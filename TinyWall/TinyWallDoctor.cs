@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration.Install;
 using System.Diagnostics;
 using System.ServiceProcess;
 using TaskScheduler;
@@ -57,12 +56,21 @@ namespace pylorak.TinyWall
 
             if (Utils.RunningAsAdmin())
             {
-                // Run installers
+                // Install (or update in place) the service.
                 try
                 {
-                    ManagedInstallerClass.InstallHelper(new string[] { "/i", Utils.ExecutablePath });
+                    using var scm = new ServiceControlManager(
+                        ServiceControlAccessRights.SC_MANAGER_CONNECT |
+                        ServiceControlAccessRights.SC_MANAGER_CREATE_SERVICE);
+                    scm.InstallService(
+                        TinyWallService.SERVICE_NAME,
+                        TinyWallService.SERVICE_DISPLAY_NAME,
+                        Utils.ExecutablePath,
+                        TinyWallService.ServiceDependencies,
+                        ServiceStartMode.Automatic);
+                    scm.SetLoadOrderGroup(TinyWallService.SERVICE_NAME, "NetworkProvider");
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Utils.LogException(e, logContext);
                 }
@@ -230,7 +238,8 @@ namespace pylorak.TinyWall
 
             try
             {
-                ManagedInstallerClass.InstallHelper(new string[] { "/u", Utils.ExecutablePath });
+                using var scm = new ServiceControlManager();
+                scm.UninstallService(TinyWallService.SERVICE_NAME);
             }
             catch (Exception e) { Utils.LogException(e, Utils.LOG_ID_INSTALLER); }
 

@@ -103,7 +103,8 @@ namespace pylorak.Windows.Services
         SERVICE_PAUSE_CONTINUE = 0x0040, // Required to call the ControlService function to pause or continue the service. 
         SERVICE_INTERROGATE = 0x0080, // Required to call the ControlService function to ask the service to report its status immediately. 
         SERVICE_USER_DEFINED_CONTROL = 0x0100, // Required to call the ControlService function to specify a user-defined control code.
-        SERVICE_ALL_ACCESS = 0xF01FF // Includes STANDARD_RIGHTS_REQUIRED in addition to all access rights in this table. 
+        SERVICE_ALL_ACCESS = 0xF01FF, // Includes STANDARD_RIGHTS_REQUIRED in addition to all access rights in this table.
+        DELETE = 0x10000 // Standard right required to call DeleteService.
     }
 
     public enum ServiceConfig2InfoLevel : int

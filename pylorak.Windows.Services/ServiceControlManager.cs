@@ -9,6 +9,10 @@ namespace pylorak.Windows.Services
     public class ServiceControlManager : IDisposable
     {
         private const uint SERVICE_NO_CHANGE = 0xFFFFFFFF;
+        private const uint SERVICE_WIN32_OWN_PROCESS = 0x00000010;
+        private const uint SERVICE_ERROR_NORMAL = 0x00000001;
+        private const int ERROR_SERVICE_DOES_NOT_EXIST = 1060;
+        private const int ERROR_SERVICE_MARKED_FOR_DELETE = 1072;
 
         private bool disposed;
         private readonly SafeServiceHandle SCManager;
@@ -30,16 +34,139 @@ namespace pylorak.Windows.Services
 
         [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
         public ServiceControlManager()
+            : this(ServiceControlAccessRights.SC_MANAGER_CONNECT)
+        {
+        }
+
+        [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
+        public ServiceControlManager(ServiceControlAccessRights desiredAccess)
         {
             // Open the service control manager
             SCManager = NativeMethods.OpenSCManager(
                 null,
                 null,
-                ServiceControlAccessRights.SC_MANAGER_CONNECT);
+                desiredAccess);
 
             // Verify if the SC is opened
             if (SCManager.IsInvalid)
                 throw new Win32Exception(Marshal.GetLastWin32Error());
+        }
+
+        /// <summary>
+        /// Installs a Win32 own-process service running as LocalSystem with
+        /// the given start mode and dependencies. If a service with the same
+        /// name already exists, its binary path, display name, dependencies,
+        /// and start mode are updated in place (semantics: update-if-exists).
+        /// </summary>
+        [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
+        public void InstallService(
+            string serviceName,
+            string displayName,
+            string binaryPath,
+            string[]? dependencies,
+            ServiceStartMode startMode)
+        {
+            char[]? depBuf = BuildDependencyBuffer(dependencies);
+
+            // First, try to open an existing service and update it.
+            using (var existing = NativeMethods.OpenService(
+                SCManager,
+                serviceName,
+                ServiceAccessRights.SERVICE_CHANGE_CONFIG | ServiceAccessRights.SERVICE_QUERY_CONFIG))
+            {
+                if (!existing.IsInvalid)
+                {
+                    var ok = NativeMethods.ChangeServiceConfig(
+                        existing,
+                        SERVICE_NO_CHANGE,
+                        (uint)startMode,
+                        SERVICE_NO_CHANGE,
+                        binaryPath,
+                        null,
+                        IntPtr.Zero,
+                        depBuf,
+                        null,
+                        null,
+                        displayName);
+                    if (!ok)
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                    return;
+                }
+
+                int err = Marshal.GetLastWin32Error();
+                if (err != ERROR_SERVICE_DOES_NOT_EXIST)
+                    throw new Win32Exception(err);
+            }
+
+            // Service does not exist — create it.
+            using var created = NativeMethods.CreateService(
+                SCManager,
+                serviceName,
+                displayName,
+                ServiceAccessRights.SERVICE_ALL_ACCESS,
+                SERVICE_WIN32_OWN_PROCESS,
+                (uint)startMode,
+                SERVICE_ERROR_NORMAL,
+                binaryPath,
+                null,
+                IntPtr.Zero,
+                depBuf,
+                null,  // null = LocalSystem
+                null);
+
+            if (created.IsInvalid)
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+        }
+
+        /// <summary>
+        /// Removes the named service. No-op if it doesn't exist.
+        /// </summary>
+        [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
+        public void UninstallService(string serviceName)
+        {
+            using var service = NativeMethods.OpenService(
+                SCManager,
+                serviceName,
+                ServiceAccessRights.DELETE);
+
+            if (service.IsInvalid)
+            {
+                int err = Marshal.GetLastWin32Error();
+                if (err == ERROR_SERVICE_DOES_NOT_EXIST)
+                    return;
+                throw new Win32Exception(err);
+            }
+
+            if (!NativeMethods.DeleteService(service))
+            {
+                int err = Marshal.GetLastWin32Error();
+                if (err == ERROR_SERVICE_MARKED_FOR_DELETE)
+                    return;
+                throw new Win32Exception(err);
+            }
+        }
+
+        private static char[]? BuildDependencyBuffer(string[]? dependencies)
+        {
+            if (dependencies is null || dependencies.Length == 0)
+                return null;
+
+            // Win32 expects a double-null-terminated MULTI_SZ.
+            int len = 0;
+            foreach (var d in dependencies)
+                len += d.Length + 1;
+            len += 1;
+
+            var buf = new char[len];
+            int pos = 0;
+            foreach (var d in dependencies)
+            {
+                d.CopyTo(0, buf, pos, d.Length);
+                pos += d.Length;
+                buf[pos++] = '\0';
+            }
+            buf[pos] = '\0';
+            return buf;
         }
 
         /*
