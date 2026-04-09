@@ -63,7 +63,11 @@ namespace pylorak.TinyWall
 
         private static readonly Random _rng = new();
 
-        public static string ExecutablePath { get; } = System.Reflection.Assembly.GetEntryAssembly().Location;
+        // On .NET Core / .NET 5+ Assembly.GetEntryAssembly().Location returns the
+        // managed .dll path, not the host .exe. Environment.ProcessPath returns the
+        // actual launched executable, which is what SCM and shell-out paths need.
+        public static string ExecutablePath { get; } = Environment.ProcessPath
+            ?? System.Reflection.Assembly.GetEntryAssembly()!.Location;
 
         public static string HexEncode(byte[] binstr)
         {
