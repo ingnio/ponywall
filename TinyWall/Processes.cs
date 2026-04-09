@@ -13,12 +13,12 @@ namespace pylorak.TinyWall
     {
         internal readonly List<ProcessInfo> Selection = new();
         private readonly AsyncIconScanner IconScanner;
-        private readonly Size IconSize = new((int)Math.Round(16 * Utils.DpiScalingFactor), (int)Math.Round(16 * Utils.DpiScalingFactor));
+        private readonly Size IconSize = new((int)Math.Round(16 * UiUtils.DpiScalingFactor), (int)Math.Round(16 * UiUtils.DpiScalingFactor));
 
         internal ProcessesForm(bool multiSelect)
         {
             InitializeComponent();
-            Utils.SetRightToLeft(this);
+            UiUtils.SetRightToLeft(this);
             this.IconList.ImageSize = IconSize;
             this.listView.MultiSelect = multiSelect;
             this.Icon = Resources.Icons.firewall;
@@ -26,7 +26,7 @@ namespace pylorak.TinyWall
             this.btnCancel.Image = GlobalInstances.CancelBtnIcon;
 
             const string TEMP_ICON_KEY = "generic-executable";
-            this.IconList.Images.Add(TEMP_ICON_KEY, Utils.GetIconContained(".exe", IconSize.Width, IconSize.Height));
+            this.IconList.Images.Add(TEMP_ICON_KEY, UiUtils.GetIconContained(".exe", IconSize.Width, IconSize.Height));
             this.IconList.Images.Add("store", Resources.Icons.store);
             this.IconList.Images.Add("system", Resources.Icons.windows_small);
             this.IconList.Images.Add("network-drive", Resources.Icons.network_drive_small);
@@ -68,7 +68,7 @@ namespace pylorak.TinyWall
             if (ActiveConfig.Controller.ProcessesFormWindowLoc.X != 0)
             {
                 this.Location = ActiveConfig.Controller.ProcessesFormWindowLoc;
-                Utils.FixupFormPosition(this);
+                UiUtils.FixupFormPosition(this);
             }
             this.WindowState = ActiveConfig.Controller.ProcessesFormWindowState;
 
@@ -139,7 +139,7 @@ namespace pylorak.TinyWall
                 }
             }
 
-            Utils.SetDoubleBuffering(listView, true);
+            UiUtils.SetDoubleBuffering(listView, true);
             listView.BeginUpdate();
             listView.ListViewItemSorter = new ListViewItemComparer(0);
             listView.Items.AddRange(itemColl.ToArray());

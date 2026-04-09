@@ -70,7 +70,7 @@ namespace pylorak.TinyWall
                     updater.CheckVersion(descriptor);
                     break;
                 case (int)DialogResult.Abort:
-                    Utils.ShowMessageBox(updater.ErrorMsg, Resources.Messages.TinyWall, TaskDialogCommonButtons.Ok, TaskDialogIcon.Error);
+                    UiUtils.ShowMessageBox(updater.ErrorMsg, Resources.Messages.TinyWall, TaskDialogCommonButtons.Ok, TaskDialogIcon.Error);
                     break;
             }
         }
@@ -88,13 +88,13 @@ namespace pylorak.TinyWall
             if (WindowsNew_AnyTwUpdate || WindowsOld_TwMinorFixOnly)
             {
                 string prompt = string.Format(CultureInfo.CurrentCulture, Resources.Messages.UpdateAvailable, UpdateModule.ComponentVersion);
-                if (Utils.ShowMessageBox(prompt, Resources.Messages.TinyWallUpdater, TaskDialogCommonButtons.Yes | TaskDialogCommonButtons.No, TaskDialogIcon.Warning) == DialogResult.Yes)
+                if (UiUtils.ShowMessageBox(prompt, Resources.Messages.TinyWallUpdater, TaskDialogCommonButtons.Yes | TaskDialogCommonButtons.No, TaskDialogIcon.Warning) == DialogResult.Yes)
                     DownloadUpdate(UpdateModule);
             }
             else
             {
                 string prompt = Resources.Messages.NoUpdateAvailable;
-                Utils.ShowMessageBox(prompt, Resources.Messages.TinyWallUpdater, TaskDialogCommonButtons.Ok, TaskDialogIcon.Information);
+                UiUtils.ShowMessageBox(prompt, Resources.Messages.TinyWallUpdater, TaskDialogCommonButtons.Ok, TaskDialogIcon.Information);
             }
         }
 
@@ -132,7 +132,7 @@ namespace pylorak.TinyWall
                     InstallUpdate(tmpFile);
                     break;
                 case (int)DialogResult.Abort:
-                    Utils.ShowMessageBox(ErrorMsg, Resources.Messages.TinyWall, TaskDialogCommonButtons.Ok, TaskDialogIcon.Error);
+                    UiUtils.ShowMessageBox(ErrorMsg, Resources.Messages.TinyWall, TaskDialogCommonButtons.Ok, TaskDialogIcon.Error);
                     break;
             }
         }

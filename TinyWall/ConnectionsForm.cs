@@ -16,19 +16,19 @@ namespace pylorak.TinyWall
     {
         private readonly TinyWallController Controller;
         private readonly AsyncIconScanner IconScanner;
-        private readonly Size IconSize = new((int)Math.Round(16 * Utils.DpiScalingFactor), (int)Math.Round(16 * Utils.DpiScalingFactor));
+        private readonly Size IconSize = new((int)Math.Round(16 * UiUtils.DpiScalingFactor), (int)Math.Round(16 * UiUtils.DpiScalingFactor));
         private bool EnableListUpdate = false;
 
         internal ConnectionsForm(TinyWallController ctrl)
         {
             InitializeComponent();
-            Utils.SetRightToLeft(this);
+            UiUtils.SetRightToLeft(this);
             this.IconList.ImageSize = IconSize;
             this.Icon = Resources.Icons.firewall;
             this.Controller = ctrl;
 
             const string TEMP_ICON_KEY = "generic-executable";
-            this.IconList.Images.Add(TEMP_ICON_KEY, Utils.GetIconContained(".exe", IconSize.Width, IconSize.Height));
+            this.IconList.Images.Add(TEMP_ICON_KEY, UiUtils.GetIconContained(".exe", IconSize.Width, IconSize.Height));
             this.IconList.Images.Add("store", Resources.Icons.store);
             this.IconList.Images.Add("system", Resources.Icons.windows_small);
             this.IconList.Images.Add("network-drive", Resources.Icons.network_drive_small);
@@ -339,14 +339,14 @@ namespace pylorak.TinyWall
 
         private void ConnectionsForm_Load(object sender, EventArgs e)
         {
-            Utils.SetDoubleBuffering(list, true);
+            UiUtils.SetDoubleBuffering(list, true);
             list.ListViewItemSorter = new ListViewItemComparer(9, null, false);
             if (ActiveConfig.Controller.ConnFormWindowSize.Width != 0)
                 this.Size = ActiveConfig.Controller.ConnFormWindowSize;
             if (ActiveConfig.Controller.ConnFormWindowLoc.X != 0)
             {
                 this.Location = ActiveConfig.Controller.ConnFormWindowLoc;
-                Utils.FixupFormPosition(this);
+                UiUtils.FixupFormPosition(this);
             }
             this.WindowState = ActiveConfig.Controller.ConnFormWindowState;
             this.chkShowActive.Checked = ActiveConfig.Controller.ConnFormShowConnections;

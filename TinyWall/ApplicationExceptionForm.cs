@@ -22,7 +22,7 @@ namespace pylorak.TinyWall
         internal ApplicationExceptionForm(FirewallExceptionV3 fwex, bool preserveSettingsOnSubjectChange = false)
         {
             InitializeComponent();
-            Utils.SetRightToLeft(this);
+            UiUtils.SetRightToLeft(this);
 
             try
             {
@@ -158,7 +158,7 @@ namespace pylorak.TinyWall
                 transparentLabel1.Text = Resources.Messages.UnknownApplication;
             }
 
-            Utils.CenterControlInParent(transparentLabel1);
+            UiUtils.CenterControlInParent(transparentLabel1);
 
             // Update subject fields
             switch (TmpExceptionSettings[0].Subject.SubjectType)
@@ -312,7 +312,7 @@ namespace pylorak.TinyWall
                 }
                 catch
                 {
-                    Utils.ShowMessageBox(
+                    UiUtils.ShowMessageBox(
                         Resources.Messages.PortListInvalid,
                         Resources.Messages.TinyWall,
                         Microsoft.Samples.TaskDialogCommonButtons.Ok,

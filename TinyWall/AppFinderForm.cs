@@ -13,14 +13,14 @@ namespace pylorak.TinyWall
     {
         private Thread? SearcherThread;
         private bool RunSearch;
-        private Size IconSize = new ((int)Math.Round(16 * Utils.DpiScalingFactor), (int)Math.Round(16 * Utils.DpiScalingFactor));
+        private Size IconSize = new ((int)Math.Round(16 * UiUtils.DpiScalingFactor), (int)Math.Round(16 * UiUtils.DpiScalingFactor));
 
         internal List<FirewallExceptionV3> SelectedExceptions { get; } = new List<FirewallExceptionV3>();
 
         internal AppFinderForm()
         {
             InitializeComponent();
-            Utils.SetRightToLeft(this);
+            UiUtils.SetRightToLeft(this);
             this.IconList.ImageSize = IconSize;
             this.Icon = Resources.Icons.firewall;
             this.btnCancel.Image = GlobalInstances.CancelBtnIcon;
@@ -253,7 +253,7 @@ namespace pylorak.TinyWall
                 if (!File.Exists(iconPath))
                     IconList.Images.Add(app.Name, Resources.Icons.window);
                 else
-                    IconList.Images.Add(app.Name, Utils.GetIconContained(iconPath, IconSize.Width, IconSize.Height));
+                    IconList.Images.Add(app.Name, UiUtils.GetIconContained(iconPath, IconSize.Width, IconSize.Height));
             }
 
             var li = new ListViewItem(app.Name);
@@ -332,7 +332,7 @@ namespace pylorak.TinyWall
             this.Activate();
             this.BringToFront();
             btnStartDetection_Click(btnStartDetection, EventArgs.Empty);
-            Utils.SetDoubleBuffering(list, true);
+            UiUtils.SetDoubleBuffering(list, true);
         }
     }
 }

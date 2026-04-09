@@ -345,7 +345,7 @@ namespace pylorak.TinyWall
             catch { }
 
             InitializeComponent();
-            Utils.SetRightToLeft(TrayMenu);
+            UiUtils.SetRightToLeft(TrayMenu);
             MouseInterceptor.MouseLButtonDown += new MouseInterceptor.MouseHookLButtonDown(MouseInterceptor_MouseLButtonDown);
             TrafficTimer = new System.Threading.Timer(TrafficTimerTick, null, Timeout.Infinite, Timeout.Infinite);
             UpdateTimer = new System.Threading.Timer(UpdateTimerTick, null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(240));
@@ -478,7 +478,7 @@ namespace pylorak.TinyWall
 
                 string trafficRateText = string.Format(CultureInfo.CurrentCulture, "{0}: {1}    {2}: {3}", Resources.Messages.TrafficIn, rxDisplay, Resources.Messages.TrafficOut, txDisplay);
 
-                Utils.Invoke(TrayMenu, (MethodInvoker)delegate
+                UiUtils.Invoke(TrayMenu, (MethodInvoker)delegate
                 {
                     mnuTrafficRate.Text = trafficRateText;
                 });
@@ -511,7 +511,7 @@ namespace pylorak.TinyWall
                 if (value != TrafficRateVisible_)
                 {
                     TrafficRateVisible_ = value;
-                    Utils.Invoke(TrayMenu, (MethodInvoker)delegate
+                    UiUtils.Invoke(TrayMenu, (MethodInvoker)delegate
                     {
                         mnuTrafficRate.Visible = TrafficRateVisible_;
                         toolStripMenuItem1.Visible = TrafficRateVisible_;
@@ -998,7 +998,7 @@ namespace pylorak.TinyWall
                 {
                     MouseInterceptor.Stop();
 
-                    var pid = Utils.GetPidUnderCursor(x, y);
+                    var pid = UiUtils.GetPidUnderCursor(x, y);
                     var exePath = Utils.GetPathOfProcessUseTwService(pid, GlobalInstances.Controller);
                     var packageList = new UwpPackageList();
                     var appContainer = packageList.FindPackageForProcess(pid);
@@ -1240,7 +1240,7 @@ namespace pylorak.TinyWall
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                Utils.SafeNativeMethods.DoMouseRightClick();
+                UiUtils.DoMouseRightClick();
             }
             
             if (e.Button == System.Windows.Forms.MouseButtons.Middle)

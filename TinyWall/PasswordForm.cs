@@ -10,7 +10,7 @@ namespace pylorak.TinyWall
         internal PasswordForm()
         {
             InitializeComponent();
-            Utils.SetRightToLeft(this);
+            UiUtils.SetRightToLeft(this);
             this.btnOK.Image = GlobalInstances.ApplyBtnIcon;
             this.btnCancel.Image = GlobalInstances.CancelBtnIcon;
         }

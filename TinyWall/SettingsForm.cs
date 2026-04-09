@@ -36,12 +36,12 @@ namespace pylorak.TinyWall
         private readonly List<ListViewItem> FilteredExceptionItems = new();
         private bool LoadingSettings;
         private string? m_NewPassword;
-        private Size IconSize = new((int)Math.Round(16 * Utils.DpiScalingFactor), (int)Math.Round(16 * Utils.DpiScalingFactor));
+        private Size IconSize = new((int)Math.Round(16 * UiUtils.DpiScalingFactor), (int)Math.Round(16 * UiUtils.DpiScalingFactor));
 
         internal SettingsForm(ServerConfiguration service, ControllerSettings controller)
         {
             InitializeComponent();
-            Utils.SetRightToLeft(this);
+            UiUtils.SetRightToLeft(this);
             this.IconList.ImageSize = IconSize;
             this.Icon = Resources.Icons.firewall;
             this.btnOK.Image = GlobalInstances.ApplyBtnIcon;
@@ -59,7 +59,7 @@ namespace pylorak.TinyWall
             this.btnDonate.BackgroundImage = Resources.Icons.donate;
 
             const string TEMP_ICON_KEY = "generic-executable";
-            IconList.Images.Add(TEMP_ICON_KEY, Utils.GetIconContained(".exe", IconSize.Width, IconSize.Height));
+            IconList.Images.Add(TEMP_ICON_KEY, UiUtils.GetIconContained(".exe", IconSize.Width, IconSize.Height));
             IconList.Images.Add("deleted", Resources.Icons.delete);
             IconList.Images.Add("network-drive", Resources.Icons.network_drive_small);
             IconList.Images.Add("window", Resources.Icons.window);
@@ -537,7 +537,7 @@ namespace pylorak.TinyWall
             if (TmpConfig.Controller.SettingsFormWindowLoc.X != 0)
             {
                 this.Location = TmpConfig.Controller.SettingsFormWindowLoc;
-                Utils.FixupFormPosition(this);
+                UiUtils.FixupFormPosition(this);
             }
 
             foreach (ColumnHeader col in listApplications.Columns)
@@ -546,7 +546,7 @@ namespace pylorak.TinyWall
                     col.Width = width;
             }
 
-            Utils.SetDoubleBuffering(listApplications, true);
+            UiUtils.SetDoubleBuffering(listApplications, true);
             listApplications.ListViewItemSorter = new ListViewItemComparer(0, IconList);
             tabControl1.SelectedIndex = TmpConfig.Controller.SettingsTabIndex;
 

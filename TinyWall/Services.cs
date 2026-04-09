@@ -27,7 +27,7 @@ namespace pylorak.TinyWall
         internal ServicesForm()
         {
             InitializeComponent();
-            Utils.SetRightToLeft(this);
+            UiUtils.SetRightToLeft(this);
             this.Icon = Resources.Icons.firewall;
             this.btnOK.Image = GlobalInstances.ApplyBtnIcon;
             this.btnCancel.Image = GlobalInstances.CancelBtnIcon;
@@ -99,7 +99,7 @@ namespace pylorak.TinyWall
             if (ActiveConfig.Controller.ServicesFormWindowLoc.X != 0)
             {
                 this.Location = ActiveConfig.Controller.ServicesFormWindowLoc;
-                Utils.FixupFormPosition(this);
+                UiUtils.FixupFormPosition(this);
             }
             this.WindowState = ActiveConfig.Controller.ServicesFormWindowState;
 
@@ -135,7 +135,7 @@ namespace pylorak.TinyWall
                     srv.Dispose();
             }
 
-            Utils.SetDoubleBuffering(listView, true);
+            UiUtils.SetDoubleBuffering(listView, true);
             listView.BeginUpdate();
             listView.ListViewItemSorter = new ListViewItemComparer(0);
             listView.Items.AddRange(itemColl.ToArray());

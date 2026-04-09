@@ -39,7 +39,7 @@ namespace pylorak.TinyWall
                     if (!string.IsNullOrWhiteSpace(icon_path) && (li.ImageIndex == TemporaryIconIdx))
                     {
                         var is_icon_new = !LoadedIcons.TryGetValue(icon_path, out int icon_idx);
-                        var icon = is_icon_new ? Utils.GetIconContained(icon_path, iconSize.Width, iconSize.Height) : null;
+                        var icon = is_icon_new ? UiUtils.GetIconContained(icon_path, iconSize.Width, iconSize.Height) : null;
 
                         if (!is_icon_new || (is_icon_new && (icon is not null)))
                         {

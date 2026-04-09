@@ -26,7 +26,7 @@ namespace pylorak.TinyWall
             get
             {
                 if (null == _ApplyBtnIcon)
-                    _ApplyBtnIcon = Utils.ScaleImage(Resources.Icons.accept, Utils.DpiScalingFactor, Utils.DpiScalingFactor);
+                    _ApplyBtnIcon = UiUtils.ScaleImage(Resources.Icons.accept, UiUtils.DpiScalingFactor, UiUtils.DpiScalingFactor);
 
                 return _ApplyBtnIcon;
             }
@@ -39,7 +39,7 @@ namespace pylorak.TinyWall
             get
             {
                 if (null == _CancelBtnIcon)
-                    _CancelBtnIcon = Utils.ScaleImage(Resources.Icons.cancel, Utils.DpiScalingFactor, Utils.DpiScalingFactor);
+                    _CancelBtnIcon = UiUtils.ScaleImage(Resources.Icons.cancel, UiUtils.DpiScalingFactor, UiUtils.DpiScalingFactor);
 
                 return _CancelBtnIcon;
             }
@@ -52,7 +52,7 @@ namespace pylorak.TinyWall
             get
             {
                 if (null == _UninstallBtnIcon)
-                    _UninstallBtnIcon = Utils.ScaleImage(Resources.Icons.uninstall, Utils.DpiScalingFactor, Utils.DpiScalingFactor);
+                    _UninstallBtnIcon = UiUtils.ScaleImage(Resources.Icons.uninstall, UiUtils.DpiScalingFactor, UiUtils.DpiScalingFactor);
 
                 return _UninstallBtnIcon;
             }
@@ -65,7 +65,7 @@ namespace pylorak.TinyWall
             get
             {
                 if (null == _AddBtnIcon)
-                    _AddBtnIcon = Utils.ScaleImage(Resources.Icons.add, Utils.DpiScalingFactor, Utils.DpiScalingFactor);
+                    _AddBtnIcon = UiUtils.ScaleImage(Resources.Icons.add, UiUtils.DpiScalingFactor, UiUtils.DpiScalingFactor);
 
                 return _AddBtnIcon;
             }
@@ -78,7 +78,7 @@ namespace pylorak.TinyWall
             get
             {
                 if (null == _ModifyBtnIcon)
-                    _ModifyBtnIcon = Utils.ScaleImage(Resources.Icons.modify, Utils.DpiScalingFactor, Utils.DpiScalingFactor);
+                    _ModifyBtnIcon = UiUtils.ScaleImage(Resources.Icons.modify, UiUtils.DpiScalingFactor, UiUtils.DpiScalingFactor);
 
                 return _ModifyBtnIcon;
             }
@@ -91,7 +91,7 @@ namespace pylorak.TinyWall
             get
             {
                 if (null == _RemoveBtnIcon)
-                    _RemoveBtnIcon = Utils.ScaleImage(Resources.Icons.remove, Utils.DpiScalingFactor, Utils.DpiScalingFactor);
+                    _RemoveBtnIcon = UiUtils.ScaleImage(Resources.Icons.remove, UiUtils.DpiScalingFactor, UiUtils.DpiScalingFactor);
 
                 return _RemoveBtnIcon;
             }
@@ -104,7 +104,7 @@ namespace pylorak.TinyWall
             get
             {
                 if (null == _SubmitBtnIcon)
-                    _SubmitBtnIcon = Utils.ScaleImage(Resources.Icons.submit, Utils.DpiScalingFactor, Utils.DpiScalingFactor);
+                    _SubmitBtnIcon = UiUtils.ScaleImage(Resources.Icons.submit, UiUtils.DpiScalingFactor, UiUtils.DpiScalingFactor);
 
                 return _SubmitBtnIcon;
             }
@@ -117,7 +117,7 @@ namespace pylorak.TinyWall
             get
             {
                 if (null == _ImportBtnIcon)
-                    _ImportBtnIcon = Utils.ScaleImage(Resources.Icons.import, Utils.DpiScalingFactor, Utils.DpiScalingFactor);
+                    _ImportBtnIcon = UiUtils.ScaleImage(Resources.Icons.import, UiUtils.DpiScalingFactor, UiUtils.DpiScalingFactor);
 
                 return _ImportBtnIcon;
             }
@@ -130,7 +130,7 @@ namespace pylorak.TinyWall
             get
             {
                 if (null == _ExportBtnIcon)
-                    _ExportBtnIcon = Utils.ScaleImage(Resources.Icons.export, Utils.DpiScalingFactor, Utils.DpiScalingFactor);
+                    _ExportBtnIcon = UiUtils.ScaleImage(Resources.Icons.export, UiUtils.DpiScalingFactor, UiUtils.DpiScalingFactor);
 
                 return _ExportBtnIcon;
             }
@@ -143,7 +143,7 @@ namespace pylorak.TinyWall
             get
             {
                 if (null == _UpdateBtnIcon)
-                    _UpdateBtnIcon = Utils.ScaleImage(Resources.Icons.update, Utils.DpiScalingFactor, Utils.DpiScalingFactor);
+                    _UpdateBtnIcon = UiUtils.ScaleImage(Resources.Icons.update, UiUtils.DpiScalingFactor, UiUtils.DpiScalingFactor);
 
                 return _UpdateBtnIcon;
             }
@@ -156,7 +156,7 @@ namespace pylorak.TinyWall
             get
             {
                 if (null == _WebBtnIcon)
-                    _WebBtnIcon = Utils.ScaleImage(Resources.Icons.web, Utils.DpiScalingFactor, Utils.DpiScalingFactor);
+                    _WebBtnIcon = UiUtils.ScaleImage(Resources.Icons.web, UiUtils.DpiScalingFactor, UiUtils.DpiScalingFactor);
 
                 return _WebBtnIcon;
             }

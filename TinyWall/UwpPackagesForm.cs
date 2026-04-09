@@ -9,12 +9,12 @@ namespace pylorak.TinyWall
     public partial class UwpPackagesForm : Form
     {
         private readonly List<UwpPackageList.Package> SelectedPackages = new ();
-        private readonly Size IconSize = new ((int)Math.Round(16 * Utils.DpiScalingFactor), (int)Math.Round(16 * Utils.DpiScalingFactor));
+        private readonly Size IconSize = new ((int)Math.Round(16 * UiUtils.DpiScalingFactor), (int)Math.Round(16 * UiUtils.DpiScalingFactor));
 
         public UwpPackagesForm(bool multiSelect)
         {
             InitializeComponent();
-            Utils.SetRightToLeft(this);
+            UiUtils.SetRightToLeft(this);
             this.listView.MultiSelect = multiSelect;
             this.Icon = Resources.Icons.firewall;
             this.btnOK.Image = GlobalInstances.ApplyBtnIcon;
@@ -62,7 +62,7 @@ namespace pylorak.TinyWall
             if (ActiveConfig.Controller.UwpPackagesFormWindowLoc.X != 0)
             {
                 this.Location = ActiveConfig.Controller.UwpPackagesFormWindowLoc;
-                Utils.FixupFormPosition(this);
+                UiUtils.FixupFormPosition(this);
             }
             this.WindowState = ActiveConfig.Controller.UwpPackagesFormWindowState;
 
@@ -84,7 +84,7 @@ namespace pylorak.TinyWall
                 itemColl.Add(li);
             }
 
-            Utils.SetDoubleBuffering(listView, true);
+            UiUtils.SetDoubleBuffering(listView, true);
             listView.BeginUpdate();
             listView.ListViewItemSorter = new ListViewItemComparer(0);
             listView.Items.AddRange(itemColl.ToArray());
