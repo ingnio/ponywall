@@ -65,7 +65,7 @@ namespace pylorak.TinyWall
                 try
                 {
                     // Create pipe server
-                    using var pipeServer = new NamedPipeServerStream(m_PipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Message, PipeOptions.WriteThrough, 2048 * 10, 2048 * 10, ps);
+                    using var pipeServer = NamedPipeServerStreamAcl.Create(m_PipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Message, PipeOptions.WriteThrough, 2048 * 10, 2048 * 10, ps);
                     if (!pipeServer.IsConnected)
                     {
                         pipeServer.WaitForConnection();

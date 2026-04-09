@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Microsoft.Samples;
 using pylorak.Utilities;
 using pylorak.Windows;
+using TaskDialog = Microsoft.Samples.TaskDialog;
 
 namespace pylorak.TinyWall
 {

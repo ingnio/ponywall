@@ -4,7 +4,6 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Windows.Forms;
 using pylorak.Utilities;
-using Windows.ApplicationModel.Store.Preview.InstallControl;
 
 namespace pylorak.TinyWall
 {

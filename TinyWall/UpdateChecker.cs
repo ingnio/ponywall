@@ -7,6 +7,8 @@ using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Samples;
 using pylorak.Windows;
+using TaskDialog = Microsoft.Samples.TaskDialog;
+using TaskDialogIcon = Microsoft.Samples.TaskDialogIcon;
 
 namespace pylorak.TinyWall
 {

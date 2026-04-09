@@ -11,6 +11,9 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="TinyWall" />
+  </ItemGroup>
   <PropertyGroup>
     <Product>pylorak.Windows</Product>
     <AssemblyTitle>pylorak.Windows</AssemblyTitle>
