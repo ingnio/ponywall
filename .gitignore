@@ -29,6 +29,9 @@
 /pylorak.Windows.WFP/bin/
 /pylorak.Windows.WFP/obj/
 
+/TinyWall.Core/bin/
+/TinyWall.Core/obj/
+
 /MsiSetup/obj/
 /MsiSetup/bin/
 /MsiSetup/Sources/ProgramFiles/
