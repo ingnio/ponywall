@@ -22,20 +22,8 @@ namespace pylorak.TinyWall
         private readonly pylorak.Windows.TrafficRateMonitor _trafficMonitor = new();
         private readonly pylorak.Windows.MouseInterceptor _mouseInterceptor = new();
         private bool _whitelistByWindowActive;
-
-        // Menu items that need dynamic updates
-        private NativeMenuItem? _mnuTrafficRate;
-        private NativeMenuItem? _mnuModeNormal;
-        private NativeMenuItem? _mnuModeBlockAll;
-        private NativeMenuItem? _mnuModeAllowOutgoing;
-        private NativeMenuItem? _mnuModeDisabled;
-        private NativeMenuItem? _mnuModeLearn;
-        private NativeMenuItem? _mnuAllowLocalSubnet;
-        private NativeMenuItem? _mnuEnableHostsBlocklist;
-        private NativeMenuItem? _mnuLock;
-        private NativeMenuItem? _mnuThemeSystem;
-        private NativeMenuItem? _mnuThemeLight;
-        private NativeMenuItem? _mnuThemeDark;
+        private string _trafficRateText = "Traffic: --";
+        private ThemeVariant _currentThemeVariant = ThemeVariant.Default;
 
         public override void Initialize()
         {
@@ -93,123 +81,15 @@ namespace pylorak.TinyWall
 
         private void SetupTrayIcon()
         {
-            var menu = new NativeMenu();
-
-            // Traffic rate display (informational, disabled)
-            _mnuTrafficRate = new NativeMenuItem("Traffic: --") { IsEnabled = false };
-            menu.Items.Add(_mnuTrafficRate);
-            menu.Items.Add(new NativeMenuItemSeparator());
-
-            // Mode submenu
-            var modeMenu = new NativeMenu();
-            _mnuModeNormal = new NativeMenuItem(pylorak.TinyWall.Resources.Messages.FirewallModeNormal);
-            _mnuModeNormal.Click += (_, _) => _viewModel?.SetModeCommand.Execute(FirewallMode.Normal);
-            modeMenu.Items.Add(_mnuModeNormal);
-
-            _mnuModeBlockAll = new NativeMenuItem(pylorak.TinyWall.Resources.Messages.FirewallModeBlockAll);
-            _mnuModeBlockAll.Click += (_, _) => _viewModel?.SetModeCommand.Execute(FirewallMode.BlockAll);
-            modeMenu.Items.Add(_mnuModeBlockAll);
-
-            _mnuModeAllowOutgoing = new NativeMenuItem(pylorak.TinyWall.Resources.Messages.FirewallModeAllowOut);
-            _mnuModeAllowOutgoing.Click += (_, _) => _viewModel?.SetModeCommand.Execute(FirewallMode.AllowOutgoing);
-            modeMenu.Items.Add(_mnuModeAllowOutgoing);
-
-            _mnuModeDisabled = new NativeMenuItem(pylorak.TinyWall.Resources.Messages.FirewallModeDisabled);
-            _mnuModeDisabled.Click += (_, _) => _viewModel?.SetModeCommand.Execute(FirewallMode.Disabled);
-            modeMenu.Items.Add(_mnuModeDisabled);
-
-            _mnuModeLearn = new NativeMenuItem(pylorak.TinyWall.Resources.Messages.FirewallModeLearn);
-            _mnuModeLearn.Click += (_, _) => _viewModel?.SetModeCommand.Execute(FirewallMode.Learning);
-            modeMenu.Items.Add(_mnuModeLearn);
-
-            var mnuMode = new NativeMenuItem("Change mode") { Menu = modeMenu };
-            menu.Items.Add(mnuMode);
-            menu.Items.Add(new NativeMenuItemSeparator());
-
-            // Manage
-            var mnuManage = new NativeMenuItem("Manage");
-            mnuManage.Click += async (_, _) => await OpenManageAsync();
-            menu.Items.Add(mnuManage);
-
-            // Connections
-            var mnuConnections = new NativeMenuItem("Connections...");
-            mnuConnections.Click += (_, _) => OpenConnections();
-            menu.Items.Add(mnuConnections);
-            menu.Items.Add(new NativeMenuItemSeparator());
-
-            // Whitelist by submenu
-            var whitelistMenu = new NativeMenu();
-            var mnuWhitelistExe = new NativeMenuItem("Executable...");
-            mnuWhitelistExe.Click += async (_, _) => await WhitelistByExecutableAsync();
-            whitelistMenu.Items.Add(mnuWhitelistExe);
-
-            var mnuWhitelistProc = new NativeMenuItem("Process...");
-            mnuWhitelistProc.Click += async (_, _) => await WhitelistByProcessAsync();
-            whitelistMenu.Items.Add(mnuWhitelistProc);
-
-            var mnuWhitelistWin = new NativeMenuItem("Window...");
-            mnuWhitelistWin.Click += (_, _) => ToggleWhitelistByWindow();
-            whitelistMenu.Items.Add(mnuWhitelistWin);
-
-            var mnuWhitelist = new NativeMenuItem("Whitelist by") { Menu = whitelistMenu };
-            menu.Items.Add(mnuWhitelist);
-            menu.Items.Add(new NativeMenuItemSeparator());
-
-            // Allow local subnet toggle
-            _mnuAllowLocalSubnet = new NativeMenuItem("Allow Local Subnet");
-            _mnuAllowLocalSubnet.Click += (_, _) => _viewModel?.ToggleLocalSubnetCommand.Execute(null);
-            menu.Items.Add(_mnuAllowLocalSubnet);
-
-            // Enable hosts blocklist toggle
-            _mnuEnableHostsBlocklist = new NativeMenuItem("Enable Hosts Blocklist");
-            _mnuEnableHostsBlocklist.Click += (_, _) => _viewModel?.ToggleHostsBlocklistCommand.Execute(null);
-            menu.Items.Add(_mnuEnableHostsBlocklist);
-            menu.Items.Add(new NativeMenuItemSeparator());
-
-            // Lock
-            _mnuLock = new NativeMenuItem(pylorak.TinyWall.Resources.Messages.Lock);
-            _mnuLock.Click += async (_, _) =>
-            {
-                if (_viewModel != null)
-                    await _viewModel.ToggleLockAsync();
-            };
-            menu.Items.Add(_mnuLock);
-            menu.Items.Add(new NativeMenuItemSeparator());
-
-            // Theme submenu
-            var themeMenu = new NativeMenu();
-            _mnuThemeSystem = new NativeMenuItem("System");
-            _mnuThemeSystem.ToggleType = NativeMenuItemToggleType.Radio;
-            _mnuThemeSystem.IsChecked = true;
-            _mnuThemeSystem.Click += (_, _) => SetThemeVariant(ThemeVariant.Default);
-            themeMenu.Items.Add(_mnuThemeSystem);
-
-            _mnuThemeLight = new NativeMenuItem("Light");
-            _mnuThemeLight.ToggleType = NativeMenuItemToggleType.Radio;
-            _mnuThemeLight.Click += (_, _) => SetThemeVariant(ThemeVariant.Light);
-            themeMenu.Items.Add(_mnuThemeLight);
-
-            _mnuThemeDark = new NativeMenuItem("Dark");
-            _mnuThemeDark.ToggleType = NativeMenuItemToggleType.Radio;
-            _mnuThemeDark.Click += (_, _) => SetThemeVariant(ThemeVariant.Dark);
-            themeMenu.Items.Add(_mnuThemeDark);
-
-            var mnuTheme = new NativeMenuItem("Theme") { Menu = themeMenu };
-            menu.Items.Add(mnuTheme);
-            menu.Items.Add(new NativeMenuItemSeparator());
-
-            // Quit
-            var mnuQuit = new NativeMenuItem("Quit");
-            mnuQuit.Click += (_, _) => _viewModel?.QuitCommand.Execute(null);
-            menu.Items.Add(mnuQuit);
-
-            // Create the tray icon
+            // Create a tray icon with no NativeMenu -- we show a custom popup window instead
             var trayIcons = new TrayIcons();
             _trayIcon = new TrayIcon
             {
-                ToolTipText = "TinyWall",
-                Menu = menu
+                ToolTipText = "TinyWall"
             };
+
+            // Show custom menu on click (both left and right)
+            _trayIcon.Clicked += (_, _) => ShowTrayMenu();
 
             // Load the tray icon from embedded Avalonia resource
             try
@@ -233,6 +113,52 @@ namespace pylorak.TinyWall
 
             trayIcons.Add(_trayIcon);
             TrayIcon.SetIcons(this, trayIcons);
+        }
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+        private static extern bool GetCursorPos(out POINT lpPoint);
+
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        private struct POINT { public int X; public int Y; }
+
+        private void ShowTrayMenu()
+        {
+            if (_viewModel == null) return;
+
+            // Get current cursor position for menu placement
+            GetCursorPos(out var pt);
+            var cursorPos = new PixelPoint(pt.X, pt.Y);
+
+            var menuWindow = new TrayMenuWindow();
+
+            // Set current state
+            menuWindow.SetState(
+                _viewModel.CurrentMode,
+                _viewModel.IsLocked,
+                _viewModel.IsLocalSubnetAllowed,
+                _viewModel.IsHostsBlocklistEnabled,
+                _currentThemeVariant,
+                _trafficRateText);
+
+            // Wire up events
+            menuWindow.ModeChangeRequested += mode => _viewModel.SetModeCommand.Execute(mode);
+            menuWindow.ManageRequested += async () => await OpenManageAsync();
+            menuWindow.ConnectionsRequested += () => OpenConnections();
+            menuWindow.WhitelistExeRequested += async () => await WhitelistByExecutableAsync();
+            menuWindow.WhitelistProcessRequested += async () => await WhitelistByProcessAsync();
+            menuWindow.WhitelistWindowRequested += () => ToggleWhitelistByWindow();
+            menuWindow.ToggleLocalSubnetRequested += () => _viewModel.ToggleLocalSubnetCommand.Execute(null);
+            menuWindow.ToggleHostsBlocklistRequested += () => _viewModel.ToggleHostsBlocklistCommand.Execute(null);
+            menuWindow.ToggleLockRequested += async () =>
+            {
+                if (_viewModel != null)
+                    await _viewModel.ToggleLockAsync();
+            };
+            menuWindow.ThemeChangeRequested += variant => SetThemeVariant(variant);
+            menuWindow.QuitRequested += () => _viewModel.QuitCommand.Execute(null);
+
+            menuWindow.ShowAt(cursorPos);
         }
 
         private async Task OpenManageAsync()
@@ -559,9 +485,7 @@ namespace pylorak.TinyWall
                 // Update traffic rate
                 UpdateTrafficRate();
 
-                // Update menu check marks based on current mode
-                UpdateModeMenuChecks();
-                UpdateToggleMenuText();
+                // Update tray tooltip
                 UpdateTrayTooltip();
             }
             catch
@@ -589,68 +513,22 @@ namespace pylorak.TinyWall
                     ? string.Format(System.Globalization.CultureInfo.CurrentCulture, "{0:f} MiB/s", mbTx)
                     : string.Format(System.Globalization.CultureInfo.CurrentCulture, "{0:f} KiB/s", kbTx);
 
-                if (_mnuTrafficRate != null)
-                    _mnuTrafficRate.Header = string.Format(System.Globalization.CultureInfo.CurrentCulture,
-                        "{0}: {1}    {2}: {3}",
-                        pylorak.TinyWall.Resources.Messages.TrafficIn, rxDisplay,
-                        pylorak.TinyWall.Resources.Messages.TrafficOut, txDisplay);
+                _trafficRateText = string.Format(System.Globalization.CultureInfo.CurrentCulture,
+                    "{0}: {1}    {2}: {3}",
+                    pylorak.TinyWall.Resources.Messages.TrafficIn, rxDisplay,
+                    pylorak.TinyWall.Resources.Messages.TrafficOut, txDisplay);
             }
             catch { }
         }
 
-        private void UpdateModeMenuChecks()
-        {
-            if (_viewModel == null) return;
-
-            // Avalonia NativeMenuItem doesn't support checkmarks directly,
-            // so we use a bullet prefix to indicate the active mode.
-            var mode = _viewModel.CurrentMode;
-            SetMenuItemChecked(_mnuModeNormal, mode == FirewallMode.Normal);
-            SetMenuItemChecked(_mnuModeBlockAll, mode == FirewallMode.BlockAll);
-            SetMenuItemChecked(_mnuModeAllowOutgoing, mode == FirewallMode.AllowOutgoing);
-            SetMenuItemChecked(_mnuModeDisabled, mode == FirewallMode.Disabled);
-            SetMenuItemChecked(_mnuModeLearn, mode == FirewallMode.Learning);
-        }
-
-        private static void SetMenuItemChecked(NativeMenuItem? item, bool isChecked)
-        {
-            if (item == null) return;
-
-            // Use a toggleType to show check state
-            item.ToggleType = NativeMenuItemToggleType.Radio;
-            item.IsChecked = isChecked;
-        }
-
-        private void UpdateToggleMenuText()
-        {
-            if (_viewModel == null) return;
-
-            if (_mnuAllowLocalSubnet != null)
-            {
-                _mnuAllowLocalSubnet.ToggleType = NativeMenuItemToggleType.CheckBox;
-                _mnuAllowLocalSubnet.IsChecked = _viewModel.IsLocalSubnetAllowed;
-            }
-
-            if (_mnuEnableHostsBlocklist != null)
-            {
-                _mnuEnableHostsBlocklist.ToggleType = NativeMenuItemToggleType.CheckBox;
-                _mnuEnableHostsBlocklist.IsChecked = _viewModel.IsHostsBlocklistEnabled;
-            }
-
-            if (_mnuLock != null)
-            {
-                _mnuLock.Header = _viewModel.IsLocked ? pylorak.TinyWall.Resources.Messages.Unlock : pylorak.TinyWall.Resources.Messages.Lock;
-            }
-        }
+        // State is now passed to TrayMenuWindow each time it opens,
+        // so no per-tick menu item updates are needed.
 
         private void SetThemeVariant(ThemeVariant variant)
         {
+            _currentThemeVariant = variant;
             if (Application.Current != null)
                 Application.Current.RequestedThemeVariant = variant;
-
-            if (_mnuThemeSystem != null) _mnuThemeSystem.IsChecked = (variant == ThemeVariant.Default);
-            if (_mnuThemeLight != null) _mnuThemeLight.IsChecked = (variant == ThemeVariant.Light);
-            if (_mnuThemeDark != null) _mnuThemeDark.IsChecked = (variant == ThemeVariant.Dark);
         }
 
         private void UpdateTrayTooltip()

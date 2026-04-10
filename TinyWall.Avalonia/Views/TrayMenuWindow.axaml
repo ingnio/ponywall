@@ -1,0 +1,257 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="pylorak.TinyWall.Views.TrayMenuWindow"
+        Title="TinyWall Menu"
+        TransparencyLevelHint="AcrylicBlur,None"
+        Background="Transparent"
+        SystemDecorations="None"
+        ShowInTaskbar="False"
+        CanResize="False"
+        Topmost="True"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="Manual"
+        MinWidth="240"
+        MaxWidth="320">
+
+  <Window.Styles>
+    <!-- Menu item button: transparent, full width, rounded hover -->
+    <Style Selector="Button.menuItem">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="Padding" Value="12,7" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Margin" Value="4,1" />
+    </Style>
+    <Style Selector="Button.menuItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+    </Style>
+    <Style Selector="Button.menuItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}" />
+    </Style>
+
+    <!-- Disabled info row (traffic rate) -->
+    <Style Selector="Button.menuInfo">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="Padding" Value="12,6" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="IsEnabled" Value="False" />
+      <Setter Property="Margin" Value="4,1" />
+      <Setter Property="Opacity" Value="0.7" />
+    </Style>
+
+    <!-- Separator -->
+    <Style Selector="Separator.menuSep">
+      <Setter Property="Margin" Value="12,4" />
+      <Setter Property="Height" Value="1" />
+      <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+    </Style>
+
+    <!-- Submenu header (non-clickable, shows expand arrow) -->
+    <Style Selector="Button.submenuHeader">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="Padding" Value="12,7" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Margin" Value="4,1" />
+    </Style>
+    <Style Selector="Button.submenuHeader:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+    </Style>
+
+    <!-- Indicator text (checkmark/radio) -->
+    <Style Selector="TextBlock.indicator">
+      <Setter Property="Width" Value="16" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="TextAlignment" Value="Center" />
+    </Style>
+
+    <!-- Submenu child items: indented -->
+    <Style Selector="Button.submenuItem">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="Padding" Value="12,6" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Margin" Value="4,0" />
+    </Style>
+    <Style Selector="Button.submenuItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+    </Style>
+    <Style Selector="Button.submenuItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}" />
+    </Style>
+
+    <!-- Expand arrow rotation -->
+    <Style Selector="TextBlock.expandArrow">
+      <Setter Property="FontSize" Value="10" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+    </Style>
+  </Window.Styles>
+
+  <Border CornerRadius="8"
+          Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+          BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+          BorderThickness="1"
+          Padding="4,6"
+          BoxShadow="0 8 32 0 #40000000"
+          ClipToBounds="True">
+    <StackPanel>
+
+      <!-- Traffic Rate (info row) -->
+      <Button Classes="menuInfo" x:Name="BtnTrafficRate">
+        <TextBlock x:Name="TxtTrafficRate" Text="Traffic: --" FontSize="12" />
+      </Button>
+
+      <Separator Classes="menuSep" />
+
+      <!-- Change Mode (expandable) -->
+      <Button Classes="submenuHeader" x:Name="BtnModeExpand" Click="OnModeExpandClick">
+        <DockPanel>
+          <TextBlock x:Name="TxtModeArrow" Classes="expandArrow" DockPanel.Dock="Right" Text="&#x25B8;" Margin="8,0,0,0" />
+          <TextBlock Text="Change mode" />
+        </DockPanel>
+      </Button>
+      <StackPanel x:Name="PnlModeItems" IsVisible="False" Margin="16,0,0,0">
+        <Button Classes="submenuItem" x:Name="BtnModeNormal" Click="OnModeNormalClick">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock x:Name="IndModeNormal" Classes="indicator" Text="●" />
+            <TextBlock x:Name="TxtModeNormal" Text="Normal" />
+          </StackPanel>
+        </Button>
+        <Button Classes="submenuItem" x:Name="BtnModeBlockAll" Click="OnModeBlockAllClick">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock x:Name="IndModeBlockAll" Classes="indicator" Text="○" />
+            <TextBlock x:Name="TxtModeBlockAll" Text="Block All" />
+          </StackPanel>
+        </Button>
+        <Button Classes="submenuItem" x:Name="BtnModeAllowOutgoing" Click="OnModeAllowOutgoingClick">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock x:Name="IndModeAllowOutgoing" Classes="indicator" Text="○" />
+            <TextBlock x:Name="TxtModeAllowOutgoing" Text="Allow Outgoing" />
+          </StackPanel>
+        </Button>
+        <Button Classes="submenuItem" x:Name="BtnModeDisabled" Click="OnModeDisabledClick">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock x:Name="IndModeDisabled" Classes="indicator" Text="○" />
+            <TextBlock x:Name="TxtModeDisabled" Text="Disabled" />
+          </StackPanel>
+        </Button>
+        <Button Classes="submenuItem" x:Name="BtnModeAutolearn" Click="OnModeAutolearnClick">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock x:Name="IndModeAutolearn" Classes="indicator" Text="○" />
+            <TextBlock x:Name="TxtModeAutolearn" Text="Autolearn" />
+          </StackPanel>
+        </Button>
+      </StackPanel>
+
+      <Separator Classes="menuSep" />
+
+      <!-- Manage -->
+      <Button Classes="menuItem" x:Name="BtnManage" Click="OnManageClick">
+        <TextBlock Text="Manage" />
+      </Button>
+
+      <!-- Connections -->
+      <Button Classes="menuItem" x:Name="BtnConnections" Click="OnConnectionsClick">
+        <TextBlock Text="Connections..." />
+      </Button>
+
+      <Separator Classes="menuSep" />
+
+      <!-- Whitelist by (expandable) -->
+      <Button Classes="submenuHeader" x:Name="BtnWhitelistExpand" Click="OnWhitelistExpandClick">
+        <DockPanel>
+          <TextBlock x:Name="TxtWhitelistArrow" Classes="expandArrow" DockPanel.Dock="Right" Text="&#x25B8;" Margin="8,0,0,0" />
+          <TextBlock Text="Whitelist by" />
+        </DockPanel>
+      </Button>
+      <StackPanel x:Name="PnlWhitelistItems" IsVisible="False" Margin="16,0,0,0">
+        <Button Classes="submenuItem" Click="OnWhitelistExeClick">
+          <TextBlock Text="Executable..." />
+        </Button>
+        <Button Classes="submenuItem" Click="OnWhitelistProcessClick">
+          <TextBlock Text="Process..." />
+        </Button>
+        <Button Classes="submenuItem" Click="OnWhitelistWindowClick">
+          <TextBlock Text="Window..." />
+        </Button>
+      </StackPanel>
+
+      <Separator Classes="menuSep" />
+
+      <!-- Allow Local Subnet -->
+      <Button Classes="menuItem" x:Name="BtnAllowLocalSubnet" Click="OnAllowLocalSubnetClick">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBlock x:Name="IndLocalSubnet" Classes="indicator" Text="☐" />
+          <TextBlock Text="Allow Local Subnet" />
+        </StackPanel>
+      </Button>
+
+      <!-- Enable Hosts Blocklist -->
+      <Button Classes="menuItem" x:Name="BtnEnableHostsBlocklist" Click="OnEnableHostsBlocklistClick">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBlock x:Name="IndHostsBlocklist" Classes="indicator" Text="☐" />
+          <TextBlock Text="Enable Hosts Blocklist" />
+        </StackPanel>
+      </Button>
+
+      <Separator Classes="menuSep" />
+
+      <!-- Lock / Unlock -->
+      <Button Classes="menuItem" x:Name="BtnLock" Click="OnLockClick">
+        <TextBlock x:Name="TxtLock" Text="Lock" />
+      </Button>
+
+      <Separator Classes="menuSep" />
+
+      <!-- Theme (expandable) -->
+      <Button Classes="submenuHeader" x:Name="BtnThemeExpand" Click="OnThemeExpandClick">
+        <DockPanel>
+          <TextBlock x:Name="TxtThemeArrow" Classes="expandArrow" DockPanel.Dock="Right" Text="&#x25B8;" Margin="8,0,0,0" />
+          <TextBlock Text="Theme" />
+        </DockPanel>
+      </Button>
+      <StackPanel x:Name="PnlThemeItems" IsVisible="False" Margin="16,0,0,0">
+        <Button Classes="submenuItem" Click="OnThemeSystemClick">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock x:Name="IndThemeSystem" Classes="indicator" Text="●" />
+            <TextBlock Text="System" />
+          </StackPanel>
+        </Button>
+        <Button Classes="submenuItem" Click="OnThemeLightClick">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock x:Name="IndThemeLight" Classes="indicator" Text="○" />
+            <TextBlock Text="Light" />
+          </StackPanel>
+        </Button>
+        <Button Classes="submenuItem" Click="OnThemeDarkClick">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock x:Name="IndThemeDark" Classes="indicator" Text="○" />
+            <TextBlock Text="Dark" />
+          </StackPanel>
+        </Button>
+      </StackPanel>
+
+      <Separator Classes="menuSep" />
+
+      <!-- Quit -->
+      <Button Classes="menuItem" x:Name="BtnQuit" Click="OnQuitClick">
+        <TextBlock Text="Quit" />
+      </Button>
+
+    </StackPanel>
+  </Border>
+</Window>
