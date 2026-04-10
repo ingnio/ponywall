@@ -17,7 +17,7 @@ namespace pylorak.TinyWall.Views
     public partial class AppFinderWindow : Window
     {
         private Thread? _searcherThread;
-        private volatile bool _runSearch;
+        private CancellationTokenSource? _scanCts;
 
         private readonly ObservableCollection<AppFinderItemViewModel> _items = new();
         private readonly SearchResults _searchResult = new();
@@ -37,16 +37,24 @@ namespace pylorak.TinyWall.Views
             StartDetection();
         }
 
+        protected override void OnClosed(EventArgs e)
+        {
+            WaitForThread();
+            _scanCts?.Dispose();
+            _scanCts = null;
+            base.OnClosed(e);
+        }
+
         private void BtnStartDetection_Click(object? sender, RoutedEventArgs e)
         {
-            if (!_runSearch)
+            if (_scanCts == null || _scanCts.IsCancellationRequested)
             {
                 StartDetection();
             }
             else
             {
                 btnStartDetection.IsEnabled = false;
-                _runSearch = false;
+                _scanCts.Cancel();
             }
         }
 
@@ -56,8 +64,10 @@ namespace pylorak.TinyWall.Views
             _items.Clear();
             _searchResult.Clear();
 
-            _runSearch = true;
-            _searcherThread = new Thread(SearcherWorkerMethod)
+            _scanCts?.Dispose();
+            _scanCts = new CancellationTokenSource();
+            var token = _scanCts.Token;
+            _searcherThread = new Thread(() => SearcherWorkerMethod(token))
             {
                 Name = "AppFinder",
                 IsBackground = true
@@ -67,14 +77,14 @@ namespace pylorak.TinyWall.Views
 
         private DateTime _lastStatusUpdate = DateTime.Now;
 
-        private void SearcherWorkerMethod()
+        private void SearcherWorkerMethod(CancellationToken cancel)
         {
             // ------------------------------------
             //       First, do a fast search
             // ------------------------------------
             foreach (Application app in ServiceGlobals.AppDatabase.KnownApplications)
             {
-                if (!_runSearch)
+                if (cancel.IsCancellationRequested)
                     break;
 
                 if (app.HasFlag("TWUI:Special"))
@@ -131,14 +141,13 @@ namespace pylorak.TinyWall.Views
             // Perform search for each path
             foreach (string path in searchPaths)
             {
-                if (!_runSearch)
+                if (cancel.IsCancellationRequested)
                     break;
 
-                DoSearchPath(path, exts, ServiceGlobals.AppDatabase);
+                DoSearchPath(path, exts, ServiceGlobals.AppDatabase, cancel);
             }
 
             // Update status when done
-            _runSearch = false;
             try
             {
                 Dispatcher.UIThread.Post(() =>
@@ -163,7 +172,7 @@ namespace pylorak.TinyWall.Views
             }
         }
 
-        private void DoSearchPath(string path, HashSet<string> exts, AppDatabase db)
+        private void DoSearchPath(string path, HashSet<string> exts, AppDatabase db, CancellationToken cancel)
         {
             // Update user feedback periodically
             DateTime now = DateTime.Now;
@@ -184,7 +193,7 @@ namespace pylorak.TinyWall.Views
                     string[] files = Directory.GetFiles(path, extFilter, SearchOption.TopDirectoryOnly);
                     foreach (string file in files)
                     {
-                        if (!_runSearch)
+                        if (cancel.IsCancellationRequested)
                             break;
 
                         ExecutableSubject subject = (ExecutableSubject)ExceptionSubject.Construct(file, null);
@@ -205,10 +214,10 @@ namespace pylorak.TinyWall.Views
                 string[] dirs = Directory.GetDirectories(path);
                 foreach (string dir in dirs)
                 {
-                    if (!_runSearch)
+                    if (cancel.IsCancellationRequested)
                         break;
 
-                    DoSearchPath(dir, exts, db);
+                    DoSearchPath(dir, exts, db, cancel);
                 }
             }
             catch (Exception ex)
@@ -232,7 +241,7 @@ namespace pylorak.TinyWall.Views
 
         private void WaitForThread()
         {
-            _runSearch = false;
+            _scanCts?.Cancel();
             _searcherThread?.Join();
         }
 
