@@ -1,0 +1,35 @@
+# Auto-detect text files and normalize to LF in repo, CRLF in checkout on Windows
+* text=auto eol=crlf
+
+# Source code
+*.cs text eol=crlf
+*.csproj text eol=crlf
+*.sln text eol=crlf
+*.props text eol=crlf
+*.targets text eol=crlf
+*.xml text eol=crlf
+*.config text eol=crlf
+*.json text eol=crlf
+*.xaml text eol=crlf
+*.axaml text eol=crlf
+*.manifest text eol=crlf
+*.resx text eol=crlf
+
+# Scripts that must use LF (run by bash)
+*.sh text eol=lf
+
+# Markdown / docs
+*.md text eol=crlf
+*.txt text eol=crlf
+
+# Binaries
+*.dll binary
+*.exe binary
+*.pdb binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.rtf binary
