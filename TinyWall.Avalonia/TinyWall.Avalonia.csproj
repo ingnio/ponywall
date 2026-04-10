@@ -17,6 +17,18 @@
     <ApplicationIcon>Assets\firewall.ico</ApplicationIcon>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
+
+  <!-- Publish profile defaults: enabled when explicitly publishing.
+       Build with: dotnet publish -c Release -r win-x64 -->
+  <PropertyGroup Condition="'$(PublishProtocol)'=='FileSystem' OR '$(_IsPublishing)'=='true'">
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>embedded</DebugType>
+    <!-- Trimming: enable in PublishTrimmed profile only -->
+  </PropertyGroup>
   <PropertyGroup>
     <Product>TinyWall</Product>
     <AssemblyTitle>TinyWall Avalonia</AssemblyTitle>

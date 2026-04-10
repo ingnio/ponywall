@@ -35,6 +35,8 @@
 /TinyWallService/bin/
 /TinyWallService/obj/
 
+/publish/
+
 /TinyWall.Avalonia/bin/
 /TinyWall.Avalonia/obj/
 

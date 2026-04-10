@@ -19,6 +19,16 @@
     <Copyright>Copyright © 2011 Károly Pados</Copyright>
     <Version>3.4.1</Version>
   </PropertyGroup>
+
+  <!-- Publish profile: build with: dotnet publish -c Release -r win-x64 -->
+  <PropertyGroup Condition="'$(PublishProtocol)'=='FileSystem' OR '$(_IsPublishing)'=='true'">
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\TinyWall.Core\TinyWall.Core.csproj" />
     <ProjectReference Include="..\pylorak.Utilities\pylorak.Utilities.csproj" />
