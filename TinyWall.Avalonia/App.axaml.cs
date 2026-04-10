@@ -160,26 +160,24 @@ namespace pylorak.TinyWall
                 Menu = menu
             };
 
-            // Load the tray icon
+            // Load the tray icon from embedded Avalonia resource
             try
             {
-                // Try to find the icon next to the executable (deployed alongside)
-                var iconPath = System.IO.Path.Combine(
-                    System.IO.Path.GetDirectoryName(Utils.ExecutablePath)!,
-                    "firewall.ico");
-                if (!System.IO.File.Exists(iconPath))
-                {
-                    // Development fallback: look relative to the source tree
-                    iconPath = System.IO.Path.Combine(
-                        System.IO.Path.GetDirectoryName(Utils.ExecutablePath)!,
-                        "..", "..", "..", "..", "TinyWall", "Resources", "img", "firewall.ico");
-                }
-                if (System.IO.File.Exists(iconPath))
-                    _trayIcon.Icon = new WindowIcon(iconPath);
+                var assets = Avalonia.Platform.AssetLoader.Open(
+                    new Uri("avares://TinyWall.Avalonia/Assets/firewall.ico"));
+                _trayIcon.Icon = new WindowIcon(assets);
             }
             catch
             {
-                // Icon load failed -- tray will show without a custom icon
+                // Fallback: try loading from file next to executable
+                try
+                {
+                    var iconPath = System.IO.Path.Combine(
+                        System.IO.Path.GetDirectoryName(Utils.ExecutablePath)!, "firewall.ico");
+                    if (System.IO.File.Exists(iconPath))
+                        _trayIcon.Icon = new WindowIcon(iconPath);
+                }
+                catch { }
             }
 
             trayIcons.Add(_trayIcon);
