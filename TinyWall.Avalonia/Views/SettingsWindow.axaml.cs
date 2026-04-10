@@ -542,12 +542,22 @@ namespace pylorak.TinyWall.Views
         {
             try
             {
-                var psi = new ProcessStartInfo(Path.Combine(
-                    Path.GetDirectoryName(Utils.ExecutablePath)!, "License.rtf"))
+                // Try LICENSE.txt next to exe first, then fall back to repo root convention
+                string[] candidates = new[]
                 {
-                    UseShellExecute = true
+                    Path.Combine(Path.GetDirectoryName(Utils.ExecutablePath)!, "LICENSE.txt"),
+                    Path.Combine(Path.GetDirectoryName(Utils.ExecutablePath)!, "License.rtf"),
                 };
-                Process.Start(psi)?.Dispose();
+                foreach (var path in candidates)
+                {
+                    if (File.Exists(path))
+                    {
+                        Process.Start(new ProcessStartInfo(path) { UseShellExecute = true })?.Dispose();
+                        return;
+                    }
+                }
+                // Fallback: open website
+                Process.Start(new ProcessStartInfo("https://tinywall.pados.hu") { UseShellExecute = true })?.Dispose();
             }
             catch { }
         }
@@ -556,12 +566,14 @@ namespace pylorak.TinyWall.Views
         {
             try
             {
-                var psi = new ProcessStartInfo(Path.Combine(
-                    Path.GetDirectoryName(Utils.ExecutablePath)!, "Attributions.txt"))
+                string path = Path.Combine(Path.GetDirectoryName(Utils.ExecutablePath)!, "Attributions.txt");
+                if (File.Exists(path))
                 {
-                    UseShellExecute = true
-                };
-                Process.Start(psi)?.Dispose();
+                    Process.Start(new ProcessStartInfo(path) { UseShellExecute = true })?.Dispose();
+                    return;
+                }
+                // Fallback: open website
+                Process.Start(new ProcessStartInfo("https://tinywall.pados.hu") { UseShellExecute = true })?.Dispose();
             }
             catch { }
         }
