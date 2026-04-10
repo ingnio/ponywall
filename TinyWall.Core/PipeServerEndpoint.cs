@@ -94,7 +94,16 @@ namespace pylorak.TinyWall
 
             string clientFilePath = Utils.GetPathOfProcess((uint)clientPid);
 
-            return clientFilePath.Equals(pylorak.Windows.ProcessManager.ExecutablePath, StringComparison.OrdinalIgnoreCase);
+            // Accept connections from any TinyWall binary in the same directory.
+            // Before the service/UI split, both lived in the same exe so a simple
+            // path equality check sufficed. Now the service is TinyWallService.exe
+            // and the UI is TinyWall.exe — both must be accepted.
+            string? serverDir = System.IO.Path.GetDirectoryName(pylorak.Windows.ProcessManager.ExecutablePath);
+            string? clientDir = System.IO.Path.GetDirectoryName(clientFilePath);
+
+            return !string.IsNullOrEmpty(serverDir)
+                && !string.IsNullOrEmpty(clientDir)
+                && serverDir.Equals(clientDir, StringComparison.OrdinalIgnoreCase);
 #else
             return true;
 #endif
