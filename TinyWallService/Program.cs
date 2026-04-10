@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Net;
 using System.Threading;
+using Microsoft.Extensions.Logging;
+using pylorak.TinyWall.Logging;
 using pylorak.Utilities;
 
 namespace pylorak.TinyWall
@@ -11,6 +13,18 @@ namespace pylorak.TinyWall
         [STAThread]
         static int Main(string[] args)
         {
+            // Configure logging as early as possible so that everything else
+            // on the startup path routes through ILogger.
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddProvider(new TinyWallFileLoggerProvider());
+#if DEBUG
+                builder.AddDebug();
+#endif
+                builder.SetMinimumLevel(LogLevel.Information);
+            });
+            TinyWallLog.Configure(loggerFactory);
+
             HierarchicalStopwatch.Enable = File.Exists(Path.Combine(Utils.AppDataPath, "enable-timings"));
             HierarchicalStopwatch.LogFileBase = Path.Combine(Utils.AppDataPath, @"logs\timings");
 

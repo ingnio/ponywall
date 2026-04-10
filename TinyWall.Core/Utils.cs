@@ -10,6 +10,7 @@ using System.Security;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using pylorak.Windows;
 
 namespace pylorak.TinyWall
@@ -306,70 +307,20 @@ namespace pylorak.TinyWall
 
         internal static Version TinyWallVersion { get; } = typeof(Utils).Assembly.GetName().Version;
 
-        private readonly static object logLocker = new();
         internal static readonly string LOG_ID_SERVICE = "service";
         internal static readonly string LOG_ID_GUI = "gui";
         internal static readonly string LOG_ID_INSTALLER = "installer";
+
         internal static void LogException(Exception e, string logname)
         {
-            Utils.Log(
-                string.Join(
-                    Environment.NewLine, new string[] {
-                    $"TinyWall version: {Utils.TinyWallVersion}",
-                    $"Windows version: {VersionInfo.WindowsVersionString}",
-                    e.ToString()
-                }),
-                logname
-            );
+            TinyWallLog.Logger(logname).LogError(e,
+                "TinyWall version: {Version}, Windows version: {Windows}",
+                TinyWallVersion, VersionInfo.WindowsVersionString);
         }
+
         internal static void Log(string info, string logname)
         {
-            try
-            {
-                lock (logLocker)
-                {
-                    string[] old_logs = new string[] {
-                        Path.Combine(Utils.AppDataPath, "errorlog"),
-                        Path.Combine(Utils.AppDataPath, "service.log"),
-                        Path.Combine(Utils.AppDataPath, "client.log"),
-                    };
-
-                    foreach (string file in old_logs)
-                    {
-                        try
-                        {
-                            if (File.Exists(file))
-                                File.Delete(file);
-                        }
-                        catch { }
-                    }
-
-                    string logdir = Path.Combine(Utils.AppDataPath, "logs");
-                    string logfile = Path.Combine(logdir, $"{logname}.log");
-
-                    if (!Directory.Exists(logdir))
-                        Directory.CreateDirectory(logdir);
-
-                    if (File.Exists(logfile))
-                    {
-                        var fi = new FileInfo(logfile);
-                        if (fi.Length > 512 * 1024)
-                        {
-                            using var fs = new FileStream(logfile, FileMode.Truncate, FileAccess.Write);
-                        }
-                    }
-
-                    using var sw = new StreamWriter(logfile, true, Encoding.UTF8);
-                    sw.WriteLine();
-                    sw.WriteLine("------- " + DateTime.Now.ToString(CultureInfo.InvariantCulture) + " -------");
-                    sw.WriteLine(info);
-                    sw.WriteLine();
-                }
-            }
-            catch
-            {
-                // Ignore exceptions - logging should not itself cause new problems
-            }
+            TinyWallLog.Logger(logname).LogInformation("{Info}", info);
         }
 
         internal static void FlushDnsCache()

@@ -4,6 +4,8 @@ using System.IO;
 using System.ServiceProcess;
 using System.Threading;
 using Avalonia;
+using Microsoft.Extensions.Logging;
+using pylorak.TinyWall.Logging;
 using pylorak.Windows.Services;
 
 namespace pylorak.TinyWall
@@ -15,6 +17,18 @@ namespace pylorak.TinyWall
         [STAThread]
         static int Main(string[] args)
         {
+            // Configure logging as early as possible so that everything else
+            // on the startup path routes through ILogger.
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddProvider(new TinyWallFileLoggerProvider());
+#if DEBUG
+                builder.AddDebug();
+#endif
+                builder.SetMinimumLevel(LogLevel.Information);
+            });
+            TinyWallLog.Configure(loggerFactory);
+
             // Single-instance check
             _singleInstanceMutex = new Mutex(true, @"Local\TinyWallController", out bool createdNew);
             if (!createdNew)
