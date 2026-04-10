@@ -35,12 +35,37 @@ namespace pylorak.TinyWall
         {
             try
             {
-                _controller.SwitchFirewallMode(mode);
-                CurrentMode = mode;
+                var resp = _controller.SwitchFirewallMode(mode);
+                switch (resp)
+                {
+                    case MessageType.MODE_SWITCH:
+                        CurrentMode = mode;
+                        string msg = mode switch
+                        {
+                            FirewallMode.Normal => Resources.Messages.TheFirewallIsNowOperatingAsRecommended,
+                            FirewallMode.AllowOutgoing => Resources.Messages.TheFirewallIsNowAllowsOutgoingConnections,
+                            FirewallMode.BlockAll => Resources.Messages.TheFirewallIsNowBlockingAllInAndOut,
+                            FirewallMode.Disabled => Resources.Messages.TheFirewallIsNowDisabled,
+                            FirewallMode.Learning => Resources.Messages.TheFirewallIsNowLearning,
+                            _ => string.Empty
+                        };
+                        if (!string.IsNullOrEmpty(msg))
+                            NotificationService.Notify(msg);
+                        break;
+                    case MessageType.RESPONSE_LOCKED:
+                        NotificationService.Notify(Resources.Messages.TinyWallIsCurrentlyLocked, NotificationLevel.Warning);
+                        break;
+                    case MessageType.COM_ERROR:
+                        NotificationService.Notify(Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
+                        break;
+                    default:
+                        NotificationService.Notify(Resources.Messages.OperationFailed, NotificationLevel.Error);
+                        break;
+                }
             }
             catch
             {
-                // Service may not be reachable
+                NotificationService.Notify(Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
             }
         }
 

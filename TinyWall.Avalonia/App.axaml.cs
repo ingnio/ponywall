@@ -48,6 +48,7 @@ namespace pylorak.TinyWall
                 _viewModel.QuitRequested += (_, _) =>
                 {
                     _pollTimer?.Stop();
+                    NotificationService.Cleanup();
                     desktop.Shutdown();
                 };
 
