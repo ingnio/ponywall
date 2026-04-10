@@ -29,6 +29,7 @@
     <PackageReference Include="Avalonia.Desktop" Version="11.2.7" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.7" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.7" />
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
   </ItemGroup>
   <ItemGroup>
@@ -38,6 +39,7 @@
     <ProjectReference Include="..\pylorak.Windows.Services\pylorak.Windows.Services.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\TinyWall\UwpPackageList.cs" Link="UwpPackageList.cs" />
     <AvaloniaResource Include="..\TinyWall\Resources\img\firewall.ico" Link="Assets\firewall.ico" />
   </ItemGroup>
 </Project>
