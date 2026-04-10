@@ -18,6 +18,7 @@ namespace pylorak.TinyWall
         private TrayIcon? _trayIcon;
         private DispatcherTimer? _pollTimer;
         private TrayViewModel? _viewModel;
+        private readonly pylorak.Windows.TrafficRateMonitor _trafficMonitor = new();
 
         // Menu items that need dynamic updates
         private NativeMenuItem? _mnuTrafficRate;
@@ -60,6 +61,7 @@ namespace pylorak.TinyWall
                 _viewModel.QuitRequested += (_, _) =>
                 {
                     _pollTimer?.Stop();
+                    _trafficMonitor.Dispose();
                     NotificationService.Cleanup();
                     desktop.Shutdown();
                 };
@@ -381,6 +383,9 @@ namespace pylorak.TinyWall
                     }
                 }
 
+                // Update traffic rate
+                UpdateTrafficRate();
+
                 // Update menu check marks based on current mode
                 UpdateModeMenuChecks();
                 UpdateToggleMenuText();
@@ -392,6 +397,32 @@ namespace pylorak.TinyWall
                 _viewModel.CurrentMode = FirewallMode.Unknown;
                 UpdateTrayTooltip();
             }
+        }
+
+        private void UpdateTrafficRate()
+        {
+            try
+            {
+                _trafficMonitor.Update();
+                float kbRx = (float)_trafficMonitor.BytesReceivedPerSec / 1024;
+                float kbTx = (float)_trafficMonitor.BytesSentPerSec / 1024;
+                float mbRx = kbRx / 1024;
+                float mbTx = kbTx / 1024;
+
+                string rxDisplay = (mbRx > 1)
+                    ? string.Format(System.Globalization.CultureInfo.CurrentCulture, "{0:f} MiB/s", mbRx)
+                    : string.Format(System.Globalization.CultureInfo.CurrentCulture, "{0:f} KiB/s", kbRx);
+                string txDisplay = (mbTx > 1)
+                    ? string.Format(System.Globalization.CultureInfo.CurrentCulture, "{0:f} MiB/s", mbTx)
+                    : string.Format(System.Globalization.CultureInfo.CurrentCulture, "{0:f} KiB/s", kbTx);
+
+                if (_mnuTrafficRate != null)
+                    _mnuTrafficRate.Header = string.Format(System.Globalization.CultureInfo.CurrentCulture,
+                        "{0}: {1}    {2}: {3}",
+                        pylorak.TinyWall.Resources.Messages.TrafficIn, rxDisplay,
+                        pylorak.TinyWall.Resources.Messages.TrafficOut, txDisplay);
+            }
+            catch { }
         }
 
         private void UpdateModeMenuChecks()

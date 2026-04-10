@@ -109,17 +109,47 @@ namespace pylorak.TinyWall
         [RelayCommand]
         private void ToggleLocalSubnet()
         {
-            // TODO: Toggle AllowLocalSubnet on the server config
-            // This requires GetServerConfig + modify + SetServerConfig round-trip.
-            // For now this is a placeholder.
+            try
+            {
+                Guid changeset = System.Guid.Empty;
+                _controller.GetServerConfig(out var config, out _, ref changeset);
+                if (config == null) return;
+
+                config.ActiveProfile.AllowLocalSubnet = !config.ActiveProfile.AllowLocalSubnet;
+                var resp = _controller.SetServerConfig(config, changeset);
+                if (resp.Type == MessageType.PUT_SETTINGS)
+                {
+                    IsLocalSubnetAllowed = config.ActiveProfile.AllowLocalSubnet;
+                    NotificationService.Notify(pylorak.TinyWall.Resources.Messages.TheFirewallSettingsHaveBeenUpdated);
+                }
+            }
+            catch
+            {
+                NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
+            }
         }
 
         [RelayCommand]
         private void ToggleHostsBlocklist()
         {
-            // TODO: Toggle EnableHostsBlocklist on the server config
-            // This requires GetServerConfig + modify + SetServerConfig round-trip.
-            // For now this is a placeholder.
+            try
+            {
+                Guid changeset = System.Guid.Empty;
+                _controller.GetServerConfig(out var config, out _, ref changeset);
+                if (config == null) return;
+
+                config.Blocklists.EnableHostsBlocklist = !config.Blocklists.EnableHostsBlocklist;
+                var resp = _controller.SetServerConfig(config, changeset);
+                if (resp.Type == MessageType.PUT_SETTINGS)
+                {
+                    IsHostsBlocklistEnabled = config.Blocklists.EnableHostsBlocklist;
+                    NotificationService.Notify(pylorak.TinyWall.Resources.Messages.TheFirewallSettingsHaveBeenUpdated);
+                }
+            }
+            catch
+            {
+                NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
+            }
         }
 
         [RelayCommand]

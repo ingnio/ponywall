@@ -13,6 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="TinyWall" />
+    <InternalsVisibleTo Include="TinyWall.Avalonia" />
     <InternalsVisibleTo Include="TinyWall.Core" />
   </ItemGroup>
   <PropertyGroup>
