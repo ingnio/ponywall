@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -7,6 +8,12 @@ namespace pylorak.TinyWall
     public partial class TrayViewModel : ObservableObject
     {
         private readonly Controller _controller;
+
+        /// <summary>
+        /// Callback that shows a password dialog and returns the password hash,
+        /// or null if cancelled. Set by the App on startup.
+        /// </summary>
+        public Func<Task<string?>>? ShowPasswordDialog { get; set; }
 
         [ObservableProperty]
         private FirewallMode _currentMode = FirewallMode.Unknown;
@@ -116,14 +123,29 @@ namespace pylorak.TinyWall
         }
 
         [RelayCommand]
-        private void ToggleLock()
+        private async Task ToggleLockAsync()
         {
             try
             {
                 if (IsLocked)
                 {
-                    // TODO: Show password dialog, then call _controller.TryUnlockServer(pwd)
-                    // For now, just attempt with empty password (will fail if password is set)
+                    if (ShowPasswordDialog == null)
+                        return;
+
+                    string? passHash = await ShowPasswordDialog();
+                    if (passHash == null)
+                        return; // cancelled
+
+                    var result = _controller.TryUnlockServer(passHash);
+                    if (result == MessageType.UNLOCK)
+                    {
+                        IsLocked = false;
+                        NotificationService.Notify(pylorak.TinyWall.Resources.Messages.TinyWallHasBeenUnlocked);
+                    }
+                    else
+                    {
+                        NotificationService.Notify(pylorak.TinyWall.Resources.Messages.UnlockFailed, NotificationLevel.Error);
+                    }
                 }
                 else
                 {
@@ -133,7 +155,7 @@ namespace pylorak.TinyWall
             }
             catch
             {
-                // Service may not be reachable
+                NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
             }
         }
 

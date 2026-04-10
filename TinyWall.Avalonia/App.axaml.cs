@@ -1,9 +1,11 @@
 using System;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using pylorak.TinyWall.Views;
 
 namespace pylorak.TinyWall
 {
@@ -51,6 +53,9 @@ namespace pylorak.TinyWall
                     NotificationService.Cleanup();
                     desktop.Shutdown();
                 };
+
+                // Wire password dialog callback
+                _viewModel.ShowPasswordDialog = ShowPasswordDialogAsync;
 
                 // Build the tray icon
                 SetupTrayIcon();
@@ -183,6 +188,36 @@ namespace pylorak.TinyWall
 
             trayIcons.Add(_trayIcon);
             TrayIcon.SetIcons(this, trayIcons);
+        }
+
+        private async Task<string?> ShowPasswordDialogAsync()
+        {
+            var dlg = new PasswordWindow();
+            // Tray-only app has no main window, so show as a standalone top-level window
+            await dlg.ShowDialog<bool?>(GetOwnerWindow());
+            return dlg.PassHash;
+        }
+
+        /// <summary>
+        /// Returns a hidden owner window for modal dialogs in this tray-only app.
+        /// </summary>
+        private Window _hiddenOwner = null!;
+        private Window GetOwnerWindow()
+        {
+            if (_hiddenOwner == null)
+            {
+                _hiddenOwner = new Window
+                {
+                    Width = 0,
+                    Height = 0,
+                    ShowInTaskbar = false,
+                    SystemDecorations = SystemDecorations.None,
+                    Opacity = 0
+                };
+                _hiddenOwner.Show();
+                _hiddenOwner.Hide();
+            }
+            return _hiddenOwner;
         }
 
         private void OnPollTimer(object? sender, EventArgs e)
