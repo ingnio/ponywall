@@ -73,6 +73,54 @@ namespace pylorak.TinyWall.Views
             TmpConfig = new ConfigContainer();
         }
 
+        protected override void OnOpened(EventArgs e)
+        {
+            base.OnOpened(e);
+
+            try
+            {
+                var ctrl = WindowStatePersistence.GetOrLoadController();
+                // SettingsForm has no WindowState field — always restore as Normal.
+                WindowStatePersistence.Restore(
+                    this,
+                    ctrl.SettingsFormWindowLocX,
+                    ctrl.SettingsFormWindowLocY,
+                    ctrl.SettingsFormWindowWidth,
+                    ctrl.SettingsFormWindowHeight,
+                    WindowStateValue.Normal);
+                WindowStatePersistence.RestoreColumnWidths(dgExceptions, ctrl.SettingsFormAppListColumnWidths);
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
+        }
+
+        protected override void OnClosing(WindowClosingEventArgs e)
+        {
+            try
+            {
+                var ctrl = WindowStatePersistence.GetOrLoadController();
+                // SettingsForm has no WindowState field — use a scratch variable.
+                var scratchState = WindowStateValue.Normal;
+                WindowStatePersistence.Capture(
+                    this,
+                    ref ctrl.SettingsFormWindowLocX,
+                    ref ctrl.SettingsFormWindowLocY,
+                    ref ctrl.SettingsFormWindowWidth,
+                    ref ctrl.SettingsFormWindowHeight,
+                    ref scratchState);
+                WindowStatePersistence.CaptureColumnWidths(dgExceptions, ctrl.SettingsFormAppListColumnWidths);
+                ctrl.Save();
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
+
+            base.OnClosing(e);
+        }
+
         private void PopulateLanguages()
         {
             var languages = new List<LanguageItem>

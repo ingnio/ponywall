@@ -4,8 +4,9 @@ namespace pylorak.TinyWall
 {
     /// <summary>
     /// JSON source-generation context for types that live in the UI assembly
-    /// (ControllerSettings and ConfigContainer reference WinForms / Drawing
-    /// types and therefore can't sit in TinyWall.Core's SourceGenerationContext).
+    /// (ControllerSettings and ConfigContainer). Kept separate from
+    /// TinyWall.Core's SourceGenerationContext because these types belong to
+    /// the controller/UI tier.
     /// </summary>
     [JsonSourceGenerationOptions(WriteIndented = true)]
     [JsonSerializable(typeof(ControllerSettings))]

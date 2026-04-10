@@ -35,12 +35,54 @@ namespace pylorak.TinyWall.Views
         protected override void OnOpened(EventArgs e)
         {
             base.OnOpened(e);
+
+            // Restore persisted window geometry + column widths.
+            try
+            {
+                var ctrl = WindowStatePersistence.GetOrLoadController();
+                WindowStatePersistence.Restore(
+                    this,
+                    ctrl.ConnFormWindowLocX,
+                    ctrl.ConnFormWindowLocY,
+                    ctrl.ConnFormWindowWidth,
+                    ctrl.ConnFormWindowHeight,
+                    ctrl.ConnFormWindowState);
+                WindowStatePersistence.RestoreColumnWidths(dataGrid, ctrl.ConnFormColumnWidths);
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
+
             _enableListUpdate = true;
             UpdateList();
 
             _autoRefreshTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
             _autoRefreshTimer.Tick += AutoRefreshTimer_Tick;
             _autoRefreshTimer.Start();
+        }
+
+        protected override void OnClosing(WindowClosingEventArgs e)
+        {
+            try
+            {
+                var ctrl = WindowStatePersistence.GetOrLoadController();
+                WindowStatePersistence.Capture(
+                    this,
+                    ref ctrl.ConnFormWindowLocX,
+                    ref ctrl.ConnFormWindowLocY,
+                    ref ctrl.ConnFormWindowWidth,
+                    ref ctrl.ConnFormWindowHeight,
+                    ref ctrl.ConnFormWindowState);
+                WindowStatePersistence.CaptureColumnWidths(dataGrid, ctrl.ConnFormColumnWidths);
+                ctrl.Save();
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
+
+            base.OnClosing(e);
         }
 
         protected override void OnClosed(EventArgs e)

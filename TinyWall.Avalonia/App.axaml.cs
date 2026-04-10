@@ -51,6 +51,18 @@ namespace pylorak.TinyWall
                     ServiceGlobals.AppDatabase = new DatabaseClasses.AppDatabase();
                 }
 
+                // Load persisted controller settings (window geometry, column widths, ...).
+                // Individual windows will read/write ActiveConfig.Controller on open/close.
+                try
+                {
+                    ActiveConfig.Controller = ControllerSettings.Load();
+                }
+                catch (Exception ex)
+                {
+                    Utils.LogException(ex, Utils.LOG_ID_GUI);
+                    ActiveConfig.Controller = new ControllerSettings();
+                }
+
                 // Create the view model
                 _viewModel = new TrayViewModel(_controller);
                 _viewModel.QuitRequested += (_, _) =>

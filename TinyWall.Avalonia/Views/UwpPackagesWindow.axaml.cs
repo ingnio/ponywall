@@ -36,7 +36,48 @@ namespace pylorak.TinyWall.Views
         protected override void OnOpened(EventArgs e)
         {
             base.OnOpened(e);
+
+            try
+            {
+                var ctrl = WindowStatePersistence.GetOrLoadController();
+                WindowStatePersistence.Restore(
+                    this,
+                    ctrl.UwpPackagesFormWindowLocX,
+                    ctrl.UwpPackagesFormWindowLocY,
+                    ctrl.UwpPackagesFormWindowWidth,
+                    ctrl.UwpPackagesFormWindowHeight,
+                    ctrl.UwpPackagesFormWindowState);
+                WindowStatePersistence.RestoreColumnWidths(dataGrid, ctrl.UwpPackagesFormColumnWidths);
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
+
             LoadPackages();
+        }
+
+        protected override void OnClosing(WindowClosingEventArgs e)
+        {
+            try
+            {
+                var ctrl = WindowStatePersistence.GetOrLoadController();
+                WindowStatePersistence.Capture(
+                    this,
+                    ref ctrl.UwpPackagesFormWindowLocX,
+                    ref ctrl.UwpPackagesFormWindowLocY,
+                    ref ctrl.UwpPackagesFormWindowWidth,
+                    ref ctrl.UwpPackagesFormWindowHeight,
+                    ref ctrl.UwpPackagesFormWindowState);
+                WindowStatePersistence.CaptureColumnWidths(dataGrid, ctrl.UwpPackagesFormColumnWidths);
+                ctrl.Save();
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
+
+            base.OnClosing(e);
         }
 
         private void LoadPackages()

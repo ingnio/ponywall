@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections.Generic;
@@ -7,6 +7,17 @@ using System.Text.Json.Serialization.Metadata;
 
 namespace pylorak.TinyWall
 {
+    /// <summary>
+    /// Toolkit-agnostic window state used by persisted controller settings.
+    /// Mapped to/from Avalonia's WindowState at the window layer.
+    /// </summary>
+    public enum WindowStateValue
+    {
+        Normal = 0,
+        Minimized = 1,
+        Maximized = 2
+    }
+
     [DataContract(Namespace = "http://schemas.datacontract.org/2004/07/PKSoft")]
     public sealed class ControllerSettings : ISerializable<ControllerSettings>
     {
@@ -16,11 +27,15 @@ namespace pylorak.TinyWall
 
         // Connections window
         [DataMember(EmitDefaultValue = false)]
-        public System.Windows.Forms.FormWindowState ConnFormWindowState = System.Windows.Forms.FormWindowState.Normal;
+        public WindowStateValue ConnFormWindowState = WindowStateValue.Normal;
         [DataMember(EmitDefaultValue = false)]
-        public System.Drawing.Point ConnFormWindowLoc = new(0, 0);
+        public int ConnFormWindowLocX;
         [DataMember(EmitDefaultValue = false)]
-        public System.Drawing.Size ConnFormWindowSize = new(0, 0);
+        public int ConnFormWindowLocY;
+        [DataMember(EmitDefaultValue = false)]
+        public int ConnFormWindowWidth;
+        [DataMember(EmitDefaultValue = false)]
+        public int ConnFormWindowHeight;
         [DataMember(EmitDefaultValue = false)]
         public Dictionary<string, int> ConnFormColumnWidths = new();
         [DataMember(EmitDefaultValue = false)]
@@ -32,31 +47,43 @@ namespace pylorak.TinyWall
 
         // Processes window
         [DataMember(EmitDefaultValue = false)]
-        public System.Windows.Forms.FormWindowState ProcessesFormWindowState = System.Windows.Forms.FormWindowState.Normal;
+        public WindowStateValue ProcessesFormWindowState = WindowStateValue.Normal;
         [DataMember(EmitDefaultValue = false)]
-        public System.Drawing.Point ProcessesFormWindowLoc = new(0, 0);
+        public int ProcessesFormWindowLocX;
         [DataMember(EmitDefaultValue = false)]
-        public System.Drawing.Size ProcessesFormWindowSize = new(0, 0);
+        public int ProcessesFormWindowLocY;
+        [DataMember(EmitDefaultValue = false)]
+        public int ProcessesFormWindowWidth;
+        [DataMember(EmitDefaultValue = false)]
+        public int ProcessesFormWindowHeight;
         [DataMember(EmitDefaultValue = false)]
         public Dictionary<string, int> ProcessesFormColumnWidths = new();
 
         // Services window
         [DataMember(EmitDefaultValue = false)]
-        public System.Windows.Forms.FormWindowState ServicesFormWindowState = System.Windows.Forms.FormWindowState.Normal;
+        public WindowStateValue ServicesFormWindowState = WindowStateValue.Normal;
         [DataMember(EmitDefaultValue = false)]
-        public System.Drawing.Point ServicesFormWindowLoc = new(0, 0);
+        public int ServicesFormWindowLocX;
         [DataMember(EmitDefaultValue = false)]
-        public System.Drawing.Size ServicesFormWindowSize = new(0, 0);
+        public int ServicesFormWindowLocY;
+        [DataMember(EmitDefaultValue = false)]
+        public int ServicesFormWindowWidth;
+        [DataMember(EmitDefaultValue = false)]
+        public int ServicesFormWindowHeight;
         [DataMember(EmitDefaultValue = false)]
         public Dictionary<string, int> ServicesFormColumnWidths = new();
 
         // UwpPackages window
         [DataMember(EmitDefaultValue = false)]
-        public System.Windows.Forms.FormWindowState UwpPackagesFormWindowState = System.Windows.Forms.FormWindowState.Normal;
+        public WindowStateValue UwpPackagesFormWindowState = WindowStateValue.Normal;
         [DataMember(EmitDefaultValue = false)]
-        public System.Drawing.Point UwpPackagesFormWindowLoc = new(0, 0);
+        public int UwpPackagesFormWindowLocX;
         [DataMember(EmitDefaultValue = false)]
-        public System.Drawing.Size UwpPackagesFormWindowSize = new(0, 0);
+        public int UwpPackagesFormWindowLocY;
+        [DataMember(EmitDefaultValue = false)]
+        public int UwpPackagesFormWindowWidth;
+        [DataMember(EmitDefaultValue = false)]
+        public int UwpPackagesFormWindowHeight;
         [DataMember(EmitDefaultValue = false)]
         public Dictionary<string, int> UwpPackagesFormColumnWidths = new();
 
@@ -66,9 +93,13 @@ namespace pylorak.TinyWall
         [DataMember(EmitDefaultValue = false)]
         public int SettingsTabIndex;
         [DataMember(EmitDefaultValue = false)]
-        public System.Drawing.Point SettingsFormWindowLoc = new(0, 0);
+        public int SettingsFormWindowLocX;
         [DataMember(EmitDefaultValue = false)]
-        public System.Drawing.Size SettingsFormWindowSize = new(0, 0);
+        public int SettingsFormWindowLocY;
+        [DataMember(EmitDefaultValue = false)]
+        public int SettingsFormWindowWidth;
+        [DataMember(EmitDefaultValue = false)]
+        public int SettingsFormWindowHeight;
         [DataMember(EmitDefaultValue = false)]
         public Dictionary<string, int> SettingsFormAppListColumnWidths = new();
 
