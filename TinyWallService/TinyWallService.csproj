@@ -28,6 +28,16 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <DebugType>embedded</DebugType>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <DebuggerSupport>false</DebuggerSupport>
+    <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
+    <EventSourceSupport>false</EventSourceSupport>
+    <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+    <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>partial</TrimMode>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\TinyWall.Core\TinyWall.Core.csproj" />

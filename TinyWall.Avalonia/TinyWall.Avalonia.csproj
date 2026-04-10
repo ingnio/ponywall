@@ -27,7 +27,26 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <DebugType>embedded</DebugType>
-    <!-- Trimming: enable in PublishTrimmed profile only -->
+    <!-- Skip ReadyToRun pre-JIT to shrink the binary; cold-start is
+         slightly slower but the app runs forever in the tray. -->
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <!-- Ship only English BCL satellite resources. The app's own
+         localized Messages.resx files are still included via
+         <EmbeddedResource> in TinyWall.Core. -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <!-- Feature switches to drop optional framework code paths. -->
+    <DebuggerSupport>false</DebuggerSupport>
+    <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
+    <EventSourceSupport>false</EventSourceSupport>
+    <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+    <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <!-- Trimming: partial mode only trims assemblies that opt in via
+         <IsTrimmable>true</IsTrimmable>. This is the safer default
+         that won't strip the COM/WMI/toast notification reflection
+         paths. Most of the savings come from trimming the BCL. -->
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>partial</TrimMode>
   </PropertyGroup>
   <PropertyGroup>
     <Product>TinyWall</Product>
