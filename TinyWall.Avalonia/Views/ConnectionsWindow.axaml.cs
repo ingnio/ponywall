@@ -337,8 +337,59 @@ namespace pylorak.TinyWall.Views
 
         private void MnuUnblock_Click(object? sender, RoutedEventArgs e)
         {
-            // Placeholder - unblock functionality requires TinyWallController integration
-            // which will be wired up in a later phase.
+            var selected = dataGrid.SelectedItems.Cast<ConnectionRowViewModel>().ToList();
+            if (selected.Count == 0) return;
+
+            try
+            {
+                var exceptions = new List<FirewallExceptionV3>();
+                foreach (var row in selected)
+                {
+                    var pi = row.ProcessInfo;
+                    if (pi == null) continue;
+
+                    ExceptionSubject subject;
+                    if (pi.Package.HasValue)
+                        subject = new AppContainerSubject(pi.Package.Value.Sid, pi.Package.Value.Name, pi.Package.Value.Publisher, pi.Package.Value.PublisherId);
+                    else if (!string.IsNullOrEmpty(pi.Path) && pi.Path != "System")
+                        subject = new ExecutableSubject(pi.Path);
+                    else
+                        continue;
+
+                    var appExceptions = ServiceGlobals.AppDatabase?.GetExceptionsForApp(subject, false, out _);
+                    if (appExceptions != null && appExceptions.Count > 0)
+                        exceptions.AddRange(appExceptions);
+                    else
+                        exceptions.Add(new FirewallExceptionV3(subject, new TcpUdpPolicy(true)));
+                }
+
+                if (exceptions.Count == 0) return;
+
+                Guid changeset = Guid.Empty;
+                _controller.GetServerConfig(out var config, out ServerState? _dummyState, ref changeset);
+                if (config != null)
+                {
+                    config.ActiveProfile.AddExceptions(exceptions);
+                    var resp = _controller.SetServerConfig(config, changeset);
+                    if (resp.Type == MessageType.PUT_SETTINGS)
+                    {
+                        NotificationService.Notify(
+                            string.Format(System.Globalization.CultureInfo.CurrentCulture,
+                                pylorak.TinyWall.Resources.Messages.FirewallRulesForUnrecognizedChanged,
+                                exceptions[0].Subject.ToString()));
+                        UpdateList();
+                    }
+                    else
+                    {
+                        NotificationService.Notify(pylorak.TinyWall.Resources.Messages.OperationFailed, NotificationLevel.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+                NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
+            }
         }
 
         private void MnuCloseProcess_Click(object? sender, RoutedEventArgs e)
