@@ -32,6 +32,9 @@
 /TinyWall.Core/bin/
 /TinyWall.Core/obj/
 
+/TinyWallService/bin/
+/TinyWallService/obj/
+
 /MsiSetup/obj/
 /MsiSetup/bin/
 /MsiSetup/Sources/ProgramFiles/

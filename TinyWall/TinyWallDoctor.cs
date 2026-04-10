@@ -65,7 +65,7 @@ namespace pylorak.TinyWall
                     scm.InstallService(
                         TinyWallService.SERVICE_NAME,
                         TinyWallService.SERVICE_DISPLAY_NAME,
-                        Utils.ExecutablePath,
+                        Utils.ServiceExecutablePath,
                         TinyWallService.ServiceDependencies,
                         ServiceStartMode.Automatic);
                     scm.SetLoadOrderGroup(TinyWallService.SERVICE_NAME, "NetworkProvider");

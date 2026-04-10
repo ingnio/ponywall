@@ -69,6 +69,13 @@ namespace pylorak.TinyWall
         public static string ExecutablePath { get; } = Environment.ProcessPath
             ?? System.Reflection.Assembly.GetEntryAssembly()!.Location;
 
+        /// <summary>
+        /// Path to the service host executable. Set by each entry point on startup.
+        /// The UI exe sets this to the sibling TinyWallService.exe; the service exe
+        /// sets it to itself.
+        /// </summary>
+        public static string ServiceExecutablePath { get; set; } = ExecutablePath;
+
         public static string HexEncode(byte[] binstr)
         {
             var sb = new StringBuilder();

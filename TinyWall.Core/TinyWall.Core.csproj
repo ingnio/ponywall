@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="TinyWall" />
+    <InternalsVisibleTo Include="TinyWallService" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="NetFwTypeLib">

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>pylorak.TinyWall</RootNamespace>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Product>TinyWall Service</Product>
+    <AssemblyTitle>TinyWallService</AssemblyTitle>
+    <Company>Károly Pados</Company>
+    <Description>TinyWall firewall service host.</Description>
+    <Copyright>Copyright © 2011 Károly Pados</Copyright>
+    <Version>3.4.1</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TinyWall.Core\TinyWall.Core.csproj" />
+    <ProjectReference Include="..\pylorak.Utilities\pylorak.Utilities.csproj" />
+    <ProjectReference Include="..\pylorak.Windows\pylorak.Windows.csproj" />
+    <ProjectReference Include="..\pylorak.Windows.Services\pylorak.Windows.Services.csproj" />
+  </ItemGroup>
+</Project>

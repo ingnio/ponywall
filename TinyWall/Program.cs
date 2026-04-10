@@ -79,6 +79,11 @@ namespace pylorak.TinyWall
             HierarchicalStopwatch.Enable = File.Exists(Path.Combine(Utils.AppDataPath, "enable-timings"));
             HierarchicalStopwatch.LogFileBase = Path.Combine(Utils.AppDataPath, @"logs\timings");
 
+            // Point service registration at the sibling TinyWallService.exe
+            string serviceExePath = Path.Combine(Path.GetDirectoryName(Utils.ExecutablePath)!, "TinyWallService.exe");
+            if (File.Exists(serviceExePath))
+                Utils.ServiceExecutablePath = serviceExePath;
+
             DefaultOsCulture ??= Thread.CurrentThread.CurrentUICulture;
 
             // WerAddExcludedApplication will fail every time we are not running as admin, 
