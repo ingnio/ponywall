@@ -630,30 +630,6 @@ namespace pylorak.TinyWall.Views
 
         // ========== Helper methods ==========
 
-        private void ShowNotImplementedMessage(string feature)
-        {
-            var msgWindow = new Window
-            {
-                Title = "TinyWall",
-                Width = 350,
-                Height = 140,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                CanResize = false,
-                Topmost = true,
-                Content = new StackPanel
-                {
-                    Margin = new Avalonia.Thickness(16),
-                    Spacing = 12,
-                    Children =
-                    {
-                        new TextBlock { Text = $"{feature} is not yet implemented.", TextWrapping = TextWrapping.Wrap },
-                        new Button { Content = "OK", HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center }
-                    }
-                }
-            };
-            ((msgWindow.Content as StackPanel)!.Children[1] as Button)!.Click += (_, _) => msgWindow.Close();
-            msgWindow.Show();
-        }
 
         private void ShowNotificationMessage(string message)
         {

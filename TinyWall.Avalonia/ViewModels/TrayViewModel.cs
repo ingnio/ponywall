@@ -76,35 +76,6 @@ namespace pylorak.TinyWall
             }
         }
 
-        [RelayCommand]
-        private void OpenManage()
-        {
-            // TODO: Open Manage window in a future phase
-        }
-
-        [RelayCommand]
-        private void OpenConnections()
-        {
-            // TODO: Open Connections window in a future phase
-        }
-
-        [RelayCommand]
-        private void WhitelistByExecutable()
-        {
-            // TODO: Implement whitelist-by-executable in a future phase
-        }
-
-        [RelayCommand]
-        private void WhitelistByProcess()
-        {
-            // TODO: Implement whitelist-by-process in a future phase
-        }
-
-        [RelayCommand]
-        private void WhitelistByWindow()
-        {
-            // TODO: Implement whitelist-by-window in a future phase
-        }
 
         [RelayCommand]
         private void ToggleLocalSubnet()

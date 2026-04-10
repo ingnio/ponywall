@@ -453,11 +453,14 @@ namespace pylorak.TinyWall.Views
             {
                 string hash = Hasher.HashFile(selected.Path);
                 string url = string.Format(CultureInfo.InvariantCulture, "https://www.virustotal.com/latest-scan/{0}", hash);
-                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true })?.Dispose();
             }
-            catch
+            catch (Exception ex)
             {
-                // Cannot get path of process
+                NotificationService.Notify(
+                    string.Format(CultureInfo.CurrentCulture, pylorak.TinyWall.Resources.Messages.CannotGetPathOfProcess),
+                    NotificationLevel.Error);
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
             }
         }
 
@@ -471,11 +474,12 @@ namespace pylorak.TinyWall.Views
             {
                 string filename = System.IO.Path.GetFileName(selected.Path);
                 string url = string.Format(CultureInfo.InvariantCulture, "http://www.processlibrary.com/search/?q={0}", filename);
-                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true })?.Dispose();
             }
-            catch
+            catch (Exception ex)
             {
-                // Cannot get path of process
+                NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CannotGetPathOfProcess, NotificationLevel.Error);
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
             }
         }
 
@@ -489,11 +493,12 @@ namespace pylorak.TinyWall.Views
             {
                 string filename = System.IO.Path.GetFileName(selected.Path);
                 string url = string.Format(CultureInfo.InvariantCulture, "https://www.google.com/search?q={0}", filename);
-                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true })?.Dispose();
             }
-            catch
+            catch (Exception ex)
             {
-                // Cannot get path of process
+                NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CannotGetPathOfProcess, NotificationLevel.Error);
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
             }
         }
 
@@ -506,11 +511,12 @@ namespace pylorak.TinyWall.Views
             try
             {
                 string url = string.Format(CultureInfo.InvariantCulture, "https://www.google.com/search?q={0}", selected.RemoteAddress);
-                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true })?.Dispose();
             }
-            catch
+            catch (Exception ex)
             {
-                // Cannot get path of process
+                NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CannotGetPathOfProcess, NotificationLevel.Error);
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
             }
         }
 
