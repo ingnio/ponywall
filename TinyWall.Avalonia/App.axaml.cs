@@ -45,6 +45,16 @@ namespace pylorak.TinyWall
                 // Initialize the Controller (pipe client to the TinyWall service)
                 _controller = new Controller("TinyWallController");
 
+                // Load the application database (used by Settings, AppFinder, etc.)
+                try
+                {
+                    ServiceGlobals.AppDatabase = DatabaseClasses.AppDatabase.Load();
+                }
+                catch
+                {
+                    ServiceGlobals.AppDatabase = new DatabaseClasses.AppDatabase();
+                }
+
                 // Create the view model
                 _viewModel = new TrayViewModel(_controller);
                 _viewModel.QuitRequested += (_, _) =>
@@ -200,13 +210,15 @@ namespace pylorak.TinyWall
 
             try
             {
-                // Load current config from server
-                _controller.GetServerConfig(out var config, out _, ref _clientChangeset);
-                if (config == null)
+                // Force a full config load by using an empty changeset
+                Guid forceLoad = Guid.Empty;
+                var respType = _controller.GetServerConfig(out var config, out _, ref forceLoad);
+                if (config == null || respType != MessageType.GET_SETTINGS)
                 {
                     NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
                     return;
                 }
+                _clientChangeset = forceLoad;
 
                 var result = await SettingsWindow.ShowSettingsDialog(
                     Utils.DeepClone(config),
@@ -240,7 +252,7 @@ namespace pylorak.TinyWall
             catch (Exception ex)
             {
                 Utils.LogException(ex, Utils.LOG_ID_GUI);
-                NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
+                NotificationService.Notify($"Manage error: {ex.GetType().Name}: {ex.Message}", NotificationLevel.Error);
             }
         }
 
