@@ -1,0 +1,50 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:pylorak.TinyWall.ViewModels"
+        x:Class="pylorak.TinyWall.Views.AppFinderWindow"
+        Title="Detect Known Applications - TinyWall"
+        Width="600" Height="500"
+        CanResize="True"
+        WindowStartupLocation="CenterScreen"
+        Topmost="True">
+
+  <Grid Margin="8" RowDefinitions="Auto,8,*,8,Auto">
+
+    <!-- Status label -->
+    <TextBlock Grid.Row="0"
+               Name="lblStatus"
+               Text="Click Start to begin detection."
+               TextTrimming="CharacterEllipsis" />
+
+    <!-- Checkbox list of detected apps -->
+    <ListBox Grid.Row="2"
+             Name="listApps"
+             SelectionMode="Multiple">
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="vm:AppFinderItemViewModel">
+          <CheckBox IsChecked="{Binding IsChecked}"
+                    Content="{Binding AppName}"
+                    Margin="2" />
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+
+    <!-- Bottom button panel -->
+    <StackPanel Grid.Row="4"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Spacing="8">
+      <Button Name="btnStartDetection" Content="Start" Width="110"
+              Click="BtnStartDetection_Click" />
+      <Button Name="btnSelectAll" Content="Select All" Width="90"
+              Click="BtnSelectAll_Click" />
+      <Button Name="btnDeselectAll" Content="Deselect All" Width="90"
+              Click="BtnDeselectAll_Click" />
+      <Button Name="btnOK" Content="OK" Width="90" IsDefault="True"
+              Click="BtnOK_Click" />
+      <Button Name="btnCancel" Content="Cancel" Width="90" IsCancel="True"
+              Click="BtnCancel_Click" />
+    </StackPanel>
+
+  </Grid>
+</Window>
