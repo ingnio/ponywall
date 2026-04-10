@@ -25,6 +25,10 @@
     <Version>3.4.1</Version>
   </PropertyGroup>
   <ItemGroup>
+    <!-- Needed for ControllerSettings which uses System.Drawing.Point/Size and System.Windows.Forms.FormWindowState -->
+    <FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.2.7" />
     <PackageReference Include="Avalonia.Desktop" Version="11.2.7" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.7" />
@@ -40,6 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\TinyWall\UwpPackageList.cs" Link="UwpPackageList.cs" />
+    <Compile Include="..\TinyWall\Settings.cs" Link="Settings.cs" />
+    <Compile Include="..\TinyWall\UiSourceGenerationContext.cs" Link="UiSourceGenerationContext.cs" />
     <AvaloniaResource Include="..\TinyWall\Resources\img\firewall.ico" Link="Assets\firewall.ico" />
   </ItemGroup>
 </Project>
