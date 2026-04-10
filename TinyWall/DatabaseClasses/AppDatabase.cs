@@ -206,7 +206,7 @@ namespace pylorak.TinyWall.DatabaseClasses
 
         public JsonTypeInfo<AppDatabase> GetJsonTypeInfo()
         {
-            return SourceGenerationContext.Default.AppDatabase;
+            return UiSourceGenerationContext.Default.AppDatabase;
         }
     }
 }

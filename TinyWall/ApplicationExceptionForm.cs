@@ -353,7 +353,7 @@ namespace pylorak.TinyWall
 
             ExceptionSubject subject;
             if (procList[0].Package.HasValue)
-                subject = new AppContainerSubject(procList[0].Package!.Value);
+                subject = new AppContainerSubject(procList[0].Package!.Value.Sid, procList[0].Package!.Value.Name, procList[0].Package!.Value.Publisher, procList[0].Package!.Value.PublisherId);
             else
                 subject = new ExecutableSubject(procList[0].Path!);
 
@@ -381,7 +381,7 @@ namespace pylorak.TinyWall
             var packageList = UwpPackagesForm.ChoosePackage(this, false);
             if (packageList.Count == 0) return;
 
-            ReinitFormFromSubject(new AppContainerSubject(packageList[0]));
+            ReinitFormFromSubject(new AppContainerSubject(packageList[0].Sid, packageList[0].Name, packageList[0].Publisher, packageList[0].PublisherId));
         }
 
         private void ReinitFormFromSubject(ExceptionSubject subject)

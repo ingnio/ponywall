@@ -380,10 +380,6 @@ namespace pylorak.TinyWall
             this.PublisherId = publisherId;
         }
 
-        public AppContainerSubject(UwpPackageList.Package package) :
-            this(package.Sid, package.Name, package.Publisher, package.PublisherId)
-        { }
-
         public override bool Equals(ExceptionSubject other)
         {
             if (other is null)

@@ -762,7 +762,7 @@ namespace pylorak.TinyWall
 
                 var subjects = new List<ExceptionSubject>();
                 if (sel.Package.HasValue)
-                    subjects.Add(new AppContainerSubject(sel.Package.Value));
+                    subjects.Add(new AppContainerSubject(sel.Package.Value.Sid, sel.Package.Value.Name, sel.Package.Value.Publisher, sel.Package.Value.PublisherId));
                 else if (sel.Services.Count > 0)
                 {
                     foreach (var srv in sel.Services)
@@ -1006,7 +1006,7 @@ namespace pylorak.TinyWall
                     ExceptionSubject subj;
                     if (appContainer.HasValue)
                     {
-                        subj = new AppContainerSubject(appContainer.Value);
+                        subj = new AppContainerSubject(appContainer.Value.Sid, appContainer.Value.Name, appContainer.Value.Publisher, appContainer.Value.PublisherId);
                     }
                     else if (string.IsNullOrEmpty(exePath))
                     {

@@ -128,7 +128,7 @@ namespace pylorak.TinyWall
 
         public JsonTypeInfo<ControllerSettings> GetJsonTypeInfo()
         {
-            return SourceGenerationContext.Default.ControllerSettings;
+            return UiSourceGenerationContext.Default.ControllerSettings;
         }
     }
 
@@ -216,7 +216,7 @@ namespace pylorak.TinyWall
 
         public JsonTypeInfo<ConfigContainer> GetJsonTypeInfo()
         {
-            return SourceGenerationContext.Default.ConfigContainer;
+            return UiSourceGenerationContext.Default.ConfigContainer;
         }
     }
 

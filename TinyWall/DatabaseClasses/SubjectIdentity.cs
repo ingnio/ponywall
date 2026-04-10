@@ -202,7 +202,7 @@ namespace pylorak.TinyWall.DatabaseClasses
 
         public JsonTypeInfo<SubjectIdentity> GetJsonTypeInfo()
         {
-            return SourceGenerationContext.Default.SubjectIdentity;
+            return UiSourceGenerationContext.Default.SubjectIdentity;
         }
     }
 }
