@@ -92,15 +92,24 @@ namespace pylorak.TinyWall
             _trayIcon.Clicked += (_, _) => ShowTrayMenu();
 
             // Right-click: Avalonia shows NativeMenu automatically.
-            // Rebuild it each time it opens so it reflects current state.
-            var nativeMenu = new NativeMenu();
-            nativeMenu.Opening += (_, _) =>
+            // Rebuild it fresh each time so it reflects current state.
+            _trayIcon.Menu = BuildNativeMenu();
+            // Refresh before each show
+            if (_trayIcon.Menu is NativeMenu nm)
             {
-                nativeMenu.Items.Clear();
-                foreach (var item in BuildNativeMenu().Items)
-                    nativeMenu.Items.Add(item);
-            };
-            _trayIcon.Menu = nativeMenu;
+                nm.Opening += (_, _) =>
+                {
+                    var fresh = BuildNativeMenu();
+                    nm.Items.Clear();
+                    // Move items one by one (adding to nm removes from fresh)
+                    while (fresh.Items.Count > 0)
+                    {
+                        var item = fresh.Items[0];
+                        fresh.Items.RemoveAt(0);
+                        nm.Items.Add(item);
+                    }
+                };
+            }
 
             // Load the tray icon from embedded Avalonia resource
             try
