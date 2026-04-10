@@ -18,11 +18,14 @@ namespace pylorak.TinyWall
             Services = services;
         }
 
-        public static ProcessInfo Create(uint pid, UwpPackageList uwp, ServicePidMap servicePids)
+        public static ProcessInfo Create(uint pid, UwpPackageList uwp, ServicePidMap servicePids, Controller? controller = null)
         {
+            string path = controller != null
+                ? Utils.GetPathOfProcessUseTwService(pid, controller)
+                : Utils.GetPathOfProcess(pid);
             return new ProcessInfo(
                 pid,
-                Utils.GetPathOfProcessUseTwService(pid, GlobalInstances.Controller),
+                path,
                 uwp.FindPackageForProcess(pid),
                 servicePids.GetServicesInPid(pid)
             );

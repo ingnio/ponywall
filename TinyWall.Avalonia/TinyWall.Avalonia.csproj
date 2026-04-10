@@ -14,7 +14,7 @@
     <RootNamespace>pylorak.TinyWall</RootNamespace>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon>..\TinyWall\Resources\img\firewall.ico</ApplicationIcon>
+    <ApplicationIcon>Assets\firewall.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <Product>TinyWall</Product>
@@ -43,10 +43,6 @@
     <ProjectReference Include="..\pylorak.Windows.Services\pylorak.Windows.Services.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\TinyWall\ProcessInfo.cs" Link="ProcessInfo.cs" />
-    <Compile Include="..\TinyWall\UwpPackageList.cs" Link="UwpPackageList.cs" />
-    <Compile Include="..\TinyWall\Settings.cs" Link="Settings.cs" />
-    <Compile Include="..\TinyWall\UiSourceGenerationContext.cs" Link="UiSourceGenerationContext.cs" />
-    <AvaloniaResource Include="..\TinyWall\Resources\img\firewall.ico" Link="Assets\firewall.ico" />
+    <AvaloniaResource Include="Assets\firewall.ico" />
   </ItemGroup>
 </Project>
