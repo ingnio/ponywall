@@ -88,19 +88,19 @@ namespace pylorak.TinyWall
                 ToolTipText = "TinyWall"
             };
 
-            // Left-click: show custom menu
+            // Left-click: show custom styled popup menu
             _trayIcon.Clicked += (_, _) => ShowTrayMenu();
 
-            // Right-click: Avalonia shows NativeMenu automatically. Use a dummy
-            // NativeMenu whose Opening event we intercept to show our custom popup.
-            var dummyMenu = new NativeMenu();
-            dummyMenu.Opening += (_, _) =>
+            // Right-click: Avalonia shows NativeMenu automatically.
+            // Rebuild it each time it opens so it reflects current state.
+            var nativeMenu = new NativeMenu();
+            nativeMenu.Opening += (_, _) =>
             {
-                // Cancel the native menu and show our custom one instead
-                dummyMenu.Items.Clear();
-                ShowTrayMenu();
+                nativeMenu.Items.Clear();
+                foreach (var item in BuildNativeMenu().Items)
+                    nativeMenu.Items.Add(item);
             };
-            _trayIcon.Menu = dummyMenu;
+            _trayIcon.Menu = nativeMenu;
 
             // Load the tray icon from embedded Avalonia resource
             try
@@ -132,6 +132,54 @@ namespace pylorak.TinyWall
 
         [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
         private struct POINT { public int X; public int Y; }
+
+        private NativeMenu BuildNativeMenu()
+        {
+            var menu = new NativeMenu();
+
+            // Mode submenu
+            var modeMenu = new NativeMenu();
+            var modes = new[] {
+                (FirewallMode.Normal, pylorak.TinyWall.Resources.Messages.FirewallModeNormal),
+                (FirewallMode.BlockAll, pylorak.TinyWall.Resources.Messages.FirewallModeBlockAll),
+                (FirewallMode.AllowOutgoing, pylorak.TinyWall.Resources.Messages.FirewallModeAllowOut),
+                (FirewallMode.Disabled, pylorak.TinyWall.Resources.Messages.FirewallModeDisabled),
+                (FirewallMode.Learning, pylorak.TinyWall.Resources.Messages.FirewallModeLearn),
+            };
+            foreach (var (mode, label) in modes)
+            {
+                var item = new NativeMenuItem(label);
+                item.ToggleType = NativeMenuItemToggleType.Radio;
+                item.IsChecked = _viewModel?.CurrentMode == mode;
+                var m = mode;
+                item.Click += (_, _) => _viewModel?.SetModeCommand.Execute(m);
+                modeMenu.Items.Add(item);
+            }
+            menu.Items.Add(new NativeMenuItem("Change mode") { Menu = modeMenu });
+            menu.Items.Add(new NativeMenuItemSeparator());
+
+            var mnuManage = new NativeMenuItem("Manage");
+            mnuManage.Click += async (_, _) => await OpenManageAsync();
+            menu.Items.Add(mnuManage);
+
+            var mnuConn = new NativeMenuItem("Connections...");
+            mnuConn.Click += (_, _) => OpenConnections();
+            menu.Items.Add(mnuConn);
+            menu.Items.Add(new NativeMenuItemSeparator());
+
+            var mnuLock = new NativeMenuItem(_viewModel?.IsLocked == true
+                ? pylorak.TinyWall.Resources.Messages.Unlock
+                : pylorak.TinyWall.Resources.Messages.Lock);
+            mnuLock.Click += async (_, _) => { if (_viewModel != null) await _viewModel.ToggleLockAsync(); };
+            menu.Items.Add(mnuLock);
+            menu.Items.Add(new NativeMenuItemSeparator());
+
+            var mnuQuit = new NativeMenuItem("Quit");
+            mnuQuit.Click += (_, _) => _viewModel?.QuitCommand.Execute(null);
+            menu.Items.Add(mnuQuit);
+
+            return menu;
+        }
 
         private void ShowTrayMenu()
         {
