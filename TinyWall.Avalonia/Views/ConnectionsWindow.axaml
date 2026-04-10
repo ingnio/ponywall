@@ -37,6 +37,8 @@
     <!-- DataGrid card -->
     <Border Grid.Row="4" Classes="card" Padding="0">
       <DataGrid Name="dataGrid"
+                x:CompileBindings="True"
+                x:DataType="vm:ConnectionRowViewModel"
                 AutoGenerateColumns="False"
                 IsReadOnly="True"
                 CanUserReorderColumns="True"

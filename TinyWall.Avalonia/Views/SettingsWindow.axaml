@@ -144,6 +144,8 @@
           <!-- DataGrid card -->
           <Border Grid.Row="2" Classes="card" Padding="0">
             <DataGrid Name="dgExceptions"
+                      x:CompileBindings="True"
+                      x:DataType="vm:ExceptionListItemViewModel"
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
                       CanUserReorderColumns="False"
