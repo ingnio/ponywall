@@ -2,39 +2,54 @@
 REM Publishes both TinyWall.Avalonia and TinyWallService as self-contained
 REM single-file Win64 executables to publish\.
 REM
-REM Run from the repo root in any shell. The output goes to publish\
-REM with both binaries and any required runtime files side by side.
+REM Uses Visual Studio's framework MSBuild because TinyWall.Core has COM
+REM references (NetFwTypeLib, TaskScheduler) that need the ResolveComReference
+REM task, which is only available in the .NET Framework MSBuild — not in
+REM dotnet build / dotnet publish.
 
 setlocal
 set OUTDIR=%~dp0publish
+set MSBUILD="C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Current\Bin\MSBuild.exe"
+
+if not exist %MSBUILD% (
+    echo MSBuild not found at %MSBUILD%
+    echo Edit publish.cmd to point at your VS install location.
+    exit /b 1
+)
 
 if exist "%OUTDIR%" rmdir /s /q "%OUTDIR%"
 mkdir "%OUTDIR%"
 
 echo.
 echo === Publishing TinyWallService ===
-dotnet publish TinyWallService\TinyWallService.csproj ^
-    -c Release ^
-    -r win-x64 ^
-    --self-contained ^
+%MSBUILD% TinyWallService\TinyWallService.csproj ^
+    -p:Configuration=Release ^
+    -p:RuntimeIdentifier=win-x64 ^
+    -p:SelfContained=true ^
     -p:PublishSingleFile=true ^
     -p:IncludeNativeLibrariesForSelfExtract=true ^
     -p:EnableCompressionInSingleFile=true ^
     -p:DebugType=embedded ^
-    -o "%OUTDIR%"
+    -p:PublishDir="%OUTDIR%\\" ^
+    -p:_IsPublishing=true ^
+    -t:Restore;Publish ^
+    -v:m -nologo
 if errorlevel 1 goto fail
 
 echo.
 echo === Publishing TinyWall.Avalonia ===
-dotnet publish TinyWall.Avalonia\TinyWall.Avalonia.csproj ^
-    -c Release ^
-    -r win-x64 ^
-    --self-contained ^
+%MSBUILD% TinyWall.Avalonia\TinyWall.Avalonia.csproj ^
+    -p:Configuration=Release ^
+    -p:RuntimeIdentifier=win-x64 ^
+    -p:SelfContained=true ^
     -p:PublishSingleFile=true ^
     -p:IncludeNativeLibrariesForSelfExtract=true ^
     -p:EnableCompressionInSingleFile=true ^
     -p:DebugType=embedded ^
-    -o "%OUTDIR%"
+    -p:PublishDir="%OUTDIR%\\" ^
+    -p:_IsPublishing=true ^
+    -t:Restore;Publish ^
+    -v:m -nologo
 if errorlevel 1 goto fail
 
 echo.

@@ -9,7 +9,6 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <RootNamespace>pylorak.Windows</RootNamespace>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="TinyWall" />
