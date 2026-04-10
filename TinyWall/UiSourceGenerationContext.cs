@@ -10,9 +10,6 @@ namespace pylorak.TinyWall
     [JsonSourceGenerationOptions(WriteIndented = true)]
     [JsonSerializable(typeof(ControllerSettings))]
     [JsonSerializable(typeof(ConfigContainer))]
-    [JsonSerializable(typeof(DatabaseClasses.SubjectIdentity))]
-    [JsonSerializable(typeof(DatabaseClasses.Application))]
-    [JsonSerializable(typeof(DatabaseClasses.AppDatabase))]
     internal partial class UiSourceGenerationContext : JsonSerializerContext
     {
     }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Globalization;
-using Microsoft.Samples;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 
@@ -11,6 +10,8 @@ namespace pylorak.TinyWall.DatabaseClasses
     [DataContract(Namespace = "TinyWall")]
     class AppDatabase : ISerializable<AppDatabase>
     {
+        internal static Func<string, List<FirewallExceptionV3>, int>? GuiPromptCallback;
+
         [DataMember(Name = "KnownApplications")]
         private readonly List<Application> _KnownApplications;
 
@@ -138,35 +139,15 @@ namespace pylorak.TinyWall.DatabaseClasses
                 // If we have found dependencies, ask the user what to do
                 if ((exceptions.Count > 1) && guiPrompt)
                 {
-
                     // Try to get localized name
                     string localizedAppName = Resources.Exceptions.ResourceManager.GetString(app.Name);
                     localizedAppName = string.IsNullOrEmpty(localizedAppName) ? app.Name : localizedAppName;
 
-                    Utils.SplitFirstLine(string.Format(CultureInfo.InvariantCulture, Resources.Messages.UnblockApp, localizedAppName), out string firstLine, out string contentLines);
+                    int result = 101; // Default: unblock all
+                    if (GuiPromptCallback != null)
+                        result = GuiPromptCallback(localizedAppName, exceptions);
 
-                    var dialog = new TaskDialog();
-                    dialog.CustomMainIcon = Resources.Icons.firewall;
-                    dialog.WindowTitle = Resources.Messages.TinyWall;
-                    dialog.MainInstruction = firstLine;
-                    dialog.Content = contentLines;
-                    dialog.DefaultButton = 1;
-                    dialog.ExpandedControlText = Resources.Messages.UnblockAppShowRelated;
-                    dialog.ExpandFooterArea = true;
-                    dialog.AllowDialogCancellation = false;
-                    dialog.UseCommandLinks = true;
-
-                    var button1 = new TaskDialogButton(101, Resources.Messages.UnblockAppUnblockAllRecommended);
-                    var button2 = new TaskDialogButton(102, Resources.Messages.UnblockAppUnblockOnlySelected);
-                    var button3 = new TaskDialogButton(103, Resources.Messages.UnblockAppCancel);
-                    dialog.Buttons = new TaskDialogButton[] { button1, button2, button3 };
-
-                    string fileListStr = string.Empty;
-                    foreach (FirewallExceptionV3 fwex in exceptions)
-                        fileListStr += fwex.Subject.ToString() + Environment.NewLine;
-                    dialog.ExpandedInformation = fileListStr.Trim();
-
-                    switch (dialog.Show())
+                    switch (result)
                     {
                         case 101:
                             break;
@@ -206,7 +187,7 @@ namespace pylorak.TinyWall.DatabaseClasses
 
         public JsonTypeInfo<AppDatabase> GetJsonTypeInfo()
         {
-            return UiSourceGenerationContext.Default.AppDatabase;
+            return SourceGenerationContext.Default.AppDatabase;
         }
     }
 }

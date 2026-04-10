@@ -324,9 +324,40 @@ namespace pylorak.TinyWall
             }
         }
 
+        private static int AppDatabaseGuiPrompt(string localizedAppName, List<FirewallExceptionV3> exceptions)
+        {
+            Utils.SplitFirstLine(string.Format(CultureInfo.InvariantCulture, Resources.Messages.UnblockApp, localizedAppName), out string firstLine, out string contentLines);
+
+            var dialog = new TaskDialog();
+            dialog.CustomMainIcon = Resources.Icons.firewall;
+            dialog.WindowTitle = Resources.Messages.TinyWall;
+            dialog.MainInstruction = firstLine;
+            dialog.Content = contentLines;
+            dialog.DefaultButton = 1;
+            dialog.ExpandedControlText = Resources.Messages.UnblockAppShowRelated;
+            dialog.ExpandFooterArea = true;
+            dialog.AllowDialogCancellation = false;
+            dialog.UseCommandLinks = true;
+
+            var button1 = new Microsoft.Samples.TaskDialogButton(101, Resources.Messages.UnblockAppUnblockAllRecommended);
+            var button2 = new Microsoft.Samples.TaskDialogButton(102, Resources.Messages.UnblockAppUnblockOnlySelected);
+            var button3 = new Microsoft.Samples.TaskDialogButton(103, Resources.Messages.UnblockAppCancel);
+            dialog.Buttons = new Microsoft.Samples.TaskDialogButton[] { button1, button2, button3 };
+
+            string fileListStr = string.Empty;
+            foreach (FirewallExceptionV3 fwex in exceptions)
+                fileListStr += fwex.Subject.ToString() + Environment.NewLine;
+            dialog.ExpandedInformation = fileListStr.Trim();
+
+            return dialog.Show();
+        }
+
         public TinyWallController(CmdLineArgs opts)
         {
             this.StartupOpts = opts;
+
+            // Wire up the GUI prompt callback for AppDatabase
+            DatabaseClasses.AppDatabase.GuiPromptCallback = AppDatabaseGuiPrompt;
 
             ActiveConfig.Controller = ControllerSettings.Load();
             try
@@ -408,7 +439,7 @@ namespace pylorak.TinyWall
                 UpdateDescriptor? descriptor = FirewallState.Update;
                 if (descriptor is not null)
                 {
-                    UpdateModule MainAppModule = UpdateChecker.GetMainAppModule(descriptor)!;
+                    UpdateModule MainAppModule = UpdateHelper.GetMainAppModule(descriptor)!;
                     if (new Version(MainAppModule.ComponentVersion) > new Version(System.Windows.Forms.Application.ProductVersion))
                     {
                         Utils.Invoke(SyncCtx, (SendOrPostCallback)delegate(object o)

@@ -1,18 +1,26 @@
 ﻿using System;
 using System.Drawing;
 using System.Diagnostics.CodeAnalysis;
-using pylorak.TinyWall.DatabaseClasses;
 
 namespace pylorak.TinyWall
 {
     internal static class GlobalInstances
     {
         [AllowNull]
-        internal static AppDatabase AppDatabase;
-        [AllowNull]
         internal static Controller Controller;
         internal static Guid ClientChangeset;
-        internal static Guid ServerChangeset;
+
+        // Aliases for backward compatibility - delegate to ServiceGlobals
+        internal static DatabaseClasses.AppDatabase AppDatabase
+        {
+            get => ServiceGlobals.AppDatabase;
+            set => ServiceGlobals.AppDatabase = value;
+        }
+        internal static Guid ServerChangeset
+        {
+            get => ServiceGlobals.ServerChangeset;
+            set => ServiceGlobals.ServerChangeset = value;
+        }
 
         public static void InitClient()
         {

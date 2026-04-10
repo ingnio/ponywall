@@ -49,7 +49,7 @@ namespace pylorak.TinyWall
             {
                 try
                 {
-                    descriptor = UpdateChecker.GetDescriptor();
+                    descriptor = UpdateHelper.GetDescriptor();
                     updater.State = UpdaterState.DescriptorReady;
                 }
                 catch
@@ -77,7 +77,7 @@ namespace pylorak.TinyWall
 
         private void CheckVersion(UpdateDescriptor descriptor)
         {
-            var UpdateModule = UpdateChecker.GetMainAppModule(descriptor)!;
+            var UpdateModule = UpdateHelper.GetMainAppModule(descriptor)!;
             var oldVersion = new Version(System.Windows.Forms.Application.ProductVersion);
             var newVersion = new Version(UpdateModule.ComponentVersion);
 

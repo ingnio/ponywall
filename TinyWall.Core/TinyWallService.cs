@@ -75,7 +75,7 @@ namespace pylorak.TinyWall
             var ModeId = Guid.NewGuid();
 
             // Do we want to let local traffic through?
-            if (ActiveConfig.Service.ActiveProfile.AllowLocalSubnet)
+            if (ServiceGlobals.Config.ActiveProfile.AllowLocalSubnet)
             {
                 var def = new RuleDef(ModeId, "Allow local subnet", GlobalSubject.Instance, RuleAction.Allow, RuleDirection.InOut, Protocol.Any, (ulong)FilterWeights.DefaultPermit);
                 def.RemoteAddresses = RuleDef.LOCALSUBNET_ID;
@@ -83,7 +83,7 @@ namespace pylorak.TinyWall
             }
 
             // Do we want to block known malware ports?
-            if (ActiveConfig.Service.Blocklists.EnableBlocklists && ActiveConfig.Service.Blocklists.EnablePortBlocklist)
+            if (ServiceGlobals.Config.Blocklists.EnableBlocklists && ServiceGlobals.Config.Blocklists.EnablePortBlocklist)
             {
                 var exceptions = new List<FirewallExceptionV3>();
                 exceptions.AddRange(CollectExceptionsForAppByName("Malware Ports"));
@@ -160,11 +160,11 @@ namespace pylorak.TinyWall
                 };
 
                 // Collect all applications exceptions
-                UserExceptions.AddRange(ActiveConfig.Service.ActiveProfile.AppExceptions);
+                UserExceptions.AddRange(ServiceGlobals.Config.ActiveProfile.AppExceptions);
 
                 // Collect all special exceptions
-                ActiveConfig.Service.ActiveProfile.SpecialExceptions.Remove("TinyWall");    // TODO: Deprecated: Needed due to old configs. Remove in future version.
-                foreach (string appName in ActiveConfig.Service.ActiveProfile.SpecialExceptions)
+                ServiceGlobals.Config.ActiveProfile.SpecialExceptions.Remove("TinyWall");    // TODO: Deprecated: Needed due to old configs. Remove in future version.
+                foreach (string appName in ServiceGlobals.Config.ActiveProfile.SpecialExceptions)
                     UserExceptions.AddRange(CollectExceptionsForAppByName(appName));
 
                 // Convert exceptions to rules
@@ -272,7 +272,7 @@ namespace pylorak.TinyWall
                     r.Application = PathMapper.Instance.ConvertPathIgnoreErrors(r.Application, PathFormat.NativeNt);
             }
 
-            bool displayBlockActive = ActiveConfig.Service.ActiveProfile.DisplayOffBlock && !DisplayCurrentlyOn;
+            bool displayBlockActive = ServiceGlobals.Config.ActiveProfile.DisplayOffBlock && !DisplayCurrentlyOn;
             if (displayBlockActive)
             {
                 // Modify all allow-rules to only allow local subnet
@@ -307,7 +307,7 @@ namespace pylorak.TinyWall
                 if (VisibleState.Mode != FirewallMode.Disabled)
                 {
                     InstallRawSocketPermits(rawSocketExceptions);
-                    InstallWsl2Filters(ActiveConfig.Service.ActiveProfile.HasSpecialException("WSL_2"));
+                    InstallWsl2Filters(ServiceGlobals.Config.ActiveProfile.HasSpecialException("WSL_2"));
                 }
 
                 trx?.Commit();
@@ -862,7 +862,7 @@ namespace pylorak.TinyWall
             try
             {
                 // Retrieve database entry for appName
-                DatabaseClasses.Application? app = GlobalInstances.AppDatabase.GetApplicationByName(name);
+                DatabaseClasses.Application? app = ServiceGlobals.AppDatabase.GetApplicationByName(name);
                 if (app is null)
                     return exceptions;
 
@@ -894,7 +894,7 @@ namespace pylorak.TinyWall
                 throw new InvalidOperationException("Firewall exception specification must have an ID.");
 #else
                 ex.RegenerateId();
-                GlobalInstances.ServerChangeset = Guid.NewGuid();
+                ServiceGlobals.ServerChangeset = Guid.NewGuid();
 #endif
             }
 
@@ -1030,7 +1030,7 @@ namespace pylorak.TinyWall
             ret.ActiveProfileName = Resources.Messages.Default;
 
             // Allow recommended exceptions
-            DatabaseClasses.AppDatabase db = GlobalInstances.AppDatabase;
+            DatabaseClasses.AppDatabase db = ServiceGlobals.AppDatabase;
             foreach (DatabaseClasses.Application app in db.KnownApplications)
             {
                 if (app.HasFlag("TWUI:Special") && app.HasFlag("TWUI:Recommended"))
@@ -1047,12 +1047,12 @@ namespace pylorak.TinyWall
         {
             using var timer = new HierarchicalStopwatch("InitFirewall()");
             LoadDatabase();
-            ActiveConfig.Service = LoadServerConfig();
-            VisibleState.Mode = ActiveConfig.Service.StartupMode;
-            GlobalInstances.ServerChangeset = Guid.NewGuid();
+            ServiceGlobals.Config = LoadServerConfig();
+            VisibleState.Mode = ServiceGlobals.Config.StartupMode;
+            ServiceGlobals.ServerChangeset = Guid.NewGuid();
 
             if (CommitLearnedRules() || PruneExpiredRules())
-                ActiveConfig.Service.Save(ConfigSavePath);
+                ServiceGlobals.Config.Save(ConfigSavePath);
 
             ReapplySettings();
             InstallFirewallRules();
@@ -1063,9 +1063,9 @@ namespace pylorak.TinyWall
         private void ReapplySettings()
         {
             using var timer = new HierarchicalStopwatch("ReapplySettings()");
-            HostsFileManager.EnableProtection = ActiveConfig.Service.LockHostsFile;
-            if (ActiveConfig.Service.Blocklists.EnableBlocklists
-                && ActiveConfig.Service.Blocklists.EnableHostsBlocklist)
+            HostsFileManager.EnableProtection = ServiceGlobals.Config.LockHostsFile;
+            if (ServiceGlobals.Config.Blocklists.EnableBlocklists
+                && ServiceGlobals.Config.Blocklists.EnableHostsBlocklist)
                 HostsFileManager.EnableHostsFile();
             else
                 HostsFileManager.DisableHostsFile();
@@ -1077,11 +1077,11 @@ namespace pylorak.TinyWall
 
             try
             {
-                GlobalInstances.AppDatabase = DatabaseClasses.AppDatabase.Load();
+                ServiceGlobals.AppDatabase = DatabaseClasses.AppDatabase.Load();
             }
             catch
             {
-                GlobalInstances.AppDatabase = new DatabaseClasses.AppDatabase();
+                ServiceGlobals.AppDatabase = new DatabaseClasses.AppDatabase();
             }
         }
 
@@ -1143,7 +1143,7 @@ namespace pylorak.TinyWall
                 if (DateTime.Now - LastUpdateCheck >= TimeSpan.FromDays(2))
                 {
                     LastUpdateCheck = DateTime.Now;
-                    update = UpdateChecker.GetDescriptor();
+                    update = UpdateHelper.GetDescriptor();
                 }
             }
             catch
@@ -1158,11 +1158,11 @@ namespace pylorak.TinyWall
                 return;
 
             VisibleState.Update = update;
-            GlobalInstances.ServerChangeset = Guid.NewGuid();
+            ServiceGlobals.ServerChangeset = Guid.NewGuid();
 
             try
             {
-                UpdateModule? module = UpdateChecker.GetDatabaseFileModule(VisibleState.Update);
+                UpdateModule? module = UpdateHelper.GetDatabaseFileModule(VisibleState.Update);
                 if (module is not null)
                 {
                     if (!string.Equals(module.DownloadHash, Hasher.HashFile(DatabaseClasses.AppDatabase.DBPath), StringComparison.OrdinalIgnoreCase))
@@ -1171,7 +1171,7 @@ namespace pylorak.TinyWall
                     }
                 }
 
-                module = UpdateChecker.GetHostsFileModule(VisibleState.Update);
+                module = UpdateHelper.GetHostsFileModule(VisibleState.Update);
                 if (module is not null)
                 {
                     if (!string.Equals(module.DownloadHash, HostsFileManager.GetHostsHash(), StringComparison.OrdinalIgnoreCase))
@@ -1223,8 +1223,8 @@ namespace pylorak.TinyWall
             string tmpHostsPath = (string)file;
             HostsFileManager.UpdateHostsFile(tmpHostsPath);
 
-            if (ActiveConfig.Service.Blocklists.EnableBlocklists
-                && ActiveConfig.Service.Blocklists.EnableHostsBlocklist)
+            if (ServiceGlobals.Config.Blocklists.EnableBlocklists
+                && ServiceGlobals.Config.Blocklists.EnableHostsBlocklist)
             {
                 HostsFileManager.EnableHostsFile();
             }
@@ -1247,7 +1247,7 @@ namespace pylorak.TinyWall
         private void NotifyController(MessageType msg)
         {
             VisibleState.ClientNotifs.Add(msg);
-            GlobalInstances.ServerChangeset = Guid.NewGuid();
+            ServiceGlobals.ServerChangeset = Guid.NewGuid();
         }
 #endif
 
@@ -1274,8 +1274,8 @@ namespace pylorak.TinyWall
             {
                 if (LearningNewExceptions.Count > 0)
                 {
-                    GlobalInstances.ServerChangeset = Guid.NewGuid();
-                    ActiveConfig.Service.ActiveProfile.AddExceptions(LearningNewExceptions);
+                    ServiceGlobals.ServerChangeset = Guid.NewGuid();
+                    ServiceGlobals.Config.ActiveProfile.AddExceptions(LearningNewExceptions);
                     LearningNewExceptions.Clear();
                     config_changed = true;
                 }
@@ -1305,7 +1305,7 @@ namespace pylorak.TinyWall
             bool system_rebooted = HasSystemRebooted();
             bool config_changed = false;
 
-            List<FirewallExceptionV3> exs = ActiveConfig.Service.ActiveProfile.AppExceptions;
+            List<FirewallExceptionV3> exs = ServiceGlobals.Config.ActiveProfile.AppExceptions;
             for (int i = exs.Count - 1; i >= 0; --i)
             {
                 // Timer values above zero are the number of minutes to stay active
@@ -1324,8 +1324,8 @@ namespace pylorak.TinyWall
 
             if (config_changed)
             {
-                GlobalInstances.ServerChangeset = Guid.NewGuid();
-                ActiveConfig.Service.ActiveProfile.AppExceptions = exs;
+                ServiceGlobals.ServerChangeset = Guid.NewGuid();
+                ServiceGlobals.Config.ActiveProfile.AppExceptions = exs;
             }
 
             return config_changed;
@@ -1363,15 +1363,15 @@ namespace pylorak.TinyWall
 
                         bool save_needed = CommitLearnedRules();
                         VisibleState.Mode = newMode;
-                        if ((ActiveConfig.Service.StartupMode != VisibleState.Mode) &&
+                        if ((ServiceGlobals.Config.StartupMode != VisibleState.Mode) &&
                             (VisibleState.Mode != FirewallMode.Disabled) &&
                             (VisibleState.Mode != FirewallMode.Learning) )
                         {
-                            ActiveConfig.Service.StartupMode = VisibleState.Mode;
+                            ServiceGlobals.Config.StartupMode = VisibleState.Mode;
                             save_needed = true;
                         }
                         if (save_needed)
-                            ActiveConfig.Service.Save(ConfigSavePath);
+                            ServiceGlobals.Config.Save(ConfigSavePath);
 
                         InstallFirewallRules();
                         return args.CreateResponse(VisibleState.Mode);
@@ -1380,14 +1380,14 @@ namespace pylorak.TinyWall
                     {
                         var args = (TwMessagePutSettings)req;
 
-                        bool warning = (args.Changeset != GlobalInstances.ServerChangeset);
+                        bool warning = (args.Changeset != ServiceGlobals.ServerChangeset);
                         if (!warning)
                         {
                             try
                             {
-                                GlobalInstances.ServerChangeset = Guid.NewGuid();
-                                ActiveConfig.Service = args.Config;
-                                ActiveConfig.Service.Save(ConfigSavePath);
+                                ServiceGlobals.ServerChangeset = Guid.NewGuid();
+                                ServiceGlobals.Config = args.Config;
+                                ServiceGlobals.Config.Save(ConfigSavePath);
                                 ReapplySettings();
                                 InstallFirewallRules();
                             }
@@ -1398,7 +1398,7 @@ namespace pylorak.TinyWall
                         }
                         VisibleState.HasPassword = PasswordLock.HasPassword;
                         VisibleState.Locked = PasswordLock.Locked;
-                        return args.CreateResponse(GlobalInstances.ServerChangeset, ActiveConfig.Service, VisibleState, warning);
+                        return args.CreateResponse(ServiceGlobals.ServerChangeset, ServiceGlobals.Config, VisibleState, warning);
                     }
                 case MessageType.ADD_TEMPORARY_EXCEPTION:
                     {
@@ -1421,19 +1421,19 @@ namespace pylorak.TinyWall
                         var args = (TwMessageGetSettings)req;
 
                         // If our changeset is different from the client's, send new settings
-                        if (args.Changeset != GlobalInstances.ServerChangeset)
+                        if (args.Changeset != ServiceGlobals.ServerChangeset)
                         {
                             VisibleState.HasPassword = PasswordLock.HasPassword;
                             VisibleState.Locked = PasswordLock.Locked;
 
-                            var ret = args.CreateResponse(GlobalInstances.ServerChangeset, ActiveConfig.Service, VisibleState);
+                            var ret = args.CreateResponse(ServiceGlobals.ServerChangeset, ServiceGlobals.Config, VisibleState);
                             VisibleState.ClientNotifs.Clear();  // TODO: VisibleState is a reference so it cleants notifs before client could receive them
                             return ret;
                         }
                         else
                         {
                             // Our changeset is the same, so do not send settings again
-                            return args.CreateResponse(GlobalInstances.ServerChangeset);
+                            return args.CreateResponse(ServiceGlobals.ServerChangeset);
                         }
                     }
                 case MessageType.REINIT:
@@ -1479,7 +1479,7 @@ namespace pylorak.TinyWall
                         try
                         {
                             PasswordLock.SetPass(args.Password);
-                            GlobalInstances.ServerChangeset = Guid.NewGuid();
+                            ServiceGlobals.ServerChangeset = Guid.NewGuid();
                             return args.CreateResponse();
                         }
                         catch
@@ -1524,7 +1524,7 @@ namespace pylorak.TinyWall
 
                         if (save_needed)
                         {
-                            ActiveConfig.Service.Save(ConfigSavePath);
+                            ServiceGlobals.Config.Save(ConfigSavePath);
                         }
                         if (rule_reload_needed)
                         {
@@ -1533,7 +1533,7 @@ namespace pylorak.TinyWall
 
 #if !DEBUG
                         // Check for updates once every 2 days
-                        if (ActiveConfig.Service.AutoUpdateCheck)
+                        if (ServiceGlobals.Config.AutoUpdateCheck)
                         {
                             UpdaterMethod();
                         }
@@ -1714,7 +1714,7 @@ namespace pylorak.TinyWall
             service.FinishStateChange();
 #if !DEBUG
             // Basic software health checks
-            TinyWallDoctor.EnsureHealth(Utils.LOG_ID_SERVICE);
+            ServiceGlobals.HealthCheckCallback?.Invoke(Utils.LOG_ID_SERVICE);
 #endif
 
             MinuteTimer.Change(60000, 60000);
@@ -1890,7 +1890,7 @@ namespace pylorak.TinyWall
                         return;
                 }
 
-                var exceptions = GlobalInstances.AppDatabase.GetExceptionsForApp(newSubject, false, out _);
+                var exceptions = ServiceGlobals.AppDatabase.GetExceptionsForApp(newSubject, false, out _);
                 LearningNewExceptions.AddRange(exceptions);
             }
         }
@@ -1952,7 +1952,7 @@ namespace pylorak.TinyWall
             }
 
             if (CommitLearnedRules())
-                ActiveConfig.Service.Save(ConfigSavePath);
+                ServiceGlobals.Config.Save(ConfigSavePath);
 
             RuleReloadEventMerger.Dispose();
             LocalSubnetFilterConditions.Dispose();
@@ -1968,7 +1968,7 @@ namespace pylorak.TinyWall
 
 #if !DEBUG
             // Basic software health checks
-            TinyWallDoctor.EnsureHealth(Utils.LOG_ID_SERVICE);
+            ServiceGlobals.HealthCheckCallback?.Invoke(Utils.LOG_ID_SERVICE);
 #else
                 using (var wfp = new Engine("TinyWall Cleanup Session", "", FWPM_SESSION_FLAGS.None, 5000))
                 using (var trx = wfp.BeginTransaction())

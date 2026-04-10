@@ -29,6 +29,9 @@ namespace pylorak.TinyWall
             }
 #endif
 
+            // Wire up the health-check callback so the service can invoke TinyWallDoctor
+            ServiceGlobals.HealthCheckCallback = TinyWallDoctor.EnsureHealth;
+
             using var SingleInstanceMutex = new Mutex(true, @"Global\TinyWallService", out bool mutexok);
             if (!mutexok)
             {

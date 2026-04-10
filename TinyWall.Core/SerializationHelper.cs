@@ -52,6 +52,9 @@ namespace pylorak.TinyWall
     [JsonSerializable(typeof(FirewallExceptionV3))]
     [JsonSerializable(typeof(ServerConfiguration))]
     [JsonSerializable(typeof(UpdateDescriptor))]
+    [JsonSerializable(typeof(DatabaseClasses.SubjectIdentity))]
+    [JsonSerializable(typeof(DatabaseClasses.Application))]
+    [JsonSerializable(typeof(DatabaseClasses.AppDatabase))]
     internal partial class SourceGenerationContext : JsonSerializerContext
     {
     }
