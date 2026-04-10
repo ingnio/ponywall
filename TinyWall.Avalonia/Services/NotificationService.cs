@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace pylorak.TinyWall
@@ -20,9 +21,10 @@ namespace pylorak.TinyWall
                     .AddText(message)
                     .Show();
             }
-            catch
+            catch (Exception ex)
             {
-                // Toast infrastructure may not be available — silently ignore
+                // Toast infrastructure may not be available — log but don't re-notify
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
             }
         }
 

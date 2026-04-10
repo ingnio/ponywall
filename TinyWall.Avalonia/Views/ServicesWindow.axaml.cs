@@ -49,9 +49,10 @@ namespace pylorak.TinyWall.Views
                             srv.ServiceName,
                             GetServiceExecutable(srv.ServiceName)));
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         // Ignore services we cannot inspect
+                        Utils.LogException(ex, Utils.LOG_ID_GUI);
                     }
                 }
             }

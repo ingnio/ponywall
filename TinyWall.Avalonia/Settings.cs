@@ -110,7 +110,10 @@ namespace pylorak.TinyWall
             {
                 SerializationHelper.SerializeToFile(this, FilePath);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
         }
 
         internal static ControllerSettings Load()
@@ -119,7 +122,10 @@ namespace pylorak.TinyWall
             {
                 return SerializationHelper.DeserializeFromFile(FilePath, new ControllerSettings());
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
 
             return new ControllerSettings();
         }

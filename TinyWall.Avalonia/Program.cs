@@ -53,7 +53,10 @@ namespace pylorak.TinyWall
                 if (sc.Status == ServiceControllerStatus.Running || sc.Status == ServiceControllerStatus.StartPending)
                     return;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
 
             // Service not running — try to install and start it
             if (Utils.RunningAsAdmin())

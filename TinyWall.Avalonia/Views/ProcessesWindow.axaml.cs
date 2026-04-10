@@ -77,9 +77,10 @@ namespace pylorak.TinyWall.Views
 
                     items.Add(new ProcessItemViewModel(info));
                 }
-                catch
+                catch (Exception ex)
                 {
                     // Ignore processes we cannot inspect
+                    Utils.LogException(ex, Utils.LOG_ID_GUI);
                 }
             }
 

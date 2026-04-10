@@ -45,8 +45,9 @@ namespace pylorak.TinyWall
                 {
                     ServiceGlobals.AppDatabase = DatabaseClasses.AppDatabase.Load();
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Utils.LogException(ex, Utils.LOG_ID_GUI);
                     ServiceGlobals.AppDatabase = new DatabaseClasses.AppDatabase();
                 }
 
@@ -118,8 +119,9 @@ namespace pylorak.TinyWall
                     new Uri("avares://TinyWall.Avalonia/Assets/firewall.ico"));
                 _trayIcon.Icon = new WindowIcon(assets);
             }
-            catch
+            catch (Exception ex)
             {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
                 // Fallback: try loading from file next to executable
                 try
                 {
@@ -128,7 +130,10 @@ namespace pylorak.TinyWall
                     if (System.IO.File.Exists(iconPath))
                         _trayIcon.Icon = new WindowIcon(iconPath);
                 }
-                catch { }
+                catch (Exception ex2)
+                {
+                    Utils.LogException(ex2, Utils.LOG_ID_GUI);
+                }
             }
 
             trayIcons.Add(_trayIcon);
@@ -321,8 +326,9 @@ namespace pylorak.TinyWall
                         else
                             tcs.TrySetResult(null);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Utils.LogException(ex, Utils.LOG_ID_GUI);
                         tcs.TrySetResult(null);
                     }
                 });
@@ -556,9 +562,10 @@ namespace pylorak.TinyWall
                 // Update tray tooltip
                 UpdateTrayTooltip();
             }
-            catch
+            catch (Exception ex)
             {
-                // Service may not be running -- silently ignore
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+                // Service may not be running -- reflect unknown state
                 _viewModel.CurrentMode = FirewallMode.Unknown;
                 UpdateTrayTooltip();
             }
@@ -586,7 +593,10 @@ namespace pylorak.TinyWall
                     pylorak.TinyWall.Resources.Messages.TrafficIn, rxDisplay,
                     pylorak.TinyWall.Resources.Messages.TrafficOut, txDisplay);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
         }
 
         // State is now passed to TrayMenuWindow each time it opens,

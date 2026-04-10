@@ -39,18 +39,32 @@ namespace pylorak.TinyWall.Views
             UpdateList();
 
             _autoRefreshTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
-            _autoRefreshTimer.Tick += (_, _) =>
-            {
-                if (chkAutoRefresh.IsChecked == true)
-                    UpdateList();
-            };
+            _autoRefreshTimer.Tick += AutoRefreshTimer_Tick;
             _autoRefreshTimer.Start();
         }
 
         protected override void OnClosed(EventArgs e)
         {
-            _autoRefreshTimer?.Stop();
+            if (_autoRefreshTimer != null)
+            {
+                _autoRefreshTimer.Stop();
+                _autoRefreshTimer.Tick -= AutoRefreshTimer_Tick;
+                _autoRefreshTimer = null;
+            }
             base.OnClosed(e);
+        }
+
+        private void AutoRefreshTimer_Tick(object? sender, EventArgs e)
+        {
+            try
+            {
+                if (chkAutoRefresh.IsChecked == true)
+                    UpdateList();
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
         }
 
         private void ChkAutoRefresh_Changed(object? sender, RoutedEventArgs e) { }
@@ -290,10 +304,11 @@ namespace pylorak.TinyWall.Views
                     ProcessInfo = pi
                 });
             }
-            catch
+            catch (Exception ex)
             {
                 // Most probably process ID has become invalid.
                 // Simply do not add item to the list.
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
             }
         }
 
@@ -411,14 +426,16 @@ namespace pylorak.TinyWall.Views
                     {
                         // The process has already exited.
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // Could not close process - ignore in Avalonia port for now
+                        // Could not close process
+                        Utils.LogException(ex, Utils.LOG_ID_GUI);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
                     // The app has probably already quit.
+                    Utils.LogException(ex, Utils.LOG_ID_GUI);
                 }
             }
 
@@ -427,19 +444,20 @@ namespace pylorak.TinyWall.Views
 
         private async void MnuCopyRemoteAddress_Click(object? sender, RoutedEventArgs e)
         {
-            var selected = dataGrid.SelectedItem as ConnectionRowViewModel;
-            if (selected is null)
-                return;
-
             try
             {
+                var selected = dataGrid.SelectedItem as ConnectionRowViewModel;
+                if (selected is null)
+                    return;
+
                 var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
                 if (clipboard is not null)
                     await clipboard.SetTextAsync(selected.RemoteAddress);
             }
-            catch
+            catch (Exception ex)
             {
-                // Fail silently
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+                NotificationService.Notify($"Error: {ex.Message}", NotificationLevel.Error);
             }
         }
 

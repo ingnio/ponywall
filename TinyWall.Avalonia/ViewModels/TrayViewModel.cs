@@ -70,8 +70,9 @@ namespace pylorak.TinyWall
                         break;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
                 NotificationService.Notify(Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
             }
         }
@@ -94,8 +95,9 @@ namespace pylorak.TinyWall
                     NotificationService.Notify(pylorak.TinyWall.Resources.Messages.TheFirewallSettingsHaveBeenUpdated);
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
                 NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
             }
         }
@@ -117,8 +119,9 @@ namespace pylorak.TinyWall
                     NotificationService.Notify(pylorak.TinyWall.Resources.Messages.TheFirewallSettingsHaveBeenUpdated);
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
                 NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
             }
         }
@@ -154,8 +157,9 @@ namespace pylorak.TinyWall
                     IsLocked = true;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
                 NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
             }
         }

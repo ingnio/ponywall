@@ -525,8 +525,9 @@ namespace pylorak.TinyWall.Views
                         InitSettingsUI();
                         ShowNotificationMessage(pylorak.TinyWall.Resources.Messages.ConfigurationHasBeenImported);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Utils.LogException(ex, Utils.LOG_ID_GUI);
                         ShowNotificationMessage(pylorak.TinyWall.Resources.Messages.ConfigurationImportError);
                     }
                 }
@@ -589,7 +590,10 @@ namespace pylorak.TinyWall.Views
                 // Fallback: open website
                 Process.Start(new ProcessStartInfo("https://tinywall.pados.hu") { UseShellExecute = true })?.Dispose();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
         }
 
         private void BtnAttributionsLink_Click(object? sender, RoutedEventArgs e)
@@ -605,7 +609,10 @@ namespace pylorak.TinyWall.Views
                 // Fallback: open website
                 Process.Start(new ProcessStartInfo("https://tinywall.pados.hu") { UseShellExecute = true })?.Dispose();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
         }
 
         private void BtnDonate_Click(object? sender, RoutedEventArgs e)
@@ -615,7 +622,10 @@ namespace pylorak.TinyWall.Views
                 var psi = new ProcessStartInfo("https://tinywall.pados.hu/donate.php") { UseShellExecute = true };
                 Process.Start(psi)?.Dispose();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
         }
 
         private void BtnUpdate_Click(object? sender, RoutedEventArgs e)
@@ -625,7 +635,10 @@ namespace pylorak.TinyWall.Views
                 var psi = new ProcessStartInfo("https://tinywall.pados.hu") { UseShellExecute = true };
                 Process.Start(psi)?.Dispose();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
         }
 
         // ========== Helper methods ==========

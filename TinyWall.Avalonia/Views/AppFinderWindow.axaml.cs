@@ -149,15 +149,17 @@ namespace pylorak.TinyWall.Views
                         btnStartDetection.Content = "Start";
                         btnStartDetection.IsEnabled = true;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         // Ignore if the window was already closed
+                        Utils.LogException(ex, Utils.LOG_ID_GUI);
                     }
                 });
             }
-            catch
+            catch (Exception ex)
             {
                 // Thread may be interrupted during shutdown
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
             }
         }
 
@@ -209,9 +211,10 @@ namespace pylorak.TinyWall.Views
                     DoSearchPath(dir, exts, db);
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 // Ignore access-denied and other I/O errors
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
             }
         }
 

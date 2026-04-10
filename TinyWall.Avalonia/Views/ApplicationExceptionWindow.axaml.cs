@@ -343,8 +343,9 @@ namespace pylorak.TinyWall.Views
                     pol.AllowedLocalUdpListenerPorts = CleanupPortsList(txtListenPortUDP.Text ?? string.Empty);
                     TmpExceptionSettings[0].Policy = pol;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Utils.LogException(ex, Utils.LOG_ID_GUI);
                     NotificationService.Notify(
                         pylorak.TinyWall.Resources.Messages.PortListInvalid,
                         NotificationLevel.Warning);
@@ -374,74 +375,106 @@ namespace pylorak.TinyWall.Views
 
         private async void BtnBrowse_Click(object? sender, RoutedEventArgs e)
         {
-            var topLevel = TopLevel.GetTopLevel(this);
-            if (topLevel == null) return;
-
-            var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            try
             {
-                Title = "Select Application",
-                AllowMultiple = false,
-                FileTypeFilter = new[]
+                var topLevel = TopLevel.GetTopLevel(this);
+                if (topLevel == null) return;
+
+                var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
                 {
-                    new FilePickerFileType("Executables (*.exe)") { Patterns = new[] { "*.exe" } },
-                    new FilePickerFileType("All Files (*)") { Patterns = new[] { "*" } }
-                }
-            });
+                    Title = "Select Application",
+                    AllowMultiple = false,
+                    FileTypeFilter = new[]
+                    {
+                        new FilePickerFileType("Executables (*.exe)") { Patterns = new[] { "*.exe" } },
+                        new FilePickerFileType("All Files (*)") { Patterns = new[] { "*" } }
+                    }
+                });
 
-            if (files.Count == 1)
+                if (files.Count == 1)
+                {
+                    string filePath = files[0].Path.LocalPath;
+                    ReinitFormFromSubject(new ExecutableSubject(
+                        PathMapper.Instance.ConvertPathIgnoreErrors(filePath, PathFormat.Win32)));
+                }
+            }
+            catch (Exception ex)
             {
-                string filePath = files[0].Path.LocalPath;
-                ReinitFormFromSubject(new ExecutableSubject(
-                    PathMapper.Instance.ConvertPathIgnoreErrors(filePath, PathFormat.Win32)));
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+                NotificationService.Notify($"Error: {ex.Message}", NotificationLevel.Error);
             }
         }
 
         private async void BtnProcess_Click(object? sender, RoutedEventArgs e)
         {
-            var selection = await ProcessesWindow.ChooseProcess(false);
-            if (selection.Count > 0)
+            try
             {
-                var info = selection[0];
-                ExceptionSubject subject;
-                if (info.Package.HasValue)
+                var selection = await ProcessesWindow.ChooseProcess(false);
+                if (selection.Count > 0)
                 {
-                    subject = new AppContainerSubject(
-                        info.Package.Value.Sid,
-                        info.Package.Value.Name,
-                        info.Package.Value.Publisher,
-                        info.Package.Value.PublisherId);
+                    var info = selection[0];
+                    ExceptionSubject subject;
+                    if (info.Package.HasValue)
+                    {
+                        subject = new AppContainerSubject(
+                            info.Package.Value.Sid,
+                            info.Package.Value.Name,
+                            info.Package.Value.Publisher,
+                            info.Package.Value.PublisherId);
+                    }
+                    else if (info.Services.Count > 0)
+                    {
+                        string serviceName = info.Services.First();
+                        subject = new ServiceSubject(info.Path, serviceName);
+                    }
+                    else
+                    {
+                        subject = new ExecutableSubject(
+                            PathMapper.Instance.ConvertPathIgnoreErrors(info.Path, PathFormat.Win32));
+                    }
+                    ReinitFormFromSubject(subject);
                 }
-                else if (info.Services.Count > 0)
-                {
-                    string serviceName = info.Services.First();
-                    subject = new ServiceSubject(info.Path, serviceName);
-                }
-                else
-                {
-                    subject = new ExecutableSubject(
-                        PathMapper.Instance.ConvertPathIgnoreErrors(info.Path, PathFormat.Win32));
-                }
-                ReinitFormFromSubject(subject);
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+                NotificationService.Notify($"Error: {ex.Message}", NotificationLevel.Error);
             }
         }
 
         private async void BtnService_Click(object? sender, RoutedEventArgs e)
         {
-            var subject = await ServicesWindow.ChooseService();
-            if (subject != null)
-                ReinitFormFromSubject(subject);
+            try
+            {
+                var subject = await ServicesWindow.ChooseService();
+                if (subject != null)
+                    ReinitFormFromSubject(subject);
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+                NotificationService.Notify($"Error: {ex.Message}", NotificationLevel.Error);
+            }
         }
 
         private async void BtnUwpApp_Click(object? sender, RoutedEventArgs e)
         {
-            var packageList = await UwpPackagesWindow.ChoosePackage(false);
-            if (packageList.Count == 0) return;
+            try
+            {
+                var packageList = await UwpPackagesWindow.ChoosePackage(false);
+                if (packageList.Count == 0) return;
 
-            ReinitFormFromSubject(new AppContainerSubject(
-                packageList[0].Sid,
-                packageList[0].Name,
-                packageList[0].Publisher,
-                packageList[0].PublisherId));
+                ReinitFormFromSubject(new AppContainerSubject(
+                    packageList[0].Sid,
+                    packageList[0].Name,
+                    packageList[0].Publisher,
+                    packageList[0].PublisherId));
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+                NotificationService.Notify($"Error: {ex.Message}", NotificationLevel.Error);
+            }
         }
 
         private void CmbTimer_SelectionChanged(object? sender, SelectionChangedEventArgs e)
