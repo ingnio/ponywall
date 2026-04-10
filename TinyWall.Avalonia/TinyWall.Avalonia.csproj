@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <OutputType>WinExe</OutputType>
+    <UseWindowsForms>false</UseWindowsForms>
+    <NeutralLanguage>en</NeutralLanguage>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <RootNamespace>pylorak.TinyWall</RootNamespace>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>..\TinyWall\Resources\img\firewall.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Product>TinyWall</Product>
+    <AssemblyTitle>TinyWall Avalonia</AssemblyTitle>
+    <Company>Karoly Pados</Company>
+    <Description>A free, lightweight and non-intrusive firewall.</Description>
+    <Copyright>Copyright (c) 2011 Karoly Pados</Copyright>
+    <Version>3.4.1</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.2.7" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.7" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.7" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TinyWall.Core\TinyWall.Core.csproj" />
+    <ProjectReference Include="..\pylorak.Utilities\pylorak.Utilities.csproj" />
+    <ProjectReference Include="..\pylorak.Windows\pylorak.Windows.csproj" />
+    <ProjectReference Include="..\pylorak.Windows.Services\pylorak.Windows.Services.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="..\TinyWall\Resources\img\firewall.ico" Link="Assets\firewall.ico" />
+  </ItemGroup>
+</Project>

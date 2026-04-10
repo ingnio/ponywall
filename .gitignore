@@ -35,6 +35,9 @@
 /TinyWallService/bin/
 /TinyWallService/obj/
 
+/TinyWall.Avalonia/bin/
+/TinyWall.Avalonia/obj/
+
 /MsiSetup/obj/
 /MsiSetup/bin/
 /MsiSetup/Sources/ProgramFiles/
