@@ -77,8 +77,9 @@ namespace pylorak.TinyWall.Views
             IndLocalSubnet.Text = localSubnetAllowed ? "\u2611" : "\u2610";
             IndHostsBlocklist.Text = hostsBlocklistEnabled ? "\u2611" : "\u2610";
 
-            // Lock text
+            // Lock text and icon
             TxtLock.Text = isLocked ? pylorak.TinyWall.Resources.Messages.Unlock : pylorak.TinyWall.Resources.Messages.Lock;
+            TxtLockIcon.Text = isLocked ? "\U0001F512" : "\U0001F513";
 
             // Theme radio indicators
             IndThemeSystem.Text = currentTheme == ThemeVariant.Default ? "\u25CF" : "\u25CB";

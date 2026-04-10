@@ -93,21 +93,33 @@
       <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}" />
     </Style>
 
-    <!-- Expand arrow rotation -->
+    <!-- Expand arrow -->
     <Style Selector="TextBlock.expandArrow">
-      <Setter Property="FontSize" Value="10" />
+      <Setter Property="FontSize" Value="14" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+    </Style>
+
+    <!-- Menu icon -->
+    <Style Selector="TextBlock.menuIcon">
+      <Setter Property="Width" Value="20" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="TextAlignment" Value="Center" />
     </Style>
   </Window.Styles>
 
   <Border CornerRadius="8"
-          Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
-          BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
           BorderThickness="1"
           Padding="4,6"
-          BoxShadow="0 8 32 0 #40000000"
+          BoxShadow="0 4 16 0 #30000000"
           ClipToBounds="True">
+    <Border.Background>
+      <SolidColorBrush Color="{DynamicResource SystemAltHighColor}" Opacity="0.96" />
+    </Border.Background>
+    <Border.BorderBrush>
+      <SolidColorBrush Color="{DynamicResource SystemBaseLowColor}" Opacity="0.5" />
+    </Border.BorderBrush>
     <StackPanel>
 
       <!-- Traffic Rate (info row) -->
@@ -121,7 +133,10 @@
       <Button Classes="submenuHeader" x:Name="BtnModeExpand" Click="OnModeExpandClick">
         <DockPanel>
           <TextBlock x:Name="TxtModeArrow" Classes="expandArrow" DockPanel.Dock="Right" Text="&#x25B8;" Margin="8,0,0,0" />
-          <TextBlock Text="Change mode" />
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Classes="menuIcon" Text="🛡️" />
+            <TextBlock Text="Change mode" />
+          </StackPanel>
         </DockPanel>
       </Button>
       <StackPanel x:Name="PnlModeItems" IsVisible="False" Margin="16,0,0,0">
@@ -161,12 +176,18 @@
 
       <!-- Manage -->
       <Button Classes="menuItem" x:Name="BtnManage" Click="OnManageClick">
-        <TextBlock Text="Manage" />
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <TextBlock Classes="menuIcon" Text="🔧" />
+          <TextBlock Text="Manage" />
+        </StackPanel>
       </Button>
 
       <!-- Connections -->
       <Button Classes="menuItem" x:Name="BtnConnections" Click="OnConnectionsClick">
-        <TextBlock Text="Connections..." />
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <TextBlock Classes="menuIcon" Text="🌐" />
+          <TextBlock Text="Connections..." />
+        </StackPanel>
       </Button>
 
       <Separator Classes="menuSep" />
@@ -175,7 +196,10 @@
       <Button Classes="submenuHeader" x:Name="BtnWhitelistExpand" Click="OnWhitelistExpandClick">
         <DockPanel>
           <TextBlock x:Name="TxtWhitelistArrow" Classes="expandArrow" DockPanel.Dock="Right" Text="&#x25B8;" Margin="8,0,0,0" />
-          <TextBlock Text="Whitelist by" />
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Classes="menuIcon" Text="✅" />
+            <TextBlock Text="Whitelist by" />
+          </StackPanel>
         </DockPanel>
       </Button>
       <StackPanel x:Name="PnlWhitelistItems" IsVisible="False" Margin="16,0,0,0">
@@ -212,7 +236,10 @@
 
       <!-- Lock / Unlock -->
       <Button Classes="menuItem" x:Name="BtnLock" Click="OnLockClick">
-        <TextBlock x:Name="TxtLock" Text="Lock" />
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <TextBlock x:Name="TxtLockIcon" Classes="menuIcon" Text="🔓" />
+          <TextBlock x:Name="TxtLock" Text="Lock" />
+        </StackPanel>
       </Button>
 
       <Separator Classes="menuSep" />
@@ -221,7 +248,10 @@
       <Button Classes="submenuHeader" x:Name="BtnThemeExpand" Click="OnThemeExpandClick">
         <DockPanel>
           <TextBlock x:Name="TxtThemeArrow" Classes="expandArrow" DockPanel.Dock="Right" Text="&#x25B8;" Margin="8,0,0,0" />
-          <TextBlock Text="Theme" />
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Classes="menuIcon" Text="🎨" />
+            <TextBlock Text="Theme" />
+          </StackPanel>
         </DockPanel>
       </Button>
       <StackPanel x:Name="PnlThemeItems" IsVisible="False" Margin="16,0,0,0">
@@ -249,7 +279,10 @@
 
       <!-- Quit -->
       <Button Classes="menuItem" x:Name="BtnQuit" Click="OnQuitClick">
-        <TextBlock Text="Quit" />
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <TextBlock Classes="menuIcon" Text="❌" />
+          <TextBlock Text="Quit" />
+        </StackPanel>
       </Button>
 
     </StackPanel>

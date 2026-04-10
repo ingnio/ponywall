@@ -88,8 +88,19 @@ namespace pylorak.TinyWall
                 ToolTipText = "TinyWall"
             };
 
-            // Show custom menu on click (both left and right)
+            // Left-click: show custom menu
             _trayIcon.Clicked += (_, _) => ShowTrayMenu();
+
+            // Right-click: Avalonia shows NativeMenu automatically. Use a dummy
+            // NativeMenu whose Opening event we intercept to show our custom popup.
+            var dummyMenu = new NativeMenu();
+            dummyMenu.Opening += (_, _) =>
+            {
+                // Cancel the native menu and show our custom one instead
+                dummyMenu.Items.Clear();
+                ShowTrayMenu();
+            };
+            _trayIcon.Menu = dummyMenu;
 
             // Load the tray icon from embedded Avalonia resource
             try
