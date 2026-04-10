@@ -1,0 +1,118 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="pylorak.TinyWall.Views.ApplicationExceptionWindow"
+        Title="Application Exception - TinyWall"
+        Width="500" Height="580"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen"
+        Topmost="True">
+
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <!-- Top colored banner -->
+    <Border Grid.Row="0"
+            Name="bannerBorder"
+            Background="#ADD8E6"
+            MinHeight="48"
+            Padding="12,8">
+      <TextBlock Name="txtBanner"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 TextAlignment="Center"
+                 TextWrapping="Wrap"
+                 FontWeight="SemiBold" />
+    </Border>
+
+    <!-- Main content -->
+    <ScrollViewer Grid.Row="1" Padding="12,8">
+      <StackPanel Spacing="10">
+
+        <!-- Subject info -->
+        <StackPanel Spacing="4">
+          <TextBlock Text="Application Path:" />
+          <TextBox Name="txtAppPath" IsReadOnly="True" />
+          <TextBlock Text="Subject Type:" />
+          <TextBox Name="txtSrvName" IsReadOnly="True" />
+        </StackPanel>
+
+        <!-- Subject selection buttons -->
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <Button Name="btnBrowse" Content="Browse..." Click="BtnBrowse_Click" />
+          <Button Name="btnProcess" Content="Process..." Click="BtnProcess_Click" />
+          <Button Name="btnService" Content="Service..." Click="BtnService_Click" />
+          <Button Name="btnUwpApp" Content="UWP App..." Click="BtnUwpApp_Click" />
+        </StackPanel>
+
+        <!-- Timer -->
+        <StackPanel Spacing="4">
+          <TextBlock Text="Timer:" />
+          <ComboBox Name="cmbTimer"
+                    HorizontalAlignment="Stretch"
+                    SelectionChanged="CmbTimer_SelectionChanged" />
+        </StackPanel>
+
+        <!-- Policy radio buttons -->
+        <StackPanel Spacing="4">
+          <TextBlock Text="Restriction Policy:" FontWeight="SemiBold" />
+          <RadioButton Name="radBlock"
+                       Content="Block"
+                       GroupName="Policy"
+                       IsCheckedChanged="RadRestriction_CheckedChanged" />
+          <RadioButton Name="radTcpUdpUnrestricted"
+                       Content="TCP+UDP Unrestricted"
+                       GroupName="Policy"
+                       IsCheckedChanged="RadRestriction_CheckedChanged" />
+          <RadioButton Name="radTcpUdpOut"
+                       Content="Outgoing Only"
+                       GroupName="Policy"
+                       IsCheckedChanged="RadRestriction_CheckedChanged" />
+          <RadioButton Name="radOnlySpecifiedPorts"
+                       Content="Only Specified Ports"
+                       GroupName="Policy"
+                       IsCheckedChanged="RadRestriction_CheckedChanged" />
+          <RadioButton Name="radUnrestricted"
+                       Content="Unrestricted"
+                       GroupName="Policy"
+                       IsCheckedChanged="RadRestriction_CheckedChanged" />
+        </StackPanel>
+
+        <!-- Port fields panel -->
+        <Border Name="portFieldsPanel" BorderBrush="Gray" BorderThickness="1" CornerRadius="4" Padding="8">
+          <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Outbound TCP:" VerticalAlignment="Center" Margin="0,0,8,6" />
+            <TextBox   Grid.Row="0" Grid.Column="1" Name="txtOutboundPortTCP" Margin="0,0,0,6" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Outbound UDP:" VerticalAlignment="Center" Margin="0,0,8,6" />
+            <TextBox   Grid.Row="1" Grid.Column="1" Name="txtOutboundPortUDP" Margin="0,0,0,6" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Listen TCP:" VerticalAlignment="Center"
+                       Name="lblListenTCP" Margin="0,0,8,6" />
+            <TextBox   Grid.Row="2" Grid.Column="1" Name="txtListenPortTCP" Margin="0,0,0,6" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Listen UDP:" VerticalAlignment="Center"
+                       Name="lblListenUDP" Margin="0,0,8,0" />
+            <TextBox   Grid.Row="3" Grid.Column="1" Name="txtListenPortUDP" />
+          </Grid>
+        </Border>
+
+        <!-- Checkboxes -->
+        <CheckBox Name="chkRestrictToLocalNetwork" Content="Restrict to Local Network" />
+        <CheckBox Name="chkInheritToChildren" Content="Inherit to Child Processes" />
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- OK / Cancel buttons -->
+    <StackPanel Grid.Row="2"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Spacing="8"
+                Margin="12,8">
+      <Button Name="btnOK" Content="OK" Width="90" IsDefault="True"
+              Click="BtnOK_Click" />
+      <Button Name="btnCancel" Content="Cancel" Width="90" IsCancel="True"
+              Click="BtnCancel_Click" />
+    </StackPanel>
+
+  </Grid>
+</Window>
