@@ -29,6 +29,9 @@
 /TinyWall.Core/bin/
 /TinyWall.Core/obj/
 
+/TinyWall.Core.Tests/bin/
+/TinyWall.Core.Tests/obj/
+
 /TinyWallService/bin/
 /TinyWallService/obj/
 
