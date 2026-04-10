@@ -149,7 +149,11 @@ namespace pylorak.TinyWall
 
             // Lock
             _mnuLock = new NativeMenuItem(pylorak.TinyWall.Resources.Messages.Lock);
-            _mnuLock.Click += (_, _) => _viewModel?.ToggleLockCommand.Execute(null);
+            _mnuLock.Click += async (_, _) =>
+            {
+                if (_viewModel != null)
+                    await _viewModel.ToggleLockAsync();
+            };
             menu.Items.Add(_mnuLock);
             menu.Items.Add(new NativeMenuItemSeparator());
 
@@ -192,32 +196,23 @@ namespace pylorak.TinyWall
 
         private async Task<string?> ShowPasswordDialogAsync()
         {
-            var dlg = new PasswordWindow();
-            // Tray-only app has no main window, so show as a standalone top-level window
-            await dlg.ShowDialog<bool?>(GetOwnerWindow());
-            return dlg.PassHash;
-        }
-
-        /// <summary>
-        /// Returns a hidden owner window for modal dialogs in this tray-only app.
-        /// </summary>
-        private Window _hiddenOwner = null!;
-        private Window GetOwnerWindow()
-        {
-            if (_hiddenOwner == null)
+            var tcs = new System.Threading.Tasks.TaskCompletionSource<string?>();
+            await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                _hiddenOwner = new Window
+                try
                 {
-                    Width = 0,
-                    Height = 0,
-                    ShowInTaskbar = false,
-                    SystemDecorations = SystemDecorations.None,
-                    Opacity = 0
-                };
-                _hiddenOwner.Show();
-                _hiddenOwner.Hide();
-            }
-            return _hiddenOwner;
+                    var dlg = new PasswordWindow();
+                    dlg.Closed += (_, _) => tcs.TrySetResult(dlg.PassHash);
+                    dlg.Show();
+                    dlg.Activate();
+                }
+                catch (Exception ex)
+                {
+                    tcs.TrySetResult(null);
+                    Utils.LogException(ex, Utils.LOG_ID_GUI);
+                }
+            });
+            return await tcs.Task;
         }
 
         private void OnPollTimer(object? sender, EventArgs e)

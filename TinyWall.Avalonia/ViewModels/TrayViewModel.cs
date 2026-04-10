@@ -123,7 +123,7 @@ namespace pylorak.TinyWall
         }
 
         [RelayCommand]
-        private async Task ToggleLockAsync()
+        internal async Task ToggleLockAsync()
         {
             try
             {
