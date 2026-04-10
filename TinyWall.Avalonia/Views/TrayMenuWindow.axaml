@@ -177,7 +177,7 @@
       <!-- Manage -->
       <Button Classes="menuItem" x:Name="BtnManage" Click="OnManageClick">
         <StackPanel Orientation="Horizontal" Spacing="10">
-          <TextBlock Classes="menuIcon" Text="&#xE945;" />
+          <TextBlock Classes="menuIcon" Text="&#xE15E;" />
           <TextBlock Text="Manage" />
         </StackPanel>
       </Button>
@@ -185,7 +185,7 @@
       <!-- Connections -->
       <Button Classes="menuItem" x:Name="BtnConnections" Click="OnConnectionsClick">
         <StackPanel Orientation="Horizontal" Spacing="10">
-          <TextBlock Classes="menuIcon" Text="&#xE951;" />
+          <TextBlock Classes="menuIcon" Text="&#xE17A;" />
           <TextBlock Text="Connections..." />
         </StackPanel>
       </Button>
