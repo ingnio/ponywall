@@ -137,11 +137,11 @@ namespace pylorak.TinyWall
             whitelistMenu.Items.Add(mnuWhitelistExe);
 
             var mnuWhitelistProc = new NativeMenuItem("Process...");
-            mnuWhitelistProc.Click += (_, _) => NotificationService.Notify("Process picker not yet ported.", NotificationLevel.Warning);
+            mnuWhitelistProc.Click += async (_, _) => await WhitelistByProcessAsync();
             whitelistMenu.Items.Add(mnuWhitelistProc);
 
             var mnuWhitelistWin = new NativeMenuItem("Window...");
-            mnuWhitelistWin.Click += (_, _) => NotificationService.Notify("Window picker not yet ported.", NotificationLevel.Warning);
+            mnuWhitelistWin.Click += (_, _) => NotificationService.Notify("Whitelist by window is not yet available in the Avalonia UI.", NotificationLevel.Warning);
             whitelistMenu.Items.Add(mnuWhitelistWin);
 
             var mnuWhitelist = new NativeMenuItem("Whitelist by") { Menu = whitelistMenu };
@@ -335,6 +335,51 @@ namespace pylorak.TinyWall
             {
                 Utils.LogException(ex, Utils.LOG_ID_GUI);
                 NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
+            }
+        }
+
+        private async Task WhitelistByProcessAsync()
+        {
+            if (_controller == null) return;
+
+            try
+            {
+                var selection = await ProcessesWindow.ChooseProcess(false);
+                if (selection.Count == 0) return;
+
+                var pi = selection[0];
+                ExceptionSubject subject;
+                if (pi.Package.HasValue)
+                    subject = new AppContainerSubject(pi.Package.Value.Sid, pi.Package.Value.Name, pi.Package.Value.Publisher, pi.Package.Value.PublisherId);
+                else
+                    subject = new ExecutableSubject(pi.Path);
+
+                var exceptions = ServiceGlobals.AppDatabase?.GetExceptionsForApp(subject, false, out _)
+                    ?? new System.Collections.Generic.List<FirewallExceptionV3> { new FirewallExceptionV3(subject, new TcpUdpPolicy(true)) };
+                if (exceptions.Count == 0)
+                    exceptions.Add(new FirewallExceptionV3(subject, new TcpUdpPolicy(true)));
+
+                Guid changeset = Guid.Empty;
+                _controller.GetServerConfig(out var config, out _, ref changeset);
+                if (config != null)
+                {
+                    config.ActiveProfile.AddExceptions(exceptions);
+                    var resp = _controller.SetServerConfig(config, changeset);
+                    if (resp.Type == MessageType.PUT_SETTINGS)
+                    {
+                        var putResp = (TwMessagePutSettings)resp;
+                        _clientChangeset = putResp.Changeset;
+                        NotificationService.Notify(
+                            string.Format(System.Globalization.CultureInfo.CurrentCulture,
+                                pylorak.TinyWall.Resources.Messages.FirewallRulesForUnrecognizedChanged,
+                                exceptions[0].Subject.ToString()));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+                NotificationService.Notify($"Error: {ex.Message}", NotificationLevel.Error);
             }
         }
 

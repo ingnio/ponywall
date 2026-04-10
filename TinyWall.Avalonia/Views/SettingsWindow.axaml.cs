@@ -394,16 +394,46 @@ namespace pylorak.TinyWall.Views
             }
         }
 
-        private void BtnAppAdd_Click(object? sender, RoutedEventArgs e)
+        private async void BtnAppAdd_Click(object? sender, RoutedEventArgs e)
         {
-            // ApplicationExceptionForm is not yet ported - placeholder
-            ShowNotImplementedMessage("Add Application Exception");
+            try
+            {
+                var result = await ApplicationExceptionWindow.EditException(FirewallExceptionV3.Default);
+                if (result != null && result.Count > 0)
+                {
+                    TmpConfig.Service.ActiveProfile.AddExceptions(result);
+                    RebuildExceptionsList();
+                }
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
         }
 
-        private void BtnAppModify_Click(object? sender, RoutedEventArgs e)
+        private async void BtnAppModify_Click(object? sender, RoutedEventArgs e)
         {
-            // ApplicationExceptionForm is not yet ported - placeholder
-            ShowNotImplementedMessage("Modify Application Exception");
+            var selected = dgExceptions.SelectedItem as ExceptionListItemViewModel;
+            if (selected == null) return;
+
+            try
+            {
+                var oldEx = selected.Exception;
+                var newEx = Utils.DeepClone(oldEx);
+                newEx.RegenerateId();
+
+                var result = await ApplicationExceptionWindow.EditException(newEx, true);
+                if (result != null && result.Count > 0)
+                {
+                    TmpConfig.Service.ActiveProfile.AppExceptions.Remove(oldEx);
+                    TmpConfig.Service.ActiveProfile.AddExceptions(result);
+                    RebuildExceptionsList();
+                }
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+            }
         }
 
         private void BtnAppRemove_Click(object? sender, RoutedEventArgs e)
