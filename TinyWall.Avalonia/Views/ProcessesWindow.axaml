@@ -1,0 +1,41 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="pylorak.TinyWall.Views.ProcessesWindow"
+        Title="Running Processes - TinyWall"
+        Width="600" Height="400"
+        CanResize="True"
+        WindowStartupLocation="CenterScreen"
+        Topmost="True">
+
+  <Grid Margin="8" RowDefinitions="*,8,Auto">
+
+    <!-- DataGrid -->
+    <DataGrid Grid.Row="0"
+              Name="dataGrid"
+              AutoGenerateColumns="False"
+              IsReadOnly="True"
+              CanUserSortColumns="True"
+              CanUserResizeColumns="True"
+              GridLinesVisibility="Horizontal"
+              HeadersVisibility="Column">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
+        <DataGridTextColumn Header="Services" Binding="{Binding Services}" Width="*" />
+        <DataGridTextColumn Header="Path" Binding="{Binding Path}" Width="2*" />
+      </DataGrid.Columns>
+    </DataGrid>
+
+    <!-- Buttons -->
+    <StackPanel Grid.Row="2"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Spacing="8">
+      <Button Name="btnOK" Content="OK" Width="90" IsDefault="True"
+              IsEnabled="False"
+              Click="BtnOK_Click" />
+      <Button Name="btnCancel" Content="Cancel" Width="90" IsCancel="True"
+              Click="BtnCancel_Click" />
+    </StackPanel>
+
+  </Grid>
+</Window>

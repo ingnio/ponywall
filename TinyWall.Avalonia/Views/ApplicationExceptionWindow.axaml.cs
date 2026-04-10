@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -395,14 +396,40 @@ namespace pylorak.TinyWall.Views
             }
         }
 
-        private void BtnProcess_Click(object? sender, RoutedEventArgs e)
+        private async void BtnProcess_Click(object? sender, RoutedEventArgs e)
         {
-            NotificationService.Notify("Process selection is not yet implemented in the Avalonia port.");
+            var selection = await ProcessesWindow.ChooseProcess(false);
+            if (selection.Count > 0)
+            {
+                var info = selection[0];
+                ExceptionSubject subject;
+                if (info.Package.HasValue)
+                {
+                    subject = new AppContainerSubject(
+                        info.Package.Value.Sid,
+                        info.Package.Value.Name,
+                        info.Package.Value.Publisher,
+                        info.Package.Value.PublisherId);
+                }
+                else if (info.Services.Count > 0)
+                {
+                    string serviceName = info.Services.First();
+                    subject = new ServiceSubject(info.Path, serviceName);
+                }
+                else
+                {
+                    subject = new ExecutableSubject(
+                        PathMapper.Instance.ConvertPathIgnoreErrors(info.Path, PathFormat.Win32));
+                }
+                ReinitFormFromSubject(subject);
+            }
         }
 
-        private void BtnService_Click(object? sender, RoutedEventArgs e)
+        private async void BtnService_Click(object? sender, RoutedEventArgs e)
         {
-            NotificationService.Notify("Service selection is not yet implemented in the Avalonia port.");
+            var subject = await ServicesWindow.ChooseService();
+            if (subject != null)
+                ReinitFormFromSubject(subject);
         }
 
         private async void BtnUwpApp_Click(object? sender, RoutedEventArgs e)
