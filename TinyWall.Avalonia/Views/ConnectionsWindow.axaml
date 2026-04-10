@@ -25,6 +25,7 @@
           <CheckBox Name="chkShowBlocked" Content="Show Blocked" IsChecked="True"
                     IsCheckedChanged="ChkFilter_Changed" />
           <Button Name="btnRefresh" Content="Refresh" Click="BtnRefresh_Click" />
+          <Button Name="btnClear" Content="Clear" Click="BtnClear_Click" />
           <CheckBox Name="chkAutoRefresh" Content="Auto-refresh" IsChecked="True"
                     IsCheckedChanged="ChkAutoRefresh_Changed" />
         </StackPanel>

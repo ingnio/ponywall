@@ -302,6 +302,12 @@ namespace pylorak.TinyWall.Views
             UpdateList();
         }
 
+        private void BtnClear_Click(object? sender, RoutedEventArgs e)
+        {
+            _allConnections.Clear();
+            _connections.Clear();
+        }
+
         private void ChkFilter_Changed(object? sender, RoutedEventArgs e)
         {
             UpdateList();
