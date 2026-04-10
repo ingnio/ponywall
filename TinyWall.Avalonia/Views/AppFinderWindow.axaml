@@ -3,42 +3,46 @@
         xmlns:vm="using:pylorak.TinyWall.ViewModels"
         x:Class="pylorak.TinyWall.Views.AppFinderWindow"
         Title="Detect Known Applications - TinyWall"
-        Width="600" Height="500"
+        Width="620" Height="520"
         CanResize="True"
         WindowStartupLocation="CenterScreen"
         Topmost="True">
 
-  <Grid Margin="8" RowDefinitions="Auto,8,*,8,Auto">
+  <Grid Margin="16" RowDefinitions="Auto,12,Auto,12,*,12,Auto">
 
-    <!-- Status label -->
-    <TextBlock Grid.Row="0"
-               Name="lblStatus"
-               Text="Click Start to begin detection."
-               TextTrimming="CharacterEllipsis" />
+    <!-- Header -->
+    <TextBlock Grid.Row="0" Classes="sectionHeader" Text="Application Detection" />
 
-    <!-- Checkbox list of detected apps -->
-    <ListBox Grid.Row="2"
-             Name="listApps"
-             SelectionMode="Multiple">
-      <ListBox.ItemTemplate>
-        <DataTemplate DataType="vm:AppFinderItemViewModel">
-          <CheckBox IsChecked="{Binding IsChecked}"
-                    Content="{Binding AppName}"
-                    Margin="2" />
-        </DataTemplate>
-      </ListBox.ItemTemplate>
-    </ListBox>
+    <!-- Status bar card -->
+    <Border Grid.Row="2" Classes="card" Padding="12,10">
+      <TextBlock Name="lblStatus"
+                 Text="Click Start to begin detection."
+                 TextTrimming="CharacterEllipsis" />
+    </Border>
+
+    <!-- Checkbox list card -->
+    <Border Grid.Row="4" Classes="card" Padding="0">
+      <ListBox Name="listApps"
+               SelectionMode="Multiple"
+               BorderThickness="0">
+        <ListBox.ItemTemplate>
+          <DataTemplate DataType="vm:AppFinderItemViewModel">
+            <CheckBox IsChecked="{Binding IsChecked}"
+                      Content="{Binding AppName}"
+                      Margin="4,2" />
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Border>
 
     <!-- Bottom button panel -->
-    <StackPanel Grid.Row="4"
-                Orientation="Horizontal"
-                HorizontalAlignment="Right"
-                Spacing="8">
+    <StackPanel Grid.Row="6" Classes="buttonRow">
       <Button Name="btnStartDetection" Content="Start" Width="110"
+              Classes="primary"
               Click="BtnStartDetection_Click" />
       <Button Name="btnSelectAll" Content="Select All" Width="90"
               Click="BtnSelectAll_Click" />
-      <Button Name="btnDeselectAll" Content="Deselect All" Width="90"
+      <Button Name="btnDeselectAll" Content="Deselect All" Width="100"
               Click="BtnDeselectAll_Click" />
       <Button Name="btnOK" Content="OK" Width="90" IsDefault="True"
               Click="BtnOK_Click" />

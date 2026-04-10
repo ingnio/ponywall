@@ -3,42 +3,49 @@
         xmlns:vm="using:pylorak.TinyWall.ViewModels"
         x:Class="pylorak.TinyWall.Views.SettingsWindow"
         Title="TinyWall Settings"
-        Width="700" Height="550"
-        MinWidth="600" MinHeight="450"
+        Width="720" Height="580"
+        MinWidth="620" MinHeight="480"
         CanResize="True"
         WindowStartupLocation="CenterScreen"
         Topmost="True">
 
-  <Grid Margin="8" RowDefinitions="*,8,Auto">
+  <Grid Margin="16" RowDefinitions="*,12,Auto">
 
     <!-- Tab Control -->
     <TabControl Grid.Row="0" Name="tabControl">
 
       <!-- ========== Tab 1: General + Password ========== -->
       <TabItem Header="General">
-        <ScrollViewer>
-          <StackPanel Margin="8" Spacing="12">
+        <ScrollViewer Padding="4,8">
+          <StackPanel Spacing="12">
 
-            <!-- Language -->
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <TextBlock Text="Language:" VerticalAlignment="Center" />
-              <ComboBox Name="comboLanguages" Width="220" />
-            </StackPanel>
-
-            <!-- General checkboxes -->
-            <CheckBox Name="chkAutoUpdateCheck" Content="Automatically check for updates" />
-            <CheckBox Name="chkAskForExceptionDetails" Content="Ask for exception details when whitelisting" />
-            <CheckBox Name="chkEnableHotkeys" Content="Enable global hotkeys" />
-
-            <!-- Password group -->
-            <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="4" Padding="12" Margin="0,8,0,0">
+            <!-- Language card -->
+            <Border Classes="card">
               <StackPanel Spacing="8">
-                <TextBlock Text="Password Protection" FontWeight="Bold" />
+                <TextBlock Text="Language" Classes="sectionHeader" />
+                <ComboBox Name="comboLanguages" Width="240" />
+              </StackPanel>
+            </Border>
+
+            <!-- Options card -->
+            <Border Classes="card">
+              <StackPanel Spacing="4">
+                <TextBlock Text="Options" Classes="sectionHeader" />
+                <CheckBox Name="chkAutoUpdateCheck" Content="Automatically check for updates" />
+                <CheckBox Name="chkAskForExceptionDetails" Content="Ask for exception details when whitelisting" />
+                <CheckBox Name="chkEnableHotkeys" Content="Enable global hotkeys" />
+              </StackPanel>
+            </Border>
+
+            <!-- Password card -->
+            <Border Classes="card">
+              <StackPanel Spacing="8">
+                <TextBlock Text="Password Protection" Classes="sectionHeader" />
                 <TextBlock Text="If set, a password will be required to access TinyWall settings."
-                           TextWrapping="Wrap" Foreground="Gray" />
+                           TextWrapping="Wrap" Classes="subtitle" />
                 <CheckBox Name="chkChangePassword" Content="Change password"
                           Checked="ChkChangePassword_Changed" Unchecked="ChkChangePassword_Changed" />
-                <Grid ColumnDefinitions="Auto,8,*" RowDefinitions="Auto,8,Auto">
+                <Grid ColumnDefinitions="Auto,12,*" RowDefinitions="Auto,8,Auto">
                   <TextBlock Grid.Row="0" Grid.Column="0" Text="Password:" VerticalAlignment="Center" />
                   <TextBox Grid.Row="0" Grid.Column="2" Name="txtPassword"
                            PasswordChar="*" IsEnabled="False" />
@@ -55,134 +62,174 @@
 
       <!-- ========== Tab 2: Machine Settings ========== -->
       <TabItem Header="Machine Settings">
-        <ScrollViewer>
-          <StackPanel Margin="8" Spacing="8">
-            <CheckBox Name="chkDisplayOffBlock"
-                      Content="Block traffic when display is off" />
-            <CheckBox Name="chkLockHostsFile"
-                      Content="Lock hosts file" />
-            <CheckBox Name="chkEnableBlocklists"
-                      Content="Enable blocklists"
-                      Checked="ChkEnableBlocklists_Changed" Unchecked="ChkEnableBlocklists_Changed" />
-            <StackPanel Margin="24,0,0,0" Spacing="4">
-              <CheckBox Name="chkHostsBlocklist"
-                        Content="Enable hosts blocklist" IsEnabled="False" />
-              <CheckBox Name="chkBlockMalwarePorts"
-                        Content="Block malware ports" IsEnabled="False" />
-            </StackPanel>
+        <ScrollViewer Padding="4,8">
+          <StackPanel Spacing="12">
+
+            <!-- Security card -->
+            <Border Classes="card">
+              <StackPanel Spacing="4">
+                <TextBlock Text="Security" Classes="sectionHeader" />
+                <CheckBox Name="chkDisplayOffBlock"
+                          Content="Block traffic when display is off" />
+                <CheckBox Name="chkLockHostsFile"
+                          Content="Lock hosts file" />
+              </StackPanel>
+            </Border>
+
+            <!-- Blocklists card -->
+            <Border Classes="card">
+              <StackPanel Spacing="4">
+                <TextBlock Text="Blocklists" Classes="sectionHeader" />
+                <CheckBox Name="chkEnableBlocklists"
+                          Content="Enable blocklists"
+                          Checked="ChkEnableBlocklists_Changed" Unchecked="ChkEnableBlocklists_Changed" />
+                <StackPanel Margin="24,4,0,0" Spacing="4">
+                  <CheckBox Name="chkHostsBlocklist"
+                            Content="Enable hosts blocklist" IsEnabled="False" />
+                  <CheckBox Name="chkBlockMalwarePorts"
+                            Content="Block malware ports" IsEnabled="False" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+
           </StackPanel>
         </ScrollViewer>
       </TabItem>
 
       <!-- ========== Tab 3: Special Exceptions ========== -->
       <TabItem Header="Special Exceptions">
-        <Grid Margin="8" RowDefinitions="Auto,4,*,16,Auto,4,*">
-          <TextBlock Grid.Row="0" Text="Recommended:" FontWeight="Bold" />
-          <ListBox Grid.Row="2" Name="listRecommended">
-            <ListBox.ItemTemplate>
-              <DataTemplate DataType="vm:SpecialExceptionItemViewModel">
-                <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Name}" Margin="2" />
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
+        <Grid Margin="4,8" RowDefinitions="Auto,8,*,16,Auto,8,*">
 
-          <TextBlock Grid.Row="4" Text="Optional:" FontWeight="Bold" />
-          <ListBox Grid.Row="6" Name="listOptional">
-            <ListBox.ItemTemplate>
-              <DataTemplate DataType="vm:SpecialExceptionItemViewModel">
-                <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Name}" Margin="2" />
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
+          <!-- Recommended card -->
+          <TextBlock Grid.Row="0" Text="Recommended" Classes="sectionHeader" />
+          <Border Grid.Row="2" Classes="card" Padding="0">
+            <ListBox Name="listRecommended" BorderThickness="0">
+              <ListBox.ItemTemplate>
+                <DataTemplate DataType="vm:SpecialExceptionItemViewModel">
+                  <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Name}" Margin="4,2" />
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </Border>
+
+          <!-- Optional card -->
+          <TextBlock Grid.Row="4" Text="Optional" Classes="sectionHeader" />
+          <Border Grid.Row="6" Classes="card" Padding="0">
+            <ListBox Name="listOptional" BorderThickness="0">
+              <ListBox.ItemTemplate>
+                <DataTemplate DataType="vm:SpecialExceptionItemViewModel">
+                  <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Name}" Margin="4,2" />
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </Border>
+
         </Grid>
       </TabItem>
 
       <!-- ========== Tab 4: Application Exceptions ========== -->
       <TabItem Header="Application Exceptions">
-        <Grid Margin="8" RowDefinitions="Auto,4,*,8,Auto">
+        <Grid Margin="4,8" RowDefinitions="Auto,8,*,12,Auto">
 
-          <!-- Filter -->
-          <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8">
-            <TextBlock Text="Filter:" VerticalAlignment="Center" />
-            <TextBox Name="txtExceptionFilter" Width="300"
-                     Watermark="Type to filter..."
-                     TextChanged="TxtExceptionFilter_TextChanged" />
-          </StackPanel>
+          <!-- Filter card -->
+          <Border Grid.Row="0" Classes="card" Padding="10,8">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock Text="Filter:" VerticalAlignment="Center" FontWeight="SemiBold" />
+              <TextBox Name="txtExceptionFilter" Width="320"
+                       Watermark="Type to filter..."
+                       TextChanged="TxtExceptionFilter_TextChanged" />
+            </StackPanel>
+          </Border>
 
-          <!-- DataGrid for exceptions -->
-          <DataGrid Grid.Row="2" Name="dgExceptions"
-                    AutoGenerateColumns="False"
-                    IsReadOnly="True"
-                    CanUserReorderColumns="False"
-                    CanUserSortColumns="True"
-                    SelectionMode="Extended"
-                    GridLinesVisibility="Horizontal">
-            <DataGrid.Columns>
-              <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
-              <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100" />
-              <DataGridTextColumn Header="Path" Binding="{Binding Path}" Width="2*" />
-              <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="130" />
-            </DataGrid.Columns>
-          </DataGrid>
+          <!-- DataGrid card -->
+          <Border Grid.Row="2" Classes="card" Padding="0">
+            <DataGrid Name="dgExceptions"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      CanUserReorderColumns="False"
+                      CanUserSortColumns="True"
+                      SelectionMode="Extended"
+                      GridLinesVisibility="Horizontal"
+                      BorderThickness="0">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
+                <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100" />
+                <DataGridTextColumn Header="Path" Binding="{Binding Path}" Width="2*" />
+                <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="130" />
+              </DataGrid.Columns>
+            </DataGrid>
+          </Border>
 
           <!-- Buttons -->
           <WrapPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Left">
-            <Button Name="btnAppAutoDetect" Content="Auto-detect" Margin="0,0,6,4"
+            <Button Name="btnAppAutoDetect" Content="Auto-detect" Margin="0,0,8,4"
                     Click="BtnAppAutoDetect_Click" />
-            <Button Name="btnAppAdd" Content="Add..." Margin="0,0,6,4"
+            <Button Name="btnAppAdd" Content="Add..." Margin="0,0,8,4"
                     Click="BtnAppAdd_Click" />
-            <Button Name="btnAppModify" Content="Modify..." Margin="0,0,6,4"
+            <Button Name="btnAppModify" Content="Modify..." Margin="0,0,8,4"
                     IsEnabled="False" Click="BtnAppModify_Click" />
-            <Button Name="btnAppRemove" Content="Remove" Margin="0,0,6,4"
+            <Button Name="btnAppRemove" Content="Remove" Margin="0,0,8,4"
                     IsEnabled="False" Click="BtnAppRemove_Click" />
-            <Button Name="btnAppRemoveAll" Content="Remove All" Margin="0,0,6,4"
+            <Button Name="btnAppRemoveAll" Content="Remove All" Margin="0,0,8,4"
                     Click="BtnAppRemoveAll_Click" />
-            <Button Name="btnImport" Content="Import..." Margin="0,0,6,4"
+            <Button Name="btnImport" Content="Import..." Margin="0,0,8,4"
                     Click="BtnImport_Click" />
-            <Button Name="btnExport" Content="Export..." Margin="0,0,6,4"
+            <Button Name="btnExport" Content="Export..." Margin="0,0,8,4"
                     Click="BtnExport_Click" />
           </WrapPanel>
 
         </Grid>
       </TabItem>
 
-      <!-- ========== Tab 5: Password (standalone, for visibility) ========== -->
-      <!-- Password is merged into General tab above per standard settings UX -->
-
-      <!-- ========== Tab 6: About ========== -->
+      <!-- ========== Tab 5: About ========== -->
       <TabItem Header="About">
-        <ScrollViewer>
-          <StackPanel Margin="16" Spacing="12">
-            <TextBlock Name="lblVersion" Text="TinyWall" FontSize="18" FontWeight="Bold" />
-            <TextBlock Text="A free, lightweight and non-intrusive firewall." TextWrapping="Wrap" />
+        <ScrollViewer Padding="4,8">
+          <StackPanel Spacing="12">
 
-            <StackPanel Spacing="6" Margin="0,8,0,0">
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="Website:" VerticalAlignment="Center" />
-                <HyperlinkButton Name="btnWebLink" Content="https://tinywall.pados.hu"
-                                 NavigateUri="https://tinywall.pados.hu" />
+            <!-- App info card -->
+            <Border Classes="card">
+              <StackPanel Spacing="8">
+                <TextBlock Name="lblVersion" Text="TinyWall" Classes="pageTitle" />
+                <TextBlock Text="A free, lightweight and non-intrusive firewall."
+                           TextWrapping="Wrap" Classes="subtitle" />
               </StackPanel>
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="GitHub:" VerticalAlignment="Center" />
-                <HyperlinkButton Name="btnGithubLink" Content="https://github.com/pylorak/tinywall"
-                                 NavigateUri="https://github.com/pylorak/tinywall" />
-              </StackPanel>
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="License:" VerticalAlignment="Center" />
-                <HyperlinkButton Name="btnLicenseLink" Content="View License"
-                                 Click="BtnLicenseLink_Click" />
-              </StackPanel>
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="Attributions:" VerticalAlignment="Center" />
-                <HyperlinkButton Name="btnAttributionsLink" Content="View Attributions"
-                                 Click="BtnAttributionsLink_Click" />
-              </StackPanel>
-            </StackPanel>
+            </Border>
 
-            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
-              <Button Name="btnDonate" Content="Donate" Click="BtnDonate_Click" />
-              <Button Name="btnUpdate" Content="Check for Updates" Click="BtnUpdate_Click" />
-            </StackPanel>
+            <!-- Links card -->
+            <Border Classes="card">
+              <StackPanel Spacing="8">
+                <TextBlock Text="Links" Classes="sectionHeader" />
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <TextBlock Text="Website:" VerticalAlignment="Center" FontWeight="SemiBold" />
+                  <HyperlinkButton Name="btnWebLink" Content="https://tinywall.pados.hu"
+                                   NavigateUri="https://tinywall.pados.hu" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <TextBlock Text="GitHub:" VerticalAlignment="Center" FontWeight="SemiBold" />
+                  <HyperlinkButton Name="btnGithubLink" Content="https://github.com/pylorak/tinywall"
+                                   NavigateUri="https://github.com/pylorak/tinywall" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <TextBlock Text="License:" VerticalAlignment="Center" FontWeight="SemiBold" />
+                  <HyperlinkButton Name="btnLicenseLink" Content="View License"
+                                   Click="BtnLicenseLink_Click" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <TextBlock Text="Attributions:" VerticalAlignment="Center" FontWeight="SemiBold" />
+                  <HyperlinkButton Name="btnAttributionsLink" Content="View Attributions"
+                                   Click="BtnAttributionsLink_Click" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+
+            <!-- Actions card -->
+            <Border Classes="card">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Name="btnDonate" Content="Donate" Classes="primary" Click="BtnDonate_Click" />
+                <Button Name="btnUpdate" Content="Check for Updates" Click="BtnUpdate_Click" />
+              </StackPanel>
+            </Border>
+
           </StackPanel>
         </ScrollViewer>
       </TabItem>
@@ -190,8 +237,9 @@
     </TabControl>
 
     <!-- Bottom OK/Cancel -->
-    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+    <StackPanel Grid.Row="2" Classes="buttonRow">
       <Button Name="btnOK" Content="OK" Width="90" IsDefault="True"
+              Classes="primary"
               Click="BtnOK_Click" />
       <Button Name="btnCancel" Content="Cancel" Width="90" IsCancel="True"
               Click="BtnCancel_Click" />

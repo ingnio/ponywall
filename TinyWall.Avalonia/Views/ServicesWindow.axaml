@@ -2,36 +2,39 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="pylorak.TinyWall.Views.ServicesWindow"
         Title="Windows Services - TinyWall"
-        Width="600" Height="400"
+        Width="620" Height="420"
         CanResize="True"
         WindowStartupLocation="CenterScreen"
         Topmost="True">
 
-  <Grid Margin="8" RowDefinitions="*,8,Auto">
+  <Grid Margin="16" RowDefinitions="Auto,12,*,12,Auto">
 
-    <!-- DataGrid -->
-    <DataGrid Grid.Row="0"
-              Name="dataGrid"
-              AutoGenerateColumns="False"
-              IsReadOnly="True"
-              SelectionMode="Single"
-              CanUserSortColumns="True"
-              CanUserResizeColumns="True"
-              GridLinesVisibility="Horizontal"
-              HeadersVisibility="Column">
-      <DataGrid.Columns>
-        <DataGridTextColumn Header="Display Name" Binding="{Binding DisplayName}" Width="*" />
-        <DataGridTextColumn Header="Service Name" Binding="{Binding ServiceName}" Width="*" />
-        <DataGridTextColumn Header="Executable Path" Binding="{Binding ExecutablePath}" Width="2*" />
-      </DataGrid.Columns>
-    </DataGrid>
+    <!-- Header -->
+    <TextBlock Grid.Row="0" Classes="sectionHeader" Text="Select a Service" />
+
+    <!-- Card around DataGrid -->
+    <Border Grid.Row="2" Classes="card" Padding="0">
+      <DataGrid Name="dataGrid"
+                AutoGenerateColumns="False"
+                IsReadOnly="True"
+                SelectionMode="Single"
+                CanUserSortColumns="True"
+                CanUserResizeColumns="True"
+                GridLinesVisibility="Horizontal"
+                HeadersVisibility="Column"
+                BorderThickness="0">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Display Name" Binding="{Binding DisplayName}" Width="*" />
+          <DataGridTextColumn Header="Service Name" Binding="{Binding ServiceName}" Width="*" />
+          <DataGridTextColumn Header="Executable Path" Binding="{Binding ExecutablePath}" Width="2*" />
+        </DataGrid.Columns>
+      </DataGrid>
+    </Border>
 
     <!-- Buttons -->
-    <StackPanel Grid.Row="2"
-                Orientation="Horizontal"
-                HorizontalAlignment="Right"
-                Spacing="8">
+    <StackPanel Grid.Row="4" Classes="buttonRow">
       <Button Name="btnOK" Content="OK" Width="90" IsDefault="True"
+              Classes="primary"
               IsEnabled="False"
               Click="BtnOK_Click" />
       <Button Name="btnCancel" Content="Cancel" Width="90" IsCancel="True"

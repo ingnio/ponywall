@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Styling;
 using Avalonia.Threading;
 using pylorak.TinyWall.Views;
 
@@ -32,6 +33,9 @@ namespace pylorak.TinyWall
         private NativeMenuItem? _mnuAllowLocalSubnet;
         private NativeMenuItem? _mnuEnableHostsBlocklist;
         private NativeMenuItem? _mnuLock;
+        private NativeMenuItem? _mnuThemeSystem;
+        private NativeMenuItem? _mnuThemeLight;
+        private NativeMenuItem? _mnuThemeDark;
 
         public override void Initialize()
         {
@@ -170,6 +174,28 @@ namespace pylorak.TinyWall
                     await _viewModel.ToggleLockAsync();
             };
             menu.Items.Add(_mnuLock);
+            menu.Items.Add(new NativeMenuItemSeparator());
+
+            // Theme submenu
+            var themeMenu = new NativeMenu();
+            _mnuThemeSystem = new NativeMenuItem("System");
+            _mnuThemeSystem.ToggleType = NativeMenuItemToggleType.Radio;
+            _mnuThemeSystem.IsChecked = true;
+            _mnuThemeSystem.Click += (_, _) => SetThemeVariant(ThemeVariant.Default);
+            themeMenu.Items.Add(_mnuThemeSystem);
+
+            _mnuThemeLight = new NativeMenuItem("Light");
+            _mnuThemeLight.ToggleType = NativeMenuItemToggleType.Radio;
+            _mnuThemeLight.Click += (_, _) => SetThemeVariant(ThemeVariant.Light);
+            themeMenu.Items.Add(_mnuThemeLight);
+
+            _mnuThemeDark = new NativeMenuItem("Dark");
+            _mnuThemeDark.ToggleType = NativeMenuItemToggleType.Radio;
+            _mnuThemeDark.Click += (_, _) => SetThemeVariant(ThemeVariant.Dark);
+            themeMenu.Items.Add(_mnuThemeDark);
+
+            var mnuTheme = new NativeMenuItem("Theme") { Menu = themeMenu };
+            menu.Items.Add(mnuTheme);
             menu.Items.Add(new NativeMenuItemSeparator());
 
             // Quit
@@ -615,6 +641,16 @@ namespace pylorak.TinyWall
             {
                 _mnuLock.Header = _viewModel.IsLocked ? pylorak.TinyWall.Resources.Messages.Unlock : pylorak.TinyWall.Resources.Messages.Lock;
             }
+        }
+
+        private void SetThemeVariant(ThemeVariant variant)
+        {
+            if (Application.Current != null)
+                Application.Current.RequestedThemeVariant = variant;
+
+            if (_mnuThemeSystem != null) _mnuThemeSystem.IsChecked = (variant == ThemeVariant.Default);
+            if (_mnuThemeLight != null) _mnuThemeLight.IsChecked = (variant == ThemeVariant.Light);
+            if (_mnuThemeDark != null) _mnuThemeDark.IsChecked = (variant == ThemeVariant.Dark);
         }
 
         private void UpdateTrayTooltip()

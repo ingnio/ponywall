@@ -3,70 +3,77 @@
         xmlns:vm="using:pylorak.TinyWall.ViewModels"
         x:Class="pylorak.TinyWall.Views.ConnectionsWindow"
         Title="TinyWall Connections"
-        Width="900" Height="500"
+        Width="920" Height="520"
         MinWidth="700" MinHeight="350"
         CanResize="True"
         WindowStartupLocation="CenterScreen"
         KeyDown="Window_KeyDown">
 
-  <Grid Margin="8" RowDefinitions="Auto,8,*">
+  <Grid Margin="16" RowDefinitions="Auto,12,Auto,12,*">
 
-    <!-- Top bar: filter checkboxes + refresh + auto-refresh + text filter -->
-    <StackPanel Grid.Row="0" Spacing="6">
-      <StackPanel Orientation="Horizontal" Spacing="16">
-        <CheckBox Name="chkShowActive" Content="Show Active Connections" IsChecked="True"
-                  IsCheckedChanged="ChkFilter_Changed" />
-        <CheckBox Name="chkShowListen" Content="Show Open Ports" IsChecked="True"
-                  IsCheckedChanged="ChkFilter_Changed" />
-        <CheckBox Name="chkShowBlocked" Content="Show Blocked" IsChecked="True"
-                  IsCheckedChanged="ChkFilter_Changed" />
-        <Button Name="btnRefresh" Content="Refresh" Click="BtnRefresh_Click" />
-        <CheckBox Name="chkAutoRefresh" Content="Auto-refresh" IsChecked="True"
-                  IsCheckedChanged="ChkAutoRefresh_Changed" />
+    <!-- Header -->
+    <TextBlock Grid.Row="0" Classes="sectionHeader" Text="Network Connections" />
+
+    <!-- Filter bar card -->
+    <Border Grid.Row="2" Classes="card" Padding="12">
+      <StackPanel Spacing="8">
+        <StackPanel Orientation="Horizontal" Spacing="16">
+          <CheckBox Name="chkShowActive" Content="Show Active Connections" IsChecked="True"
+                    IsCheckedChanged="ChkFilter_Changed" />
+          <CheckBox Name="chkShowListen" Content="Show Open Ports" IsChecked="True"
+                    IsCheckedChanged="ChkFilter_Changed" />
+          <CheckBox Name="chkShowBlocked" Content="Show Blocked" IsChecked="True"
+                    IsCheckedChanged="ChkFilter_Changed" />
+          <Button Name="btnRefresh" Content="Refresh" Click="BtnRefresh_Click" />
+          <CheckBox Name="chkAutoRefresh" Content="Auto-refresh" IsChecked="True"
+                    IsCheckedChanged="ChkAutoRefresh_Changed" />
+        </StackPanel>
+        <TextBox Name="txtFilter" Watermark="Filter by process name, address, port..."
+                 TextChanged="TxtFilter_TextChanged" />
       </StackPanel>
-      <TextBox Name="txtFilter" Watermark="Filter by process name, address, port..."
-               TextChanged="TxtFilter_TextChanged" />
-    </StackPanel>
+    </Border>
 
-    <!-- DataGrid -->
-    <DataGrid Grid.Row="2"
-              Name="dataGrid"
-              AutoGenerateColumns="False"
-              IsReadOnly="True"
-              CanUserReorderColumns="True"
-              CanUserResizeColumns="True"
-              CanUserSortColumns="True"
-              SelectionMode="Extended"
-              GridLinesVisibility="Horizontal">
+    <!-- DataGrid card -->
+    <Border Grid.Row="4" Classes="card" Padding="0">
+      <DataGrid Name="dataGrid"
+                AutoGenerateColumns="False"
+                IsReadOnly="True"
+                CanUserReorderColumns="True"
+                CanUserResizeColumns="True"
+                CanUserSortColumns="True"
+                SelectionMode="Extended"
+                GridLinesVisibility="Horizontal"
+                BorderThickness="0">
 
-      <DataGrid.ContextMenu>
-        <ContextMenu Name="rowContextMenu" Opening="ContextMenu_Opening">
-          <MenuItem Header="Unblock" Name="mnuUnblock" Click="MnuUnblock_Click" />
-          <Separator />
-          <MenuItem Header="Close Process" Name="mnuCloseProcess" Click="MnuCloseProcess_Click" />
-          <Separator />
-          <MenuItem Header="Copy Remote Address" Name="mnuCopyRemoteAddress" Click="MnuCopyRemoteAddress_Click" />
-          <Separator />
-          <MenuItem Header="Look up on VirusTotal" Name="mnuVirusTotal" Click="MnuVirusTotal_Click" />
-          <MenuItem Header="Look up on ProcessLibrary" Name="mnuProcessLibrary" Click="MnuProcessLibrary_Click" />
-          <MenuItem Header="Search file name on Google" Name="mnuGoogleFilename" Click="MnuGoogleFilename_Click" />
-          <MenuItem Header="Search remote address on Google" Name="mnuGoogleRemoteAddress" Click="MnuGoogleRemoteAddress_Click" />
-        </ContextMenu>
-      </DataGrid.ContextMenu>
+        <DataGrid.ContextMenu>
+          <ContextMenu Name="rowContextMenu" Opening="ContextMenu_Opening">
+            <MenuItem Header="Unblock" Name="mnuUnblock" Click="MnuUnblock_Click" />
+            <Separator />
+            <MenuItem Header="Close Process" Name="mnuCloseProcess" Click="MnuCloseProcess_Click" />
+            <Separator />
+            <MenuItem Header="Copy Remote Address" Name="mnuCopyRemoteAddress" Click="MnuCopyRemoteAddress_Click" />
+            <Separator />
+            <MenuItem Header="Look up on VirusTotal" Name="mnuVirusTotal" Click="MnuVirusTotal_Click" />
+            <MenuItem Header="Look up on ProcessLibrary" Name="mnuProcessLibrary" Click="MnuProcessLibrary_Click" />
+            <MenuItem Header="Search file name on Google" Name="mnuGoogleFilename" Click="MnuGoogleFilename_Click" />
+            <MenuItem Header="Search remote address on Google" Name="mnuGoogleRemoteAddress" Click="MnuGoogleRemoteAddress_Click" />
+          </ContextMenu>
+        </DataGrid.ContextMenu>
 
-      <DataGrid.Columns>
-        <DataGridTextColumn Header="Process" Binding="{Binding ProcessName}" Width="150" />
-        <DataGridTextColumn Header="Services" Binding="{Binding Services}" Width="100" />
-        <DataGridTextColumn Header="Protocol" Binding="{Binding Protocol}" Width="60" />
-        <DataGridTextColumn Header="Local Port" Binding="{Binding LocalPort}" Width="70" />
-        <DataGridTextColumn Header="Local Address" Binding="{Binding LocalAddress}" Width="120" />
-        <DataGridTextColumn Header="Remote Port" Binding="{Binding RemotePort}" Width="70" />
-        <DataGridTextColumn Header="Remote Address" Binding="{Binding RemoteAddress}" Width="120" />
-        <DataGridTextColumn Header="State" Binding="{Binding State}" Width="80" />
-        <DataGridTextColumn Header="Direction" Binding="{Binding Direction}" Width="70" />
-        <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}" Width="140" />
-      </DataGrid.Columns>
-    </DataGrid>
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Process" Binding="{Binding ProcessName}" Width="150" />
+          <DataGridTextColumn Header="Services" Binding="{Binding Services}" Width="100" />
+          <DataGridTextColumn Header="Protocol" Binding="{Binding Protocol}" Width="60" />
+          <DataGridTextColumn Header="Local Port" Binding="{Binding LocalPort}" Width="70" />
+          <DataGridTextColumn Header="Local Address" Binding="{Binding LocalAddress}" Width="120" />
+          <DataGridTextColumn Header="Remote Port" Binding="{Binding RemotePort}" Width="70" />
+          <DataGridTextColumn Header="Remote Address" Binding="{Binding RemoteAddress}" Width="120" />
+          <DataGridTextColumn Header="State" Binding="{Binding State}" Width="80" />
+          <DataGridTextColumn Header="Direction" Binding="{Binding Direction}" Width="70" />
+          <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}" Width="140" />
+        </DataGrid.Columns>
+      </DataGrid>
+    </Border>
 
   </Grid>
 </Window>
