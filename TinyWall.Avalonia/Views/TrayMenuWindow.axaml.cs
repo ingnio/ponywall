@@ -59,12 +59,12 @@ namespace pylorak.TinyWall.Views
             // Traffic rate
             TxtTrafficRate.Text = trafficRateText;
 
-            // Mode radio indicators
-            IndModeNormal.Text = mode == FirewallMode.Normal ? "\u25CF" : "\u25CB";
-            IndModeBlockAll.Text = mode == FirewallMode.BlockAll ? "\u25CF" : "\u25CB";
-            IndModeAllowOutgoing.Text = mode == FirewallMode.AllowOutgoing ? "\u25CF" : "\u25CB";
-            IndModeDisabled.Text = mode == FirewallMode.Disabled ? "\u25CF" : "\u25CB";
-            IndModeAutolearn.Text = mode == FirewallMode.Learning ? "\u25CF" : "\u25CB";
+            // Mode radio indicators (Segoe Fluent Icons: E73E = checkmark, empty = unselected)
+            IndModeNormal.Text = mode == FirewallMode.Normal ? "\uE73E" : " ";
+            IndModeBlockAll.Text = mode == FirewallMode.BlockAll ? "\uE73E" : " ";
+            IndModeAllowOutgoing.Text = mode == FirewallMode.AllowOutgoing ? "\uE73E" : " ";
+            IndModeDisabled.Text = mode == FirewallMode.Disabled ? "\uE73E" : " ";
+            IndModeAutolearn.Text = mode == FirewallMode.Learning ? "\uE73E" : " ";
 
             // Mode labels from resources
             TxtModeNormal.Text = pylorak.TinyWall.Resources.Messages.FirewallModeNormal;
@@ -73,18 +73,21 @@ namespace pylorak.TinyWall.Views
             TxtModeDisabled.Text = pylorak.TinyWall.Resources.Messages.FirewallModeDisabled;
             TxtModeAutolearn.Text = pylorak.TinyWall.Resources.Messages.FirewallModeLearn;
 
-            // Checkbox indicators
-            IndLocalSubnet.Text = localSubnetAllowed ? "\u2611" : "\u2610";
-            IndHostsBlocklist.Text = hostsBlocklistEnabled ? "\u2611" : "\u2610";
+            // Checkbox indicators (Segoe Fluent Icons: E73E = checkmark)
+            IndLocalSubnet.Text = localSubnetAllowed ? "\uE73E" : " ";
+            IndHostsBlocklist.Text = hostsBlocklistEnabled ? "\uE73E" : " ";
 
-            // Lock text and icon
+            // Lock text and icon (Segoe Fluent Icons: E72E = lock, E785 = unlock)
             TxtLock.Text = isLocked ? pylorak.TinyWall.Resources.Messages.Unlock : pylorak.TinyWall.Resources.Messages.Lock;
-            TxtLockIcon.Text = isLocked ? "\U0001F512" : "\U0001F513";
+            TxtLockIcon.Text = isLocked ? "\uE72E" : "\uE785";
 
             // Theme radio indicators
-            IndThemeSystem.Text = currentTheme == ThemeVariant.Default ? "\u25CF" : "\u25CB";
-            IndThemeLight.Text = currentTheme == ThemeVariant.Light ? "\u25CF" : "\u25CB";
-            IndThemeDark.Text = currentTheme == ThemeVariant.Dark ? "\u25CF" : "\u25CB";
+            IndThemeSystem.Text = currentTheme == ThemeVariant.Default ? "\uE73E" : " ";
+            IndThemeLight.Text = currentTheme == ThemeVariant.Light ? "\uE73E" : " ";
+            IndThemeDark.Text = currentTheme == ThemeVariant.Dark ? "\uE73E" : " ";
+
+            // Set background to match Win11 context menu
+            UpdateMenuBackground();
         }
 
         /// <summary>
@@ -94,11 +97,11 @@ namespace pylorak.TinyWall.Views
         {
             // Collapse all submenus initially
             PnlModeItems.IsVisible = false;
-            TxtModeArrow.Text = "\u25B8";
+            TxtModeArrow.Text = "\uE76C";
             PnlWhitelistItems.IsVisible = false;
-            TxtWhitelistArrow.Text = "\u25B8";
+            TxtWhitelistArrow.Text = "\uE76C";
             PnlThemeItems.IsVisible = false;
-            TxtThemeArrow.Text = "\u25B8";
+            TxtThemeArrow.Text = "\uE76C";
 
             // Position will be adjusted after the window is measured
             Position = cursorPosition;
@@ -141,6 +144,16 @@ namespace pylorak.TinyWall.Views
             Position = new PixelPoint(x, y);
         }
 
+        private void UpdateMenuBackground()
+        {
+            // Match Win11 Explorer context menu colors
+            var isDark = ActualThemeVariant == ThemeVariant.Dark;
+            MenuBorder.Background = new Avalonia.Media.SolidColorBrush(
+                isDark ? Avalonia.Media.Color.Parse("#2D2D2D") : Avalonia.Media.Color.Parse("#F9F9F9"));
+            MenuBorder.BorderBrush = new Avalonia.Media.SolidColorBrush(
+                isDark ? Avalonia.Media.Color.Parse("#454545") : Avalonia.Media.Color.Parse("#E0E0E0"));
+        }
+
         private void OnWindowDeactivated(object? sender, EventArgs e)
         {
             Close();
@@ -151,19 +164,19 @@ namespace pylorak.TinyWall.Views
         private void OnModeExpandClick(object? sender, RoutedEventArgs e)
         {
             PnlModeItems.IsVisible = !PnlModeItems.IsVisible;
-            TxtModeArrow.Text = PnlModeItems.IsVisible ? "\u25BE" : "\u25B8";
+            TxtModeArrow.Text = PnlModeItems.IsVisible ? "\uE70D" : "\uE76C";
         }
 
         private void OnWhitelistExpandClick(object? sender, RoutedEventArgs e)
         {
             PnlWhitelistItems.IsVisible = !PnlWhitelistItems.IsVisible;
-            TxtWhitelistArrow.Text = PnlWhitelistItems.IsVisible ? "\u25BE" : "\u25B8";
+            TxtWhitelistArrow.Text = PnlWhitelistItems.IsVisible ? "\uE70D" : "\uE76C";
         }
 
         private void OnThemeExpandClick(object? sender, RoutedEventArgs e)
         {
             PnlThemeItems.IsVisible = !PnlThemeItems.IsVisible;
-            TxtThemeArrow.Text = PnlThemeItems.IsVisible ? "\u25BE" : "\u25B8";
+            TxtThemeArrow.Text = PnlThemeItems.IsVisible ? "\uE70D" : "\uE76C";
         }
 
         // ---------- Mode clicks ----------

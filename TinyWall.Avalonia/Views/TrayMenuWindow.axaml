@@ -67,13 +67,7 @@
       <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
     </Style>
 
-    <!-- Indicator text (checkmark/radio) -->
-    <Style Selector="TextBlock.indicator">
-      <Setter Property="Width" Value="16" />
-      <Setter Property="FontSize" Value="12" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="TextAlignment" Value="Center" />
-    </Style>
+    <!-- (indicator style defined above with Segoe Fluent Icons) -->
 
     <!-- Submenu child items: indented -->
     <Style Selector="Button.submenuItem">
@@ -93,33 +87,39 @@
       <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}" />
     </Style>
 
-    <!-- Expand arrow -->
+    <!-- Expand arrow (Segoe Fluent Icons) -->
     <Style Selector="TextBlock.expandArrow">
-      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontFamily" Value="Segoe Fluent Icons" />
+      <Setter Property="FontSize" Value="12" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
     </Style>
 
-    <!-- Menu icon -->
+    <!-- Menu icon (Segoe Fluent Icons) -->
     <Style Selector="TextBlock.menuIcon">
+      <Setter Property="FontFamily" Value="Segoe Fluent Icons" />
       <Setter Property="Width" Value="20" />
-      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontSize" Value="15" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="TextAlignment" Value="Center" />
+    </Style>
+
+    <!-- Indicator (Segoe Fluent Icons) -->
+    <Style Selector="TextBlock.indicator">
+      <Setter Property="FontFamily" Value="Segoe Fluent Icons" />
+      <Setter Property="Width" Value="20" />
+      <Setter Property="FontSize" Value="12" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="TextAlignment" Value="Center" />
     </Style>
   </Window.Styles>
 
-  <Border CornerRadius="8"
+  <Border x:Name="MenuBorder"
+          CornerRadius="8"
           BorderThickness="1"
           Padding="4,6"
           BoxShadow="0 4 16 0 #30000000"
           ClipToBounds="True">
-    <Border.Background>
-      <SolidColorBrush Color="{DynamicResource SystemAltHighColor}" Opacity="0.96" />
-    </Border.Background>
-    <Border.BorderBrush>
-      <SolidColorBrush Color="{DynamicResource SystemBaseLowColor}" Opacity="0.5" />
-    </Border.BorderBrush>
     <StackPanel>
 
       <!-- Traffic Rate (info row) -->
@@ -132,9 +132,9 @@
       <!-- Change Mode (expandable) -->
       <Button Classes="submenuHeader" x:Name="BtnModeExpand" Click="OnModeExpandClick">
         <DockPanel>
-          <TextBlock x:Name="TxtModeArrow" Classes="expandArrow" DockPanel.Dock="Right" Text="&#x25B8;" Margin="8,0,0,0" />
+          <TextBlock x:Name="TxtModeArrow" Classes="expandArrow" DockPanel.Dock="Right" Text="&#xE76C;" Margin="8,0,0,0" />
           <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock Classes="menuIcon" Text="🛡️" />
+            <TextBlock Classes="menuIcon" Text="&#xE72E;" />
             <TextBlock Text="Change mode" />
           </StackPanel>
         </DockPanel>
@@ -177,7 +177,7 @@
       <!-- Manage -->
       <Button Classes="menuItem" x:Name="BtnManage" Click="OnManageClick">
         <StackPanel Orientation="Horizontal" Spacing="10">
-          <TextBlock Classes="menuIcon" Text="🔧" />
+          <TextBlock Classes="menuIcon" Text="&#xE713;" />
           <TextBlock Text="Manage" />
         </StackPanel>
       </Button>
@@ -185,7 +185,7 @@
       <!-- Connections -->
       <Button Classes="menuItem" x:Name="BtnConnections" Click="OnConnectionsClick">
         <StackPanel Orientation="Horizontal" Spacing="10">
-          <TextBlock Classes="menuIcon" Text="🌐" />
+          <TextBlock Classes="menuIcon" Text="&#xE774;" />
           <TextBlock Text="Connections..." />
         </StackPanel>
       </Button>
@@ -195,9 +195,9 @@
       <!-- Whitelist by (expandable) -->
       <Button Classes="submenuHeader" x:Name="BtnWhitelistExpand" Click="OnWhitelistExpandClick">
         <DockPanel>
-          <TextBlock x:Name="TxtWhitelistArrow" Classes="expandArrow" DockPanel.Dock="Right" Text="&#x25B8;" Margin="8,0,0,0" />
+          <TextBlock x:Name="TxtWhitelistArrow" Classes="expandArrow" DockPanel.Dock="Right" Text="&#xE76C;" Margin="8,0,0,0" />
           <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock Classes="menuIcon" Text="✅" />
+            <TextBlock Classes="menuIcon" Text="&#xE73E;" />
             <TextBlock Text="Whitelist by" />
           </StackPanel>
         </DockPanel>
@@ -237,7 +237,7 @@
       <!-- Lock / Unlock -->
       <Button Classes="menuItem" x:Name="BtnLock" Click="OnLockClick">
         <StackPanel Orientation="Horizontal" Spacing="10">
-          <TextBlock x:Name="TxtLockIcon" Classes="menuIcon" Text="🔓" />
+          <TextBlock x:Name="TxtLockIcon" Classes="menuIcon" Text="&#xE785;" />
           <TextBlock x:Name="TxtLock" Text="Lock" />
         </StackPanel>
       </Button>
@@ -247,9 +247,9 @@
       <!-- Theme (expandable) -->
       <Button Classes="submenuHeader" x:Name="BtnThemeExpand" Click="OnThemeExpandClick">
         <DockPanel>
-          <TextBlock x:Name="TxtThemeArrow" Classes="expandArrow" DockPanel.Dock="Right" Text="&#x25B8;" Margin="8,0,0,0" />
+          <TextBlock x:Name="TxtThemeArrow" Classes="expandArrow" DockPanel.Dock="Right" Text="&#xE76C;" Margin="8,0,0,0" />
           <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock Classes="menuIcon" Text="🎨" />
+            <TextBlock Classes="menuIcon" Text="&#xE790;" />
             <TextBlock Text="Theme" />
           </StackPanel>
         </DockPanel>
@@ -280,7 +280,7 @@
       <!-- Quit -->
       <Button Classes="menuItem" x:Name="BtnQuit" Click="OnQuitClick">
         <StackPanel Orientation="Horizontal" Spacing="10">
-          <TextBlock Classes="menuIcon" Text="❌" />
+          <TextBlock Classes="menuIcon" Text="&#xE711;" />
           <TextBlock Text="Quit" />
         </StackPanel>
       </Button>
