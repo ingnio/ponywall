@@ -119,6 +119,7 @@
     <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+    <Setter Property="GridLinesVisibility" Value="None" />
   </Style>
 
   <Style Selector="DataGridColumnHeader">
@@ -131,9 +132,13 @@
     <Setter Property="Padding" Value="12,6" />
   </Style>
 
-  <!-- Alternating row colors -->
+  <!-- Subtle alternating row colors — very low opacity for gentle striping -->
   <Style Selector="DataGridRow:nth-child(even)">
-    <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListLowBrush}" />
+    <Setter Property="Background">
+      <Setter.Value>
+        <SolidColorBrush Color="#808080" Opacity="0.04" />
+      </Setter.Value>
+    </Setter>
   </Style>
 
   <!-- ===== CheckBox / RadioButton Spacing ===== -->

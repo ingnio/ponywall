@@ -19,7 +19,6 @@
                 IsReadOnly="True"
                 CanUserSortColumns="True"
                 CanUserResizeColumns="True"
-                GridLinesVisibility="Horizontal"
                 HeadersVisibility="Column"
                 BorderThickness="0">
         <DataGrid.Columns>

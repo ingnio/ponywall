@@ -149,7 +149,6 @@
                       CanUserReorderColumns="False"
                       CanUserSortColumns="True"
                       SelectionMode="Extended"
-                      GridLinesVisibility="Horizontal"
                       BorderThickness="0">
               <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
