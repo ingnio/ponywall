@@ -47,7 +47,41 @@
          paths. Most of the savings come from trimming the BCL. -->
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>partial</TrimMode>
+    <!-- Toast notifications need built-in COM interop. Single-file
+         publish defaults this to false; force it back on. -->
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
   </PropertyGroup>
+
+  <!-- Trimmer roots: assemblies that must be kept whole because they
+       use reflection / COM activators / runtime dynamic loading that
+       the trimmer can't statically analyze. -->
+  <ItemGroup Condition="'$(_IsPublishing)'=='true'">
+    <!-- Toast notifications use a COM activator registered via reflection -->
+    <TrimmerRootAssembly Include="Microsoft.Toolkit.Uwp.Notifications" />
+    <!-- TinyWall.Core has COM references and JSON source-gen that the
+         trimmer doesn't fully understand. Force-keep it whole to prevent
+         settings load and pipe-message handling from breaking. -->
+    <TrimmerRootAssembly Include="TinyWall.Core" />
+    <!-- pylorak.* libraries use P/Invoke and COM types the trimmer can't trace. -->
+    <TrimmerRootAssembly Include="pylorak.Utilities" />
+    <TrimmerRootAssembly Include="pylorak.Windows" />
+    <TrimmerRootAssembly Include="pylorak.Windows.Services" />
+    <TrimmerRootAssembly Include="pylorak.Windows.WFP" />
+    <!-- Avalonia: root every assembly. Trim annotations in Avalonia 11.2
+         aren't complete — especially the Win32 platform backend (tray
+         NativeMenu), XAML loader, and DataGrid column binding. Rooting
+         fixes a BEX64 fast-fail 0xc0000409 crash on context menu open. -->
+    <TrimmerRootAssembly Include="Avalonia" />
+    <TrimmerRootAssembly Include="Avalonia.Base" />
+    <TrimmerRootAssembly Include="Avalonia.Controls" />
+    <TrimmerRootAssembly Include="Avalonia.Controls.DataGrid" />
+    <TrimmerRootAssembly Include="Avalonia.Desktop" />
+    <TrimmerRootAssembly Include="Avalonia.Markup.Xaml" />
+    <TrimmerRootAssembly Include="Avalonia.Themes.Fluent" />
+    <TrimmerRootAssembly Include="Avalonia.Win32" />
+    <!-- Service controller is used for service install/start -->
+    <TrimmerRootAssembly Include="System.ServiceProcess.ServiceController" />
+  </ItemGroup>
   <PropertyGroup>
     <Product>TinyWall</Product>
     <AssemblyTitle>TinyWall Avalonia</AssemblyTitle>

@@ -23,6 +23,7 @@ namespace pylorak.TinyWall.Views
         public event Action<FirewallMode>? ModeChangeRequested;
         public event Action? ManageRequested;
         public event Action? ConnectionsRequested;
+        public event Action? LogsRequested;
         public event Action? WhitelistExeRequested;
         public event Action? WhitelistProcessRequested;
         public event Action? WhitelistWindowRequested;
@@ -222,6 +223,12 @@ namespace pylorak.TinyWall.Views
         private void OnConnectionsClick(object? sender, RoutedEventArgs e)
         {
             ConnectionsRequested?.Invoke();
+            Close();
+        }
+
+        private void OnLogsClick(object? sender, RoutedEventArgs e)
+        {
+            LogsRequested?.Invoke();
             Close();
         }
 

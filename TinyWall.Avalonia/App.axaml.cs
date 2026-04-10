@@ -184,13 +184,17 @@ namespace pylorak.TinyWall
             menu.Items.Add(new NativeMenuItem("Change mode") { Menu = modeMenu });
             menu.Items.Add(new NativeMenuItemSeparator());
 
-            var mnuManage = new NativeMenuItem("Manage");
+            var mnuManage = new NativeMenuItem("Settings");
             mnuManage.Click += async (_, _) => await OpenManageAsync();
             menu.Items.Add(mnuManage);
 
             var mnuConn = new NativeMenuItem("Connections...");
             mnuConn.Click += (_, _) => OpenConnections();
             menu.Items.Add(mnuConn);
+
+            var mnuLogs = new NativeMenuItem("Open logs folder");
+            mnuLogs.Click += (_, _) => OpenLogsFolder();
+            menu.Items.Add(mnuLogs);
             menu.Items.Add(new NativeMenuItemSeparator());
 
             var mnuLock = new NativeMenuItem(_viewModel?.IsLocked == true
@@ -230,6 +234,7 @@ namespace pylorak.TinyWall
             menuWindow.ModeChangeRequested += mode => _viewModel.SetModeCommand.Execute(mode);
             menuWindow.ManageRequested += async () => await OpenManageAsync();
             menuWindow.ConnectionsRequested += () => OpenConnections();
+            menuWindow.LogsRequested += () => OpenLogsFolder();
             menuWindow.WhitelistExeRequested += async () => await WhitelistByExecutableAsync();
             menuWindow.WhitelistProcessRequested += async () => await WhitelistByProcessAsync();
             menuWindow.WhitelistWindowRequested += () => ToggleWhitelistByWindow();
@@ -302,6 +307,28 @@ namespace pylorak.TinyWall
         {
             if (_controller == null) return;
             ConnectionsWindow.ShowConnections(_controller);
+        }
+
+        private void OpenLogsFolder()
+        {
+            try
+            {
+                string logDir = System.IO.Path.Combine(Utils.AppDataPath, "logs");
+                if (!System.IO.Directory.Exists(logDir))
+                    System.IO.Directory.CreateDirectory(logDir);
+
+                // Open the logs folder in Explorer
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = logDir,
+                    UseShellExecute = true
+                })?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_GUI);
+                NotificationService.Notify($"Could not open logs folder: {ex.Message}", NotificationLevel.Error);
+            }
         }
 
         private async Task WhitelistByExecutableAsync()

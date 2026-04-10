@@ -38,7 +38,22 @@
     <UseSystemResourceKeys>true</UseSystemResourceKeys>
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>partial</TrimMode>
+    <!-- WMI / TaskScheduler COM interop required by the firewall service -->
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
   </PropertyGroup>
+
+  <!-- Trimmer roots: the service uses reflection / COM / P/Invoke that
+       the trimmer can't statically trace. Force-keep all the in-tree
+       libraries plus System.Management. -->
+  <ItemGroup Condition="'$(_IsPublishing)'=='true'">
+    <TrimmerRootAssembly Include="System.Management" />
+    <TrimmerRootAssembly Include="System.ServiceProcess.ServiceController" />
+    <TrimmerRootAssembly Include="TinyWall.Core" />
+    <TrimmerRootAssembly Include="pylorak.Utilities" />
+    <TrimmerRootAssembly Include="pylorak.Windows" />
+    <TrimmerRootAssembly Include="pylorak.Windows.Services" />
+    <TrimmerRootAssembly Include="pylorak.Windows.WFP" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TinyWall.Core\TinyWall.Core.csproj" />
     <ProjectReference Include="..\pylorak.Utilities\pylorak.Utilities.csproj" />
