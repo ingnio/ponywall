@@ -19,6 +19,8 @@ namespace pylorak.TinyWall
         private DispatcherTimer? _pollTimer;
         private TrayViewModel? _viewModel;
         private readonly pylorak.Windows.TrafficRateMonitor _trafficMonitor = new();
+        private readonly pylorak.Windows.MouseInterceptor _mouseInterceptor = new();
+        private bool _whitelistByWindowActive;
 
         // Menu items that need dynamic updates
         private NativeMenuItem? _mnuTrafficRate;
@@ -61,6 +63,7 @@ namespace pylorak.TinyWall
                 _viewModel.QuitRequested += (_, _) =>
                 {
                     _pollTimer?.Stop();
+                    _mouseInterceptor.Dispose();
                     _trafficMonitor.Dispose();
                     NotificationService.Cleanup();
                     desktop.Shutdown();
@@ -141,7 +144,7 @@ namespace pylorak.TinyWall
             whitelistMenu.Items.Add(mnuWhitelistProc);
 
             var mnuWhitelistWin = new NativeMenuItem("Window...");
-            mnuWhitelistWin.Click += (_, _) => NotificationService.Notify("Whitelist by window is not yet available in the Avalonia UI.", NotificationLevel.Warning);
+            mnuWhitelistWin.Click += (_, _) => ToggleWhitelistByWindow();
             whitelistMenu.Items.Add(mnuWhitelistWin);
 
             var mnuWhitelist = new NativeMenuItem("Whitelist by") { Menu = whitelistMenu };
@@ -336,6 +339,105 @@ namespace pylorak.TinyWall
                 Utils.LogException(ex, Utils.LOG_ID_GUI);
                 NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
             }
+        }
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern IntPtr WindowFromPoint(System.Drawing.Point pt);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
+        private static extern int GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        private static uint GetPidUnderCursor(int x, int y)
+        {
+            _ = GetWindowThreadProcessId(WindowFromPoint(new System.Drawing.Point(x, y)), out uint procId);
+            return procId;
+        }
+
+        private void ToggleWhitelistByWindow()
+        {
+            if (!_whitelistByWindowActive)
+            {
+                _mouseInterceptor.MouseLButtonDown += OnWhitelistWindowClick;
+                _mouseInterceptor.Start();
+                _whitelistByWindowActive = true;
+                NotificationService.Notify(pylorak.TinyWall.Resources.Messages.ClickOnAWindowWhitelisting);
+            }
+            else
+            {
+                _mouseInterceptor.Stop();
+                _mouseInterceptor.MouseLButtonDown -= OnWhitelistWindowClick;
+                _whitelistByWindowActive = false;
+                NotificationService.Notify(pylorak.TinyWall.Resources.Messages.WhitelistingCancelled);
+            }
+        }
+
+        private void OnWhitelistWindowClick(int x, int y)
+        {
+            // Run on a threadpool thread that marshals back to UI, so the hook
+            // callback returns before we unhook (same pattern as WinForms version)
+            System.Threading.ThreadPool.QueueUserWorkItem(_ =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    try
+                    {
+                        _mouseInterceptor.Stop();
+                        _mouseInterceptor.MouseLButtonDown -= OnWhitelistWindowClick;
+                        _whitelistByWindowActive = false;
+
+                        var pid = GetPidUnderCursor(x, y);
+                        if (_controller == null) return;
+
+                        var exePath = Utils.GetPathOfProcessUseTwService(pid, _controller);
+                        var packageList = new UwpPackageList();
+                        var appContainer = packageList.FindPackageForProcess(pid);
+
+                        ExceptionSubject subj;
+                        if (appContainer.HasValue)
+                        {
+                            subj = new AppContainerSubject(appContainer.Value.Sid, appContainer.Value.Name, appContainer.Value.Publisher, appContainer.Value.PublisherId);
+                        }
+                        else if (string.IsNullOrEmpty(exePath))
+                        {
+                            NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CannotGetExecutablePathWhitelisting, NotificationLevel.Error);
+                            return;
+                        }
+                        else
+                        {
+                            subj = new ExecutableSubject(exePath);
+                        }
+
+                        DatabaseClasses.Application? _dummyApp;
+                        var exceptions = ServiceGlobals.AppDatabase?.GetExceptionsForApp(subj, false, out _dummyApp)
+                            ?? new System.Collections.Generic.List<FirewallExceptionV3> { new FirewallExceptionV3(subj, new TcpUdpPolicy(true)) };
+                        if (exceptions.Count == 0)
+                            exceptions.Add(new FirewallExceptionV3(subj, new TcpUdpPolicy(true)));
+
+                        Guid changeset = Guid.Empty;
+                        ServerState? _dummyState;
+                        _controller.GetServerConfig(out var config, out _dummyState, ref changeset);
+                        if (config != null)
+                        {
+                            config.ActiveProfile.AddExceptions(exceptions);
+                            var resp = _controller.SetServerConfig(config, changeset);
+                            if (resp.Type == MessageType.PUT_SETTINGS)
+                            {
+                                var putResp = (TwMessagePutSettings)resp;
+                                _clientChangeset = putResp.Changeset;
+                                NotificationService.Notify(
+                                    string.Format(System.Globalization.CultureInfo.CurrentCulture,
+                                        pylorak.TinyWall.Resources.Messages.FirewallRulesForUnrecognizedChanged,
+                                        exceptions[0].Subject.ToString()));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Utils.LogException(ex, Utils.LOG_ID_GUI);
+                        NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CannotGetExecutablePathWhitelisting, NotificationLevel.Error);
+                    }
+                });
+            });
         }
 
         private async Task WhitelistByProcessAsync()
