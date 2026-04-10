@@ -78,27 +78,27 @@ namespace pylorak.TinyWall
 
             // Mode submenu
             var modeMenu = new NativeMenu();
-            _mnuModeNormal = new NativeMenuItem("Normal");
+            _mnuModeNormal = new NativeMenuItem(pylorak.TinyWall.Resources.Messages.FirewallModeNormal);
             _mnuModeNormal.Click += (_, _) => _viewModel?.SetModeCommand.Execute(FirewallMode.Normal);
             modeMenu.Items.Add(_mnuModeNormal);
 
-            _mnuModeBlockAll = new NativeMenuItem("Block All");
+            _mnuModeBlockAll = new NativeMenuItem(pylorak.TinyWall.Resources.Messages.FirewallModeBlockAll);
             _mnuModeBlockAll.Click += (_, _) => _viewModel?.SetModeCommand.Execute(FirewallMode.BlockAll);
             modeMenu.Items.Add(_mnuModeBlockAll);
 
-            _mnuModeAllowOutgoing = new NativeMenuItem("Allow Outgoing");
+            _mnuModeAllowOutgoing = new NativeMenuItem(pylorak.TinyWall.Resources.Messages.FirewallModeAllowOut);
             _mnuModeAllowOutgoing.Click += (_, _) => _viewModel?.SetModeCommand.Execute(FirewallMode.AllowOutgoing);
             modeMenu.Items.Add(_mnuModeAllowOutgoing);
 
-            _mnuModeDisabled = new NativeMenuItem("Disabled");
+            _mnuModeDisabled = new NativeMenuItem(pylorak.TinyWall.Resources.Messages.FirewallModeDisabled);
             _mnuModeDisabled.Click += (_, _) => _viewModel?.SetModeCommand.Execute(FirewallMode.Disabled);
             modeMenu.Items.Add(_mnuModeDisabled);
 
-            _mnuModeLearn = new NativeMenuItem("Autolearn");
+            _mnuModeLearn = new NativeMenuItem(pylorak.TinyWall.Resources.Messages.FirewallModeLearn);
             _mnuModeLearn.Click += (_, _) => _viewModel?.SetModeCommand.Execute(FirewallMode.Learning);
             modeMenu.Items.Add(_mnuModeLearn);
 
-            var mnuMode = new NativeMenuItem("Firewall mode") { Menu = modeMenu };
+            var mnuMode = new NativeMenuItem("Change mode") { Menu = modeMenu };
             menu.Items.Add(mnuMode);
             menu.Items.Add(new NativeMenuItemSeparator());
 
@@ -143,7 +143,7 @@ namespace pylorak.TinyWall
             menu.Items.Add(new NativeMenuItemSeparator());
 
             // Lock
-            _mnuLock = new NativeMenuItem("Lock");
+            _mnuLock = new NativeMenuItem(pylorak.TinyWall.Resources.Messages.Lock);
             _mnuLock.Click += (_, _) => _viewModel?.ToggleLockCommand.Execute(null);
             menu.Items.Add(_mnuLock);
             menu.Items.Add(new NativeMenuItemSeparator());
@@ -263,7 +263,7 @@ namespace pylorak.TinyWall
 
             if (_mnuLock != null)
             {
-                _mnuLock.Header = _viewModel.IsLocked ? "Unlock" : "Lock";
+                _mnuLock.Header = _viewModel.IsLocked ? pylorak.TinyWall.Resources.Messages.Unlock : pylorak.TinyWall.Resources.Messages.Lock;
             }
         }
 
@@ -273,12 +273,12 @@ namespace pylorak.TinyWall
 
             string modeText = _viewModel.CurrentMode switch
             {
-                FirewallMode.Normal => "Normal",
-                FirewallMode.BlockAll => "Block All Traffic",
-                FirewallMode.AllowOutgoing => "Allow Outgoing",
-                FirewallMode.Disabled => "Firewall Disabled",
-                FirewallMode.Learning => "Autolearn",
-                _ => "Unknown"
+                FirewallMode.Normal => pylorak.TinyWall.Resources.Messages.FirewallModeNormal,
+                FirewallMode.BlockAll => pylorak.TinyWall.Resources.Messages.FirewallModeBlockAll,
+                FirewallMode.AllowOutgoing => pylorak.TinyWall.Resources.Messages.FirewallModeAllowOut,
+                FirewallMode.Disabled => pylorak.TinyWall.Resources.Messages.FirewallModeDisabled,
+                FirewallMode.Learning => pylorak.TinyWall.Resources.Messages.FirewallModeLearn,
+                _ => pylorak.TinyWall.Resources.Messages.FirewallModeUnknown
             };
 
             _trayIcon.ToolTipText = $"TinyWall - {modeText}";
