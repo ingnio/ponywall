@@ -11,15 +11,21 @@
 
   <Grid Margin="8" RowDefinitions="Auto,8,*">
 
-    <!-- Top bar: filter checkboxes + refresh -->
-    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="16">
-      <CheckBox Name="chkShowActive" Content="Show Active Connections" IsChecked="True"
-                IsCheckedChanged="ChkFilter_Changed" />
-      <CheckBox Name="chkShowListen" Content="Show Open Ports" IsChecked="True"
-                IsCheckedChanged="ChkFilter_Changed" />
-      <CheckBox Name="chkShowBlocked" Content="Show Blocked" IsChecked="True"
-                IsCheckedChanged="ChkFilter_Changed" />
-      <Button Name="btnRefresh" Content="Refresh" Click="BtnRefresh_Click" />
+    <!-- Top bar: filter checkboxes + refresh + auto-refresh + text filter -->
+    <StackPanel Grid.Row="0" Spacing="6">
+      <StackPanel Orientation="Horizontal" Spacing="16">
+        <CheckBox Name="chkShowActive" Content="Show Active Connections" IsChecked="True"
+                  IsCheckedChanged="ChkFilter_Changed" />
+        <CheckBox Name="chkShowListen" Content="Show Open Ports" IsChecked="True"
+                  IsCheckedChanged="ChkFilter_Changed" />
+        <CheckBox Name="chkShowBlocked" Content="Show Blocked" IsChecked="True"
+                  IsCheckedChanged="ChkFilter_Changed" />
+        <Button Name="btnRefresh" Content="Refresh" Click="BtnRefresh_Click" />
+        <CheckBox Name="chkAutoRefresh" Content="Auto-refresh" IsChecked="True"
+                  IsCheckedChanged="ChkAutoRefresh_Changed" />
+      </StackPanel>
+      <TextBox Name="txtFilter" Watermark="Filter by process name, address, port..."
+               TextChanged="TxtFilter_TextChanged" />
     </StackPanel>
 
     <!-- DataGrid -->

@@ -9,6 +9,7 @@ using System.Net.NetworkInformation;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using pylorak.TinyWall.ViewModels;
 using pylorak.Windows;
 using pylorak.Windows.NetStat;
@@ -19,7 +20,10 @@ namespace pylorak.TinyWall.Views
     {
         private readonly Controller _controller;
         private bool _enableListUpdate;
+        private readonly ObservableCollection<ConnectionRowViewModel> _allConnections = new();
         private readonly ObservableCollection<ConnectionRowViewModel> _connections = new();
+        private DispatcherTimer? _autoRefreshTimer;
+        private string _filterText = string.Empty;
 
         internal ConnectionsWindow(Controller controller)
         {
@@ -33,6 +37,57 @@ namespace pylorak.TinyWall.Views
             base.OnOpened(e);
             _enableListUpdate = true;
             UpdateList();
+
+            _autoRefreshTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
+            _autoRefreshTimer.Tick += (_, _) =>
+            {
+                if (chkAutoRefresh.IsChecked == true)
+                    UpdateList();
+            };
+            _autoRefreshTimer.Start();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            _autoRefreshTimer?.Stop();
+            base.OnClosed(e);
+        }
+
+        private void ChkAutoRefresh_Changed(object? sender, RoutedEventArgs e) { }
+
+        private void TxtFilter_TextChanged(object? sender, TextChangedEventArgs e)
+        {
+            _filterText = (txtFilter.Text ?? string.Empty).Trim();
+            ApplyFilter();
+        }
+
+        private void ApplyFilter()
+        {
+            _connections.Clear();
+            if (string.IsNullOrEmpty(_filterText))
+            {
+                foreach (var item in _allConnections)
+                    _connections.Add(item);
+            }
+            else
+            {
+                var filter = _filterText.ToUpperInvariant();
+                foreach (var item in _allConnections)
+                {
+                    if ((item.ProcessName?.ToUpperInvariant().Contains(filter) == true)
+                        || (item.LocalAddress?.ToUpperInvariant().Contains(filter) == true)
+                        || (item.RemoteAddress?.ToUpperInvariant().Contains(filter) == true)
+                        || (item.LocalPort?.Contains(filter) == true)
+                        || (item.RemotePort?.Contains(filter) == true)
+                        || (item.Protocol?.ToUpperInvariant().Contains(filter) == true)
+                        || (item.State?.ToUpperInvariant().Contains(filter) == true)
+                        || (item.Services?.ToUpperInvariant().Contains(filter) == true)
+                        || (item.Path?.ToUpperInvariant().Contains(filter) == true))
+                    {
+                        _connections.Add(item);
+                    }
+                }
+            }
         }
 
         private static string GetPathFromPidCached(Dictionary<uint, string> cache, uint pid, Controller controller)
@@ -197,9 +252,11 @@ namespace pylorak.TinyWall.Views
                 }
             }
 
-            _connections.Clear();
+            _allConnections.Clear();
             foreach (var row in rows)
-                _connections.Add(row);
+                _allConnections.Add(row);
+
+            ApplyFilter();
         }
 
         private static void AddRow(List<ConnectionRowViewModel> rows, ProcessInfo pi, string protocol, IPEndPoint localEP, IPEndPoint remoteEP, string state, DateTime ts, RuleDirection dir)
