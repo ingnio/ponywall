@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading;
@@ -27,7 +28,42 @@ namespace pylorak.TinyWall.History
 
         /// <summary>Runs the hot to warm migration and retention cleanup. Called on a timer.</summary>
         void RunMaintenance();
+
+        /// <summary>Fetches a single event by its row id from events_hot. Returns null if not found.</summary>
+        FirewallEventRecord? GetEventById(long id);
+
+        /// <summary>
+        /// Returns up to <paramref name="limit"/> events from events_hot
+        /// whose reason_id is still Unknown. Used by the backfill job.
+        /// </summary>
+        IReadOnlyList<FirewallEventRecord> GetUnexplainedBatch(int limit);
+
+        /// <summary>
+        /// Updates the reason_id, confidence and matched_rule_id of an
+        /// events_hot row. Single-row update. For batched updates from
+        /// the backfill job, use <see cref="UpdateReasons"/>.
+        /// </summary>
+        void UpdateReason(long eventId, ReasonId reason, Confidence confidence, string? matchedRuleId, string? nearMissRuleIds);
+
+        /// <summary>
+        /// Applies many reason updates inside a single transaction.
+        /// Returns the number of rows actually updated.
+        /// </summary>
+        int UpdateReasons(IReadOnlyList<ReasonUpdate> updates);
+
+        /// <summary>Loads a stored ruleset snapshot by id. Returns null if no such row.</summary>
+        RulesetSnapshot? GetRulesetSnapshot(long id);
     }
+
+    /// <summary>
+    /// Batched reason update payload used by <see cref="IFirewallEventStore.UpdateReasons"/>.
+    /// </summary>
+    public readonly record struct ReasonUpdate(
+        long EventId,
+        ReasonId Reason,
+        Confidence Confidence,
+        string? MatchedRuleId,
+        string? NearMissRuleIds);
 
     /// <summary>
     /// SQLite-backed implementation of <see cref="IFirewallEventStore"/>.
@@ -366,6 +402,187 @@ namespace pylorak.TinyWall.History
                 }
                 return acc;
             }
+        }
+
+        public FirewallEventRecord? GetEventById(long id)
+        {
+            if (_disposed)
+                return null;
+
+            lock (_writeLock)
+            {
+                using var cmd = _connection.CreateCommand();
+                cmd.CommandText = @"
+                    SELECT id, decision_id, flow_id, timestamp_utc_ms, action, direction, protocol,
+                           local_ip, local_port, remote_ip, remote_port,
+                           pid, app_path, app_name, package_sid, service_name,
+                           mode_at_event, ruleset_id, reason_id, confidence,
+                           matched_rule_id, near_miss_rule_ids, schema_version
+                      FROM events_hot
+                     WHERE id = $id
+                     LIMIT 1;";
+                cmd.Parameters.AddWithValue("$id", id);
+                using var reader = cmd.ExecuteReader();
+                if (!reader.Read())
+                    return null;
+                return MapRecord(reader);
+            }
+        }
+
+        public IReadOnlyList<FirewallEventRecord> GetUnexplainedBatch(int limit)
+        {
+            if (_disposed || limit <= 0)
+                return Array.Empty<FirewallEventRecord>();
+
+            var results = new List<FirewallEventRecord>(Math.Min(limit, 256));
+            lock (_writeLock)
+            {
+                using var cmd = _connection.CreateCommand();
+                cmd.CommandText = @"
+                    SELECT id, decision_id, flow_id, timestamp_utc_ms, action, direction, protocol,
+                           local_ip, local_port, remote_ip, remote_port,
+                           pid, app_path, app_name, package_sid, service_name,
+                           mode_at_event, ruleset_id, reason_id, confidence,
+                           matched_rule_id, near_miss_rule_ids, schema_version
+                      FROM events_hot
+                     WHERE reason_id = 0
+                     ORDER BY id ASC
+                     LIMIT $limit;";
+                cmd.Parameters.AddWithValue("$limit", limit);
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                    results.Add(MapRecord(reader));
+            }
+            return results;
+        }
+
+        public void UpdateReason(long eventId, ReasonId reason, Confidence confidence, string? matchedRuleId, string? nearMissRuleIds)
+        {
+            if (_disposed)
+                return;
+
+            lock (_writeLock)
+            {
+                using var cmd = _connection.CreateCommand();
+                cmd.CommandText = @"
+                    UPDATE events_hot
+                       SET reason_id = $reason,
+                           confidence = $conf,
+                           matched_rule_id = $ruleId,
+                           near_miss_rule_ids = $nearMiss
+                     WHERE id = $id;";
+                cmd.Parameters.AddWithValue("$reason", (int)reason);
+                cmd.Parameters.AddWithValue("$conf", (int)confidence);
+                cmd.Parameters.AddWithValue("$ruleId", (object?)matchedRuleId ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("$nearMiss", (object?)nearMissRuleIds ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("$id", eventId);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public int UpdateReasons(IReadOnlyList<ReasonUpdate> updates)
+        {
+            if (_disposed || updates is null || updates.Count == 0)
+                return 0;
+
+            int n = 0;
+            lock (_writeLock)
+            {
+                using var tx = _connection.BeginTransaction();
+                using var cmd = _connection.CreateCommand();
+                cmd.Transaction = tx;
+                cmd.CommandText = @"
+                    UPDATE events_hot
+                       SET reason_id = $reason,
+                           confidence = $conf,
+                           matched_rule_id = $ruleId,
+                           near_miss_rule_ids = $nearMiss
+                     WHERE id = $id;";
+                var pReason = cmd.Parameters.Add("$reason", SqliteType.Integer);
+                var pConf = cmd.Parameters.Add("$conf", SqliteType.Integer);
+                var pRuleId = cmd.Parameters.Add("$ruleId", SqliteType.Text);
+                var pNearMiss = cmd.Parameters.Add("$nearMiss", SqliteType.Text);
+                var pId = cmd.Parameters.Add("$id", SqliteType.Integer);
+
+                foreach (var u in updates)
+                {
+                    pReason.Value = (int)u.Reason;
+                    pConf.Value = (int)u.Confidence;
+                    pRuleId.Value = (object?)u.MatchedRuleId ?? DBNull.Value;
+                    pNearMiss.Value = (object?)u.NearMissRuleIds ?? DBNull.Value;
+                    pId.Value = u.EventId;
+                    n += cmd.ExecuteNonQuery();
+                }
+
+                tx.Commit();
+            }
+            return n;
+        }
+
+        public RulesetSnapshot? GetRulesetSnapshot(long id)
+        {
+            if (_disposed)
+                return null;
+
+            lock (_writeLock)
+            {
+                using var cmd = _connection.CreateCommand();
+                cmd.CommandText = "SELECT id, timestamp_utc_ms, content_hash, content_json FROM rulesets WHERE id = $id LIMIT 1;";
+                cmd.Parameters.AddWithValue("$id", id);
+                using var reader = cmd.ExecuteReader();
+                if (!reader.Read())
+                    return null;
+
+                long rid = reader.GetInt64(0);
+                long ts = reader.GetInt64(1);
+                string hash = reader.GetString(2);
+                byte[] json;
+                using (var stream = reader.GetStream(3))
+                using (var ms = new MemoryStream())
+                {
+                    stream.CopyTo(ms);
+                    json = ms.ToArray();
+                }
+
+                return new RulesetSnapshot
+                {
+                    Id = rid,
+                    TimestampUtcMs = ts,
+                    ContentHash = hash,
+                    ContentJson = json,
+                };
+            }
+        }
+
+        private static FirewallEventRecord MapRecord(SqliteDataReader r)
+        {
+            var rec = new FirewallEventRecord
+            {
+                Id = r.GetInt64(0),
+                DecisionId = Guid.TryParseExact(r.GetString(1), "N", out var g) ? g : Guid.Empty,
+                FlowId = r.GetInt64(2),
+                TimestampUtcMs = r.GetInt64(3),
+                Action = (EventAction)r.GetInt32(4),
+                Direction = (RuleDirection)r.GetInt32(5),
+                Protocol = (Protocol)r.GetInt32(6),
+                LocalIp = r.IsDBNull(7) ? null : r.GetString(7),
+                LocalPort = r.IsDBNull(8) ? 0 : r.GetInt32(8),
+                RemoteIp = r.IsDBNull(9) ? null : r.GetString(9),
+                RemotePort = r.IsDBNull(10) ? 0 : r.GetInt32(10),
+                Pid = r.IsDBNull(11) ? 0u : (uint)r.GetInt64(11),
+                AppPath = r.IsDBNull(12) ? null : r.GetString(12),
+                AppName = r.IsDBNull(13) ? null : r.GetString(13),
+                PackageSid = r.IsDBNull(14) ? null : r.GetString(14),
+                ServiceName = r.IsDBNull(15) ? null : r.GetString(15),
+                ModeAtEvent = (FirewallMode)r.GetInt32(16),
+                RulesetId = r.GetInt64(17),
+                ReasonId = (ReasonId)r.GetInt32(18),
+                Confidence = (Confidence)r.GetInt32(19),
+                MatchedRuleId = r.IsDBNull(20) ? null : r.GetString(20),
+                NearMissRuleIds = r.IsDBNull(21) ? null : r.GetString(21),
+                SchemaVersion = r.GetInt32(22),
+            };
+            return rec;
         }
 
         public void Dispose()

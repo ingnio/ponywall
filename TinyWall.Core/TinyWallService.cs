@@ -38,6 +38,9 @@ namespace pylorak.TinyWall
 
         private readonly CircularBuffer<FirewallLogEntry> FirewallLogEntries = new(500);
         private readonly FirewallEventStore EventStore = new();
+        private readonly ExplanationService ExplanationService;
+        private readonly Timer BackfillTimer;
+        private readonly CancellationTokenSource BackfillCts = new();
         private long _currentRulesetId;
         private readonly FileLocker FileLocker = new();
         private readonly HostsFileManager HostsFileManager = new();
@@ -1261,6 +1264,21 @@ namespace pylorak.TinyWall
             Q.Add(new TwRequest(TwMessageSimple.CreateRequest(MessageType.MINUTE_TIMER)));
         }
 
+        // Runs on the threadpool. Bounded pass over events_hot rows whose
+        // reason_id is still Unknown, updates them in batches. See
+        // Docs/EXPLAINABILITY.md sections 6 and 10.
+        private void BackfillTimerCallback(object? state)
+        {
+            try
+            {
+                ExplanationService.Backfill(BackfillCts.Token);
+            }
+            catch (Exception ex)
+            {
+                Utils.LogException(ex, Utils.LOG_ID_SERVICE);
+            }
+        }
+
         private List<FirewallLogEntry> GetFwLog()
         {
             var entries = new List<FirewallLogEntry>();
@@ -1685,6 +1703,9 @@ namespace pylorak.TinyWall
             LogWatcher.NewLogEntry += (FirewallLogWatcher sender, FirewallLogEntry entry) => { AutoLearnLogEntry(entry); };
             MinuteTimer = new Timer(new TimerCallback(TimerCallback), null, Timeout.Infinite, Timeout.Infinite);
 
+            ExplanationService = new ExplanationService(EventStore);
+            BackfillTimer = new Timer(BackfillTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
+
             // Discover network configuration
             ReenumerateAdresses();
 
@@ -1728,6 +1749,8 @@ namespace pylorak.TinyWall
 #endif
 
             MinuteTimer.Change(60000, 60000);
+            // Explanation backfill runs every 30s, up to 1000 rows per pass.
+            BackfillTimer.Change(30000, 30000);
             RunService = true;
             while (RunService)
             {
@@ -1971,6 +1994,14 @@ namespace pylorak.TinyWall
             GatewayFilterConditions.Dispose();
             DnsFilterConditions.Dispose();
             LogWatcher.Dispose();
+            try { BackfillCts.Cancel(); } catch { }
+            if (BackfillTimer != null)
+            {
+                using WaitHandle bwh = new AutoResetEvent(false);
+                BackfillTimer.Dispose(bwh);
+                bwh.WaitOne();
+            }
+            BackfillCts.Dispose();
             EventStore.Dispose();
             HostsFileManager.Dispose();
             FileLocker.UnlockAll();
