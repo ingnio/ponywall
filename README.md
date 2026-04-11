@@ -20,7 +20,7 @@ Upstream's design goals ("lightweight, non-intrusive") are respected where possi
 ## How PonyWall differs from upstream TinyWall
 
 - **UI**: Ported from WinForms to [Avalonia 11](https://avaloniaui.net/) with compiled bindings. Runs on .NET 8 with single-file publish and partial trimming.
-- **Service split**: The firewall service is its own binary (`PonyWallService.exe`) separate from the tray UI (`PonyWall.exe` — still sitting in the `TinyWall.Avalonia.exe` source path for now, will be renamed in a later commit).
+- **Service split**: The firewall service is its own binary (`PonyWallService.exe`) separate from the tray UI (`PonyWall.exe`).
 - **Observability stack**: SQLite event store (hot/warm schema), per-rule ruleset snapshots (SHA-256 keyed), explanation engine that classifies each event against its historical ruleset and surfaces evidence chips + near-miss rules, forensic JSON export.
 - **Stats**: A dashboard showing top apps/destinations, reason distribution, 24h sparkline, and event-store health.
 - **First-block toasts**: Windows toast notification when a never-before-seen app is blocked, with Allow once / Allow always / Block always action buttons. Deduped per-app with a persistent seen-apps map.
@@ -51,7 +51,7 @@ Or, for the single-file self-contained publish used by the installer:
 publish.cmd
 ```
 
-This produces `PonyWall.exe` and `PonyWallService.exe` under `TinyWall.Avalonia\bin\Release\publish\` (the output path still uses the old project folder name).
+This produces `PonyWall.exe` and `PonyWallService.exe` under `publish\` at the repo root.
 
 ### Building the installer
 

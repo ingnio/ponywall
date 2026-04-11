@@ -16,6 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TinyWall.Core\TinyWall.Core.csproj" />
+    <ProjectReference Include="..\PonyWall.Core\PonyWall.Core.csproj" />
   </ItemGroup>
 </Project>

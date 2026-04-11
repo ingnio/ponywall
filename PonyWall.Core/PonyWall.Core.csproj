@@ -26,9 +26,10 @@
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="TinyWall" />
-    <InternalsVisibleTo Include="TinyWall.Avalonia" />
-    <InternalsVisibleTo Include="TinyWallService" />
+    <!-- The UI (PonyWall.Avalonia.csproj) overrides AssemblyName to "PonyWall";
+         the service (PonyWallService.csproj) keeps the default. -->
+    <InternalsVisibleTo Include="PonyWall" />
+    <InternalsVisibleTo Include="PonyWallService" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="NetFwTypeLib">

@@ -11,9 +11,10 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="TinyWall" />
-    <InternalsVisibleTo Include="TinyWall.Avalonia" />
-    <InternalsVisibleTo Include="TinyWall.Core" />
+    <!-- Assembly names after the PonyWall rename. -->
+    <InternalsVisibleTo Include="PonyWall" />
+    <InternalsVisibleTo Include="PonyWallService" />
+    <InternalsVisibleTo Include="PonyWall.Core" />
   </ItemGroup>
   <PropertyGroup>
     <Product>pylorak.Windows</Product>

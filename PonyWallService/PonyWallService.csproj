@@ -12,6 +12,10 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
+    <!-- Explicit AssemblyName so the output exe is PonyWallService.exe
+         (the default would already produce this from the csproj filename,
+         but making it explicit documents the intent). -->
+    <AssemblyName>PonyWallService</AssemblyName>
     <Product>PonyWall Service</Product>
     <AssemblyTitle>PonyWallService</AssemblyTitle>
     <Company>ingnio</Company>
@@ -48,7 +52,7 @@
   <ItemGroup Condition="'$(_IsPublishing)'=='true'">
     <TrimmerRootAssembly Include="System.Management" />
     <TrimmerRootAssembly Include="System.ServiceProcess.ServiceController" />
-    <TrimmerRootAssembly Include="TinyWall.Core" />
+    <TrimmerRootAssembly Include="PonyWall.Core" />
     <TrimmerRootAssembly Include="pylorak.Utilities" />
     <TrimmerRootAssembly Include="pylorak.Windows" />
     <TrimmerRootAssembly Include="pylorak.Windows.Services" />
@@ -59,7 +63,7 @@
     <TrimmerRootAssembly Include="SQLitePCLRaw.core" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TinyWall.Core\TinyWall.Core.csproj" />
+    <ProjectReference Include="..\PonyWall.Core\PonyWall.Core.csproj" />
     <ProjectReference Include="..\pylorak.Utilities\pylorak.Utilities.csproj" />
     <ProjectReference Include="..\pylorak.Windows\pylorak.Windows.csproj" />
     <ProjectReference Include="..\pylorak.Windows.Services\pylorak.Windows.Services.csproj" />

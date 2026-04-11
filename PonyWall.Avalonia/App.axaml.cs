@@ -133,7 +133,7 @@ namespace pylorak.TinyWall
             try
             {
                 var assets = Avalonia.Platform.AssetLoader.Open(
-                    new Uri("avares://TinyWall.Avalonia/Assets/firewall.ico"));
+                    new Uri("avares://PonyWall/Assets/firewall.ico"));
                 _trayIcon.Icon = new WindowIcon(assets);
             }
             catch (Exception ex)

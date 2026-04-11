@@ -32,7 +32,7 @@
     <PublishReadyToRun>false</PublishReadyToRun>
     <!-- Ship only English BCL satellite resources. The app's own
          localized Messages.resx files are still included via
-         <EmbeddedResource> in TinyWall.Core. -->
+         <EmbeddedResource> in PonyWall.Core. -->
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <!-- Feature switches to drop optional framework code paths. -->
     <DebuggerSupport>false</DebuggerSupport>
@@ -58,10 +58,10 @@
   <ItemGroup Condition="'$(_IsPublishing)'=='true'">
     <!-- Toast notifications use a COM activator registered via reflection -->
     <TrimmerRootAssembly Include="Microsoft.Toolkit.Uwp.Notifications" />
-    <!-- TinyWall.Core has COM references and JSON source-gen that the
+    <!-- PonyWall.Core has COM references and JSON source-gen that the
          trimmer doesn't fully understand. Force-keep it whole to prevent
          settings load and pipe-message handling from breaking. -->
-    <TrimmerRootAssembly Include="TinyWall.Core" />
+    <TrimmerRootAssembly Include="PonyWall.Core" />
     <!-- pylorak.* libraries use P/Invoke and COM types the trimmer can't trace. -->
     <TrimmerRootAssembly Include="pylorak.Utilities" />
     <TrimmerRootAssembly Include="pylorak.Windows" />
@@ -87,6 +87,9 @@
     <TrimmerRootAssembly Include="SQLitePCLRaw.core" />
   </ItemGroup>
   <PropertyGroup>
+    <!-- Default AssemblyName would be "PonyWall.Avalonia" from the csproj
+         filename; override so the user-visible exe is just "PonyWall.exe". -->
+    <AssemblyName>PonyWall</AssemblyName>
     <Product>PonyWall</Product>
     <AssemblyTitle>PonyWall</AssemblyTitle>
     <Company>ingnio</Company>
@@ -103,7 +106,7 @@
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TinyWall.Core\TinyWall.Core.csproj" />
+    <ProjectReference Include="..\PonyWall.Core\PonyWall.Core.csproj" />
     <ProjectReference Include="..\pylorak.Utilities\pylorak.Utilities.csproj" />
     <ProjectReference Include="..\pylorak.Windows\pylorak.Windows.csproj" />
     <ProjectReference Include="..\pylorak.Windows.Services\pylorak.Windows.Services.csproj" />

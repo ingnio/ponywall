@@ -72,7 +72,7 @@ namespace pylorak.TinyWall
 
         /// <summary>
         /// Path to the service host executable. Set by each entry point on startup.
-        /// The UI exe sets this to the sibling TinyWallService.exe; the service exe
+        /// The UI exe sets this to the sibling PonyWallService.exe; the service exe
         /// sets it to itself.
         /// </summary>
         public static string ServiceExecutablePath { get; set; } = ExecutablePath;

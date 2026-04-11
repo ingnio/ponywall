@@ -17,33 +17,33 @@ PonyWall diverges from TinyWall in the following substantial ways. Git history (
 
 ### Architecture
 
-1. **UI framework port: WinForms → Avalonia 11**. Every window was rewritten against Avalonia's XAML with compiled bindings. The WinForms references are removed entirely — `Microsoft.WindowsDesktop.App.WindowsForms` is no longer a dependency. Files touched: all of `TinyWall.Avalonia/Views/`, all of `TinyWall.Avalonia/ViewModels/`.
+1. **UI framework port: WinForms → Avalonia 11**. Every window was rewritten against Avalonia's XAML with compiled bindings. The WinForms references are removed entirely — `Microsoft.WindowsDesktop.App.WindowsForms` is no longer a dependency. Files touched: all of `PonyWall.Avalonia/Views/`, all of `PonyWall.Avalonia/ViewModels/`.
 
 2. **Target framework: .NET Framework 4.x → .NET 8** (`net8.0-windows10.0.19041.0`). Updated nullable annotations, async patterns, record types throughout. C# LangVersion set to `latest`.
 
 3. **Single-file self-contained publish** with partial trimming and feature switches (`DebuggerSupport=false`, `EventSourceSupport=false`, etc.). TrimmerRootAssembly entries preserve COM/WMI/toast reflection paths that partial trimming otherwise strips. See `publish.cmd` and the publish profile in each csproj.
 
-4. **Service/UI split**. The firewall service is now its own binary (`PonyWallService.exe` — project folder still named `TinyWallService/` for git history continuity) separate from the tray UI (`TinyWall.Avalonia.exe`). Previously a single binary hosted both.
+4. **Service/UI split**. The firewall service is now its own binary (`PonyWallService.exe`, in `PonyWallService/`) separate from the tray UI (`PonyWall.exe`, in `PonyWall.Avalonia/`). Previously a single binary hosted both.
 
-5. **Core extraction**. Firewall logic, rule model, WFP glue, and shared types moved into a `TinyWall.Core` class library. Used by both the service and the UI. Folder rename not yet done to preserve git history.
+5. **Core extraction**. Firewall logic, rule model, WFP glue, and shared types moved into a `PonyWall.Core` class library. Used by both the service and the UI.
 
 ### Observability stack (new in PonyWall, not in upstream)
 
-6. **SQLite event store** for firewall decision history (`TinyWall.Core/History/FirewallEventStore.cs`). Hot/warm schema, WAL mode, bounded queue with background flush thread, per-rule ruleset snapshots SHA-256 keyed and content-addressed. Design contract in `Docs/EXPLAINABILITY.md`.
+6. **SQLite event store** for firewall decision history (`PonyWall.Core/History/FirewallEventStore.cs`). Hot/warm schema, WAL mode, bounded queue with background flush thread, per-rule ruleset snapshots SHA-256 keyed and content-addressed. Design contract in `Docs/EXPLAINABILITY.md`.
 
-7. **Explanation engine** (`TinyWall.Core/History/ExplanationService.cs`). Post-hoc replays each captured event against the ruleset snapshot that was active when the kernel made its decision, classifies it with a stable reason taxonomy (see `ReasonId.cs`), and produces evidence chips + near-miss rules. Runs on a background backfill timer (30s cadence, up to 1000 rows/pass).
+7. **Explanation engine** (`PonyWall.Core/History/ExplanationService.cs`). Post-hoc replays each captured event against the ruleset snapshot that was active when the kernel made its decision, classifies it with a stable reason taxonomy (see `ReasonId.cs`), and produces evidence chips + near-miss rules. Runs on a background backfill timer (30s cadence, up to 1000 rows/pass).
 
-8. **HistoryWindow** (`TinyWall.Avalonia/Views/HistoryWindow.axaml`). DataGrid of recent events with action/reason/time-range filters, text search, live tail auto-refresh, and a drill-down pane that re-runs the explanation engine on click to surface full evidence.
+8. **HistoryWindow** (`PonyWall.Avalonia/Views/HistoryWindow.axaml`). DataGrid of recent events with action/reason/time-range filters, text search, live tail auto-refresh, and a drill-down pane that re-runs the explanation engine on click to surface full evidence.
 
-9. **Forensic JSON export** (`TinyWall.Core/History/HistoryExporter.cs`). Self-contained bundle with events + deduplicated ruleset snapshots embedded as nested JSON + recomputed explanations. Shareable with support engineers.
+9. **Forensic JSON export** (`PonyWall.Core/History/HistoryExporter.cs`). Self-contained bundle with events + deduplicated ruleset snapshots embedded as nested JSON + recomputed explanations. Shareable with support engineers.
 
-10. **Stats window** (`TinyWall.Avalonia/Views/StatsWindow.axaml`). Top apps / top remote addresses / reason distribution / 24h sparkline / event-store health. Built on GROUP BY queries in `HistoryReader`.
+10. **Stats window** (`PonyWall.Avalonia/Views/StatsWindow.axaml`). Top apps / top remote addresses / reason distribution / 24h sparkline / event-store health. Built on GROUP BY queries in `HistoryReader`.
 
-11. **First-block toast notifications** (`TinyWall.Core/History/ToastDeduper.cs`, `TinyWall.Avalonia/Services/NotificationService.cs`). Windows toast when a never-before-seen app is blocked, with Allow once / Allow always / Block always action buttons via `Microsoft.Toolkit.Uwp.Notifications`. Dedupe persisted to `%ProgramData%\PonyWall\toasted-apps.json`. Opt-out via Settings.
+11. **First-block toast notifications** (`PonyWall.Core/History/ToastDeduper.cs`, `PonyWall.Avalonia/Services/NotificationService.cs`). Windows toast when a never-before-seen app is blocked, with Allow once / Allow always / Block always action buttons via `Microsoft.Toolkit.Uwp.Notifications`. Dedupe persisted to `%ProgramData%\PonyWall\toasted-apps.json`. Opt-out via Settings.
 
 ### Identity and branding
 
-12. **Identity rename**. The Windows service, named pipe, ProgramData folder, WFP provider/session/sublayer names, atom name, and global mutex names were renamed from `TinyWall` to `PonyWall` so the fork can be installed side-by-side with upstream without collisions. Internal C# namespaces (`pylorak.TinyWall.*`), type names (`TinyWallService`, `TinyWallServer`, `TinyWallApp`), and project folder paths were deliberately left unchanged to preserve git history and minimize review surface.
+12. **Identity rename**. The Windows service, named pipe, ProgramData folder, WFP provider/session/sublayer names, atom name, and global mutex names were renamed from `TinyWall` to `PonyWall` so the fork can be installed side-by-side with upstream without collisions. Project folders, solution file, csproj filenames, and individual `.cs` files with `TinyWall` in their name were also renamed to `PonyWall` (with `git mv` to preserve history). Internal C# namespaces (`pylorak.TinyWall.*`) and type names (`TinyWallService`, `TinyWallServer`, `TinyWallApp`) were deliberately left unchanged — the upstream code inside retains those symbol names for git-blame continuity against `pylorak/tinywall`.
 
 13. **Version reset**. Semantic version reset to `0.1.0` to signal the fork is pre-release and its API/config surface is not yet frozen.
 
@@ -67,7 +67,7 @@ The authoritative per-file modification record is the git history. Use `git log 
 
 - The GPL-3.0 license text itself.
 - Károly Pados's original copyright notices in source files that retain substantial upstream code.
-- The core WFP filter management in `TinyWall.Core/TinyWallService.cs` (heavily extended for history capture, but the baseline filter installation logic is upstream).
+- The core WFP filter management in `PonyWall.Core/PonyWallService.cs` (heavily extended for history capture, but the baseline filter installation logic is upstream).
 - The application database format (`profiles.json` / the `DatabaseClasses.*` types).
 - The rule model (`FirewallExceptionV3`, `ExceptionPolicy`, `ExceptionSubject` and subclasses) — intentionally preserved for config compatibility reads.
 - The `TaskDialog` wrapper in `pylorak.Windows/TaskDialog` (Public Domain, originally by KevinGre).

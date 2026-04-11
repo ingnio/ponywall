@@ -11,13 +11,13 @@ namespace pylorak.TinyWall
     ///
     /// This class is shared between two different process roles:
     ///
-    /// - In TinyWallService.exe: holds the server-side state. Config and
+    /// - In PonyWallService.exe: holds the server-side state. Config and
     ///   ServerChangeset are mutated by the pipe handler (PUT_SETTINGS) and
     ///   read by the firewall worker thread on every rule application. The
     ///   AppDatabase is loaded once at service startup and read-only after.
     ///   HealthCheckCallback is set once at startup.
     ///
-    /// - In TinyWall.Avalonia.exe: holds the client-side cache of last-seen
+    /// - In PonyWall.exe: holds the client-side cache of last-seen
     ///   server state. Config is updated by the polling timer (UI thread)
     ///   when GetServerConfig returns a new changeset, and read by every UI
     ///   action that needs to inspect server settings. The AppDatabase is

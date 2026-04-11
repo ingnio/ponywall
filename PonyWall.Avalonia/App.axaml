@@ -5,6 +5,6 @@
     <Application.Styles>
         <FluentTheme DensityStyle="Compact" />
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
-        <StyleInclude Source="avares://TinyWall.Avalonia/Styles.axaml" />
+        <StyleInclude Source="avares://PonyWall/Styles.axaml" />
     </Application.Styles>
 </Application>

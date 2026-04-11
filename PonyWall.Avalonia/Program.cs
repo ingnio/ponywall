@@ -39,10 +39,10 @@ namespace pylorak.TinyWall
 
             try
             {
-                // Point service registration at the sibling TinyWallService.exe
+                // Point service registration at the sibling PonyWallService.exe
                 string serviceExePath = Path.Combine(
                     Path.GetDirectoryName(Utils.ExecutablePath)!,
-                    "TinyWallService.exe");
+                    "PonyWallService.exe");
                 if (File.Exists(serviceExePath))
                     Utils.ServiceExecutablePath = serviceExePath;
 

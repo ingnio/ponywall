@@ -14,11 +14,11 @@
 #define MyAppVersion "0.1.0"
 #define MyAppPublisher "ingnio"
 #define MyAppURL "https://github.com/ingnio/ponywall"
-; Note: the exe source file names are still TinyWall.Avalonia.exe / TinyWallService.exe
-; because the project folders weren't renamed. The installed filename ends up
-; matching the source.
-#define MyAppExeName "TinyWall.Avalonia.exe"
-#define MyServiceExeName "TinyWallService.exe"
+; The UI csproj (PonyWall.Avalonia.csproj) overrides AssemblyName so the UI exe
+; is "PonyWall.exe" rather than "PonyWall.Avalonia.exe". The service keeps the
+; default AssemblyName derived from PonyWallService.csproj.
+#define MyAppExeName "PonyWall.exe"
+#define MyServiceExeName "PonyWallService.exe"
 #define MyServiceName "PonyWall"
 
 [Setup]
@@ -45,7 +45,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 PrivilegesRequired=admin
 UninstallDisplayIcon={app}\{#MyAppExeName}
-SetupIconFile=..\TinyWall.Avalonia\Assets\firewall.ico
+SetupIconFile=..\PonyWall.Avalonia\Assets\firewall.ico
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

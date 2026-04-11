@@ -270,7 +270,7 @@ each individual attempt.
 
 ## 6. The Explain API
 
-A single interface in `TinyWall.Core.History`:
+A single interface in `PonyWall.Core/History/`:
 
 ```csharp
 public interface IExplanationService
@@ -436,15 +436,15 @@ document and lists the specific acceptance criteria it meets.
 
 | Thing | Path |
 |-------|------|
-| Event store implementation | `TinyWall.Core/History/FirewallEventStore.cs` |
-| SQLite schema + migrations | `TinyWall.Core/History/Migrations/` |
-| `IExplanationService` interface | `TinyWall.Core/History/IExplanationService.cs` |
-| `ExplanationService` implementation | `TinyWall.Core/History/ExplanationService.cs` |
-| Reason enum + Confidence enum | `TinyWall.Core/History/ReasonId.cs` |
-| Explanation records | `TinyWall.Core/History/Explanation.cs` |
+| Event store implementation | `PonyWall.Core/History/FirewallEventStore.cs` |
+| SQLite schema + migrations | `PonyWall.Core/History/Migrations/` |
+| `IExplanationService` interface | `PonyWall.Core/History/IExplanationService.cs` |
+| `ExplanationService` implementation | `PonyWall.Core/History/ExplanationService.cs` |
+| Reason enum + Confidence enum | `PonyWall.Core/History/ReasonId.cs` |
+| Explanation records | `PonyWall.Core/History/Explanation.cs` |
 | History DB file | `%ProgramData%\PonyWall\history.db` |
-| History UI window | `TinyWall.Avalonia/Views/HistoryWindow.axaml` |
-| History viewmodel | `TinyWall.Avalonia/ViewModels/HistoryViewModel.cs` |
+| History UI window | `PonyWall.Avalonia/Views/HistoryWindow.axaml` |
+| History viewmodel | `PonyWall.Avalonia/ViewModels/HistoryViewModel.cs` |
 | This document | `Docs/EXPLAINABILITY.md` |
 
 ## 14. Revision log

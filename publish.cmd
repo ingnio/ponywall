@@ -1,8 +1,8 @@
 @echo off
-REM Publishes both TinyWall.Avalonia and TinyWallService as self-contained
-REM single-file Win64 executables to publish\.
+REM Publishes both the UI (PonyWall.exe) and the service (PonyWallService.exe)
+REM as self-contained single-file Win64 executables to publish\.
 REM
-REM Uses Visual Studio's framework MSBuild because TinyWall.Core has COM
+REM Uses Visual Studio's framework MSBuild because PonyWall.Core has COM
 REM references (NetFwTypeLib, TaskScheduler) that need the ResolveComReference
 REM task, which is only available in the .NET Framework MSBuild — not in
 REM dotnet build / dotnet publish.
@@ -21,8 +21,8 @@ if exist "%OUTDIR%" rmdir /s /q "%OUTDIR%"
 mkdir "%OUTDIR%"
 
 echo.
-echo === Publishing TinyWallService ===
-%MSBUILD% TinyWallService\TinyWallService.csproj ^
+echo === Publishing PonyWallService ===
+%MSBUILD% PonyWallService\PonyWallService.csproj ^
     -p:Configuration=Release ^
     -p:RuntimeIdentifier=win-x64 ^
     -p:SelfContained=true ^
@@ -37,8 +37,8 @@ echo === Publishing TinyWallService ===
 if errorlevel 1 goto fail
 
 echo.
-echo === Publishing TinyWall.Avalonia ===
-%MSBUILD% TinyWall.Avalonia\TinyWall.Avalonia.csproj ^
+echo === Publishing PonyWall (UI) ===
+%MSBUILD% PonyWall.Avalonia\PonyWall.Avalonia.csproj ^
     -p:Configuration=Release ^
     -p:RuntimeIdentifier=win-x64 ^
     -p:SelfContained=true ^

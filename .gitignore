@@ -11,8 +11,8 @@
 /LocalizationPack/**/*.pdf
 /LocalizationPack/ZetaResourceEditor/
 
-/TinyWall.suo
-/TinyWall.v11.suo
+/PonyWall.suo
+/PonyWall.v11.suo
 
 /pylorak.Utilities/obj/
 /pylorak.Utilities/bin/
@@ -26,20 +26,20 @@
 /pylorak.Windows.WFP/bin/
 /pylorak.Windows.WFP/obj/
 
-/TinyWall.Core/bin/
-/TinyWall.Core/obj/
+/PonyWall.Core/bin/
+/PonyWall.Core/obj/
 
-/TinyWall.Core.Tests/bin/
-/TinyWall.Core.Tests/obj/
+/PonyWall.Core.Tests/bin/
+/PonyWall.Core.Tests/obj/
 
-/TinyWallService/bin/
-/TinyWallService/obj/
+/PonyWallService/bin/
+/PonyWallService/obj/
 
 /publish/
 /installer/Output/
 
-/TinyWall.Avalonia/bin/
-/TinyWall.Avalonia/obj/
+/PonyWall.Avalonia/bin/
+/PonyWall.Avalonia/obj/
 
 /MsiSetup/obj/
 /MsiSetup/bin/

@@ -9,7 +9,7 @@ This directory contains the Inno Setup script for building the PonyWall installe
    cd ..
    publish.cmd
    ```
-   This produces `..\publish\TinyWall.Avalonia.exe` and `..\publish\TinyWallService.exe`. (The exe filenames still reflect the original project folder names, which were deliberately left unchanged to preserve git history. The installed binaries are PonyWall — the names are the only thing that didn't rename.)
+   This produces `..\publish\PonyWall.exe` and `..\publish\PonyWallService.exe`.
 
 2. **Install Inno Setup 6:**
    Download from <https://jrsoftware.org/isdl.php> and install. The compiler is `iscc.exe` and is added to PATH by default.
@@ -22,7 +22,7 @@ This directory contains the Inno Setup script for building the PonyWall installe
 
 ## What the installer does
 
-- Installs both `TinyWall.Avalonia.exe` (the UI) and `TinyWallService.exe` (the firewall service) side-by-side under `Program Files\PonyWall\`
+- Installs both `PonyWall.exe` (the UI) and `PonyWallService.exe` (the firewall service) side-by-side under `Program Files\PonyWall\`
 - Adds `LICENSE.txt`, `README.md`, and `CHANGES.md` to the install dir for GPLv3 compliance and user reference
 - Creates a Start menu shortcut
 - Optional: desktop icon and Windows startup entry
