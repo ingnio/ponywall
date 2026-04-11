@@ -42,7 +42,7 @@ namespace pylorak.TinyWall.History
             IReadOnlyList<FirewallEventRecord> events,
             HistoryReader reader,
             Stream destination,
-            string? toolName = "TinyWall",
+            string? toolName = "PonyWall",
             string? toolVersion = null)
         {
             if (events is null) throw new ArgumentNullException(nameof(events));
@@ -79,7 +79,7 @@ namespace pylorak.TinyWall.History
             writer.WriteNumber("schemaVersion", SchemaVersion);
             writer.WriteString("exportedAt", DateTimeOffset.UtcNow.ToString("o"));
             writer.WriteStartObject("tool");
-            writer.WriteString("name", toolName ?? "TinyWall");
+            writer.WriteString("name", toolName ?? "PonyWall");
             if (!string.IsNullOrEmpty(toolVersion))
                 writer.WriteString("version", toolVersion);
             writer.WriteEndObject();

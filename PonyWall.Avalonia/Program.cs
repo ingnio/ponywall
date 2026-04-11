@@ -32,6 +32,19 @@ namespace pylorak.TinyWall
             // Point the service-registration path at the sibling PonyWallService.exe.
             // Must happen before either the /install branch or the normal-launch
             // branch — both of them read Utils.ServiceExecutablePath.
+            //
+            // If the sibling isn't present we do NOT silently fall back to the
+            // UI exe (Utils.ServiceExecutablePath defaults to ExecutablePath).
+            // Doing so would cause InstallService to register the UI itself as
+            // the service binary, and SCM would then try to start it — the UI
+            // isn't a ServiceBase, so SCM would hang 30 seconds waiting for
+            // SERVICE_RUNNING and fail with error 1053. This is exactly the bug
+            // we saw when the user launched bin\Release\PonyWall.exe (which
+            // doesn't have a sibling PonyWallService.exe because MSBuild
+            // produces each project's output in its own bin folder).
+            //
+            // Instead: if the sibling is missing, leave ServiceExecutablePath
+            // unset and let InstallServiceAsAdmin detect this and abort cleanly.
             string serviceExePath = Path.Combine(
                 Path.GetDirectoryName(Utils.ExecutablePath)!,
                 "PonyWallService.exe");
@@ -121,6 +134,26 @@ namespace pylorak.TinyWall
         /// </summary>
         private static bool InstallServiceAsAdmin()
         {
+            // Sanity check: don't register the UI exe as the service binary.
+            // If Program.cs's sibling-check at startup couldn't find
+            // PonyWallService.exe next to us, ServiceExecutablePath is still
+            // at its default (ExecutablePath == the UI itself), which means
+            // we'd register the UI exe as a service and SCM would time out
+            // starting it with error 1053. Better to bail loudly.
+            if (!string.Equals(
+                    Path.GetFileName(Utils.ServiceExecutablePath),
+                    "PonyWallService.exe",
+                    StringComparison.OrdinalIgnoreCase)
+                || !File.Exists(Utils.ServiceExecutablePath))
+            {
+                Utils.LogException(
+                    new InvalidOperationException(
+                        $"Refusing to install service: PonyWallService.exe not found next to {Utils.ExecutablePath}. " +
+                        $"Launch from the publish\\ directory produced by publish.cmd, not from a per-project bin\\ folder."),
+                    Utils.LOG_ID_GUI);
+                return false;
+            }
+
             try
             {
                 using var scm = new ServiceControlManager(

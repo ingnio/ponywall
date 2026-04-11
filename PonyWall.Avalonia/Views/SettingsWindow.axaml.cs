@@ -365,7 +365,7 @@ namespace pylorak.TinyWall.Views
                     // Show simple error - just use a basic approach
                     var msgWindow = new Window
                     {
-                        Title = "TinyWall",
+                        Title = "PonyWall",
                         Width = 350,
                         Height = 150,
                         WindowStartupLocation = WindowStartupLocation.CenterOwner,
@@ -507,7 +507,7 @@ namespace pylorak.TinyWall.Views
             // Simple confirmation dialog
             var confirmWindow = new Window
             {
-                Title = "TinyWall",
+                Title = "PonyWall",
                 Width = 400,
                 Height = 160,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
@@ -700,7 +700,7 @@ namespace pylorak.TinyWall.Views
         {
             var msgWindow = new Window
             {
-                Title = "TinyWall",
+                Title = "PonyWall",
                 Width = 380,
                 Height = 140,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,

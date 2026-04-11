@@ -169,7 +169,7 @@ namespace pylorak.TinyWall.Views
                         records,
                         _reader,
                         stream,
-                        toolName: "TinyWall",
+                        toolName: "PonyWall",
                         toolVersion: typeof(HistoryWindow).Assembly.GetName().Version?.ToString());
                 }).ConfigureAwait(true);
 
