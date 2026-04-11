@@ -69,6 +69,8 @@
             <Border Classes="card">
               <StackPanel Spacing="4">
                 <TextBlock Text="Security" Classes="sectionHeader" />
+                <CheckBox Name="chkAllowLocalSubnet"
+                          Content="Allow local subnet traffic" />
                 <CheckBox Name="chkDisplayOffBlock"
                           Content="Block traffic when display is off" />
                 <CheckBox Name="chkLockHostsFile"

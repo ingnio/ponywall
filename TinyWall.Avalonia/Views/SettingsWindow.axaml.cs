@@ -175,6 +175,7 @@ namespace pylorak.TinyWall.Views
                 }
 
                 // Machine Settings tab
+                chkAllowLocalSubnet.IsChecked = TmpConfig.Service.ActiveProfile.AllowLocalSubnet;
                 chkDisplayOffBlock.IsChecked = TmpConfig.Service.ActiveProfile.DisplayOffBlock;
                 chkLockHostsFile.IsChecked = TmpConfig.Service.LockHostsFile;
                 chkHostsBlocklist.IsChecked = TmpConfig.Service.Blocklists.EnableHostsBlocklist;
@@ -398,6 +399,7 @@ namespace pylorak.TinyWall.Views
             TmpConfig.Service.Blocklists.EnableHostsBlocklist = chkHostsBlocklist.IsChecked == true;
             TmpConfig.Service.Blocklists.EnableBlocklists = chkEnableBlocklists.IsChecked == true;
             TmpConfig.Service.ActiveProfile.DisplayOffBlock = chkDisplayOffBlock.IsChecked == true;
+            TmpConfig.Service.ActiveProfile.AllowLocalSubnet = chkAllowLocalSubnet.IsChecked == true;
 
             // Save language
             var selectedLang = comboLanguages.SelectedItem as LanguageItem;

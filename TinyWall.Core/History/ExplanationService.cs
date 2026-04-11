@@ -161,7 +161,7 @@ namespace pylorak.TinyWall.History
         /// dependency, does no network I/O, and does not mutate anything.
         /// This is what the tests exercise.
         /// </summary>
-        public Explanation ExplainAgainst(FirewallEventRecord record, ServerConfiguration config, FirewallMode modeAtEvent)
+        public static Explanation ExplainAgainst(FirewallEventRecord record, ServerConfiguration config, FirewallMode modeAtEvent)
         {
             if (record is null) throw new ArgumentNullException(nameof(record));
             if (config is null) throw new ArgumentNullException(nameof(config));

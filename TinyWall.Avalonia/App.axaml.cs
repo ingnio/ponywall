@@ -192,6 +192,14 @@ namespace pylorak.TinyWall
             mnuConn.Click += (_, _) => OpenConnections();
             menu.Items.Add(mnuConn);
 
+            var mnuHistory = new NativeMenuItem("History...");
+            mnuHistory.Click += (_, _) => OpenHistory();
+            menu.Items.Add(mnuHistory);
+
+            var mnuStats = new NativeMenuItem("Stats...");
+            mnuStats.Click += (_, _) => OpenStats();
+            menu.Items.Add(mnuStats);
+
             var mnuLogs = new NativeMenuItem("Open logs folder");
             mnuLogs.Click += (_, _) => OpenLogsFolder();
             menu.Items.Add(mnuLogs);
@@ -225,8 +233,6 @@ namespace pylorak.TinyWall
             menuWindow.SetState(
                 _viewModel.CurrentMode,
                 _viewModel.IsLocked,
-                _viewModel.IsLocalSubnetAllowed,
-                _viewModel.IsHostsBlocklistEnabled,
                 _currentThemeVariant,
                 _trafficRateText);
 
@@ -234,12 +240,12 @@ namespace pylorak.TinyWall
             menuWindow.ModeChangeRequested += mode => _viewModel.SetModeCommand.Execute(mode);
             menuWindow.ManageRequested += async () => await OpenManageAsync();
             menuWindow.ConnectionsRequested += () => OpenConnections();
+            menuWindow.HistoryRequested += () => OpenHistory();
+            menuWindow.StatsRequested += () => OpenStats();
             menuWindow.LogsRequested += () => OpenLogsFolder();
             menuWindow.WhitelistExeRequested += async () => await WhitelistByExecutableAsync();
             menuWindow.WhitelistProcessRequested += async () => await WhitelistByProcessAsync();
             menuWindow.WhitelistWindowRequested += () => ToggleWhitelistByWindow();
-            menuWindow.ToggleLocalSubnetRequested += () => _viewModel.ToggleLocalSubnetCommand.Execute(null);
-            menuWindow.ToggleHostsBlocklistRequested += () => _viewModel.ToggleHostsBlocklistCommand.Execute(null);
             menuWindow.ToggleLockRequested += async () =>
             {
                 if (_viewModel != null)
@@ -307,6 +313,17 @@ namespace pylorak.TinyWall
         {
             if (_controller == null) return;
             ConnectionsWindow.ShowConnections(_controller);
+        }
+
+        private void OpenHistory()
+        {
+            if (_controller == null) return;
+            HistoryWindow.ShowHistory(_controller);
+        }
+
+        private void OpenStats()
+        {
+            StatsWindow.ShowStats();
         }
 
         private void OpenLogsFolder()
@@ -590,8 +607,6 @@ namespace pylorak.TinyWall
                     if (config != null)
                     {
                         _lastServerConfig = config;
-                        _viewModel.IsLocalSubnetAllowed = config.ActiveProfile.AllowLocalSubnet;
-                        _viewModel.IsHostsBlocklistEnabled = config.Blocklists.EnableHostsBlocklist;
                     }
                 }
 

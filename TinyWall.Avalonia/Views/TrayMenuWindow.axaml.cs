@@ -15,20 +15,18 @@ namespace pylorak.TinyWall.Views
         // Current state passed in from App
         private FirewallMode _currentMode;
         private bool _isLocked;
-        private bool _isLocalSubnetAllowed;
-        private bool _isHostsBlocklistEnabled;
         private ThemeVariant _currentTheme = ThemeVariant.Default;
 
         // Events raised to App for action handling
         public event Action<FirewallMode>? ModeChangeRequested;
         public event Action? ManageRequested;
         public event Action? ConnectionsRequested;
+        public event Action? HistoryRequested;
+        public event Action? StatsRequested;
         public event Action? LogsRequested;
         public event Action? WhitelistExeRequested;
         public event Action? WhitelistProcessRequested;
         public event Action? WhitelistWindowRequested;
-        public event Action? ToggleLocalSubnetRequested;
-        public event Action? ToggleHostsBlocklistRequested;
         public event Action? ToggleLockRequested;
         public event Action<ThemeVariant>? ThemeChangeRequested;
         public event Action? QuitRequested;
@@ -46,15 +44,11 @@ namespace pylorak.TinyWall.Views
         public void SetState(
             FirewallMode mode,
             bool isLocked,
-            bool localSubnetAllowed,
-            bool hostsBlocklistEnabled,
             ThemeVariant currentTheme,
             string trafficRateText)
         {
             _currentMode = mode;
             _isLocked = isLocked;
-            _isLocalSubnetAllowed = localSubnetAllowed;
-            _isHostsBlocklistEnabled = hostsBlocklistEnabled;
             _currentTheme = currentTheme;
 
             // Traffic rate
@@ -73,10 +67,6 @@ namespace pylorak.TinyWall.Views
             TxtModeAllowOutgoing.Text = pylorak.TinyWall.Resources.Messages.FirewallModeAllowOut;
             TxtModeDisabled.Text = pylorak.TinyWall.Resources.Messages.FirewallModeDisabled;
             TxtModeAutolearn.Text = pylorak.TinyWall.Resources.Messages.FirewallModeLearn;
-
-            // Checkbox indicators (Segoe Fluent Icons: E73E = checkmark)
-            IndLocalSubnet.Text = localSubnetAllowed ? "\uE73E" : " ";
-            IndHostsBlocklist.Text = hostsBlocklistEnabled ? "\uE73E" : " ";
 
             // Lock text and icon (Segoe Fluent Icons: E72E = lock, E785 = unlock)
             TxtLock.Text = isLocked ? pylorak.TinyWall.Resources.Messages.Unlock : pylorak.TinyWall.Resources.Messages.Lock;
@@ -226,6 +216,18 @@ namespace pylorak.TinyWall.Views
             Close();
         }
 
+        private void OnHistoryClick(object? sender, RoutedEventArgs e)
+        {
+            HistoryRequested?.Invoke();
+            Close();
+        }
+
+        private void OnStatsClick(object? sender, RoutedEventArgs e)
+        {
+            StatsRequested?.Invoke();
+            Close();
+        }
+
         private void OnLogsClick(object? sender, RoutedEventArgs e)
         {
             LogsRequested?.Invoke();
@@ -252,19 +254,6 @@ namespace pylorak.TinyWall.Views
             Close();
         }
 
-        // ---------- Toggle clicks ----------
-
-        private void OnAllowLocalSubnetClick(object? sender, RoutedEventArgs e)
-        {
-            ToggleLocalSubnetRequested?.Invoke();
-            Close();
-        }
-
-        private void OnEnableHostsBlocklistClick(object? sender, RoutedEventArgs e)
-        {
-            ToggleHostsBlocklistRequested?.Invoke();
-            Close();
-        }
 
         // ---------- Lock click ----------
 

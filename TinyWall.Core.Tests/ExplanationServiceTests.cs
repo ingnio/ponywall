@@ -58,7 +58,7 @@ namespace pylorak.TinyWall.Tests
             record.ModeAtEvent = FirewallMode.BlockAll;
             var config = CreateTestServerConfiguration();
 
-            var result = NewService().ExplainAgainst(record, config, FirewallMode.BlockAll);
+            var result = ExplanationService.ExplainAgainst(record, config, FirewallMode.BlockAll);
 
             Assert.Equal(ReasonId.BlockedByModeBlockAll, result.PrimaryReason);
             Assert.Equal(Confidence.Medium, result.Confidence);
@@ -76,7 +76,7 @@ namespace pylorak.TinyWall.Tests
                 new UnrestrictedPolicy());
             var config = CreateTestServerConfiguration(otherEx);
 
-            var result = NewService().ExplainAgainst(record, config, FirewallMode.Normal);
+            var result = ExplanationService.ExplainAgainst(record, config, FirewallMode.Normal);
 
             Assert.Equal(ReasonId.BlockedNoMatchInNormal, result.PrimaryReason);
             // There are remediation buttons offered for "add allow rule".
@@ -99,7 +99,7 @@ namespace pylorak.TinyWall.Tests
             // Event is UDP on port 53 — wrong port for the policy.
             var record = BlockedOutboundEvent(protocol: Protocol.TCP, remotePort: 53);
 
-            var result = NewService().ExplainAgainst(record, config, FirewallMode.Normal);
+            var result = ExplanationService.ExplainAgainst(record, config, FirewallMode.Normal);
 
             Assert.Equal(ReasonId.BlockedRestrictedPorts, result.PrimaryReason);
             Assert.NotEmpty(result.NearMisses);
@@ -118,7 +118,7 @@ namespace pylorak.TinyWall.Tests
             var record = BlockedOutboundEvent();
             record.Action = EventAction.Allow;
 
-            var result = NewService().ExplainAgainst(record, config, FirewallMode.Normal);
+            var result = ExplanationService.ExplainAgainst(record, config, FirewallMode.Normal);
 
             Assert.Equal(ReasonId.AllowedByMatchedRule, result.PrimaryReason);
             Assert.Equal(ex.Id.ToString(), result.MatchedRuleId);
@@ -176,7 +176,7 @@ namespace pylorak.TinyWall.Tests
             );
 
             var record = BlockedOutboundEvent();
-            var result = NewService().ExplainAgainst(record, config, FirewallMode.Normal);
+            var result = ExplanationService.ExplainAgainst(record, config, FirewallMode.Normal);
 
             Assert.Equal(ReasonId.BlockedNoMatchInNormal, result.PrimaryReason);
             // Top 3 near-misses should all be chrome.exe (by filename match),
@@ -195,7 +195,7 @@ namespace pylorak.TinyWall.Tests
             var config = CreateTestServerConfiguration(ex);
 
             var record = BlockedOutboundEvent();
-            var result = NewService().ExplainAgainst(record, config, FirewallMode.Normal);
+            var result = ExplanationService.ExplainAgainst(record, config, FirewallMode.Normal);
 
             Assert.Equal(ReasonId.BlockedByMatchedBlockRule, result.PrimaryReason);
             Assert.Equal(ex.Id.ToString(), result.MatchedRuleId);
@@ -211,7 +211,7 @@ namespace pylorak.TinyWall.Tests
 
             var record = BlockedOutboundEvent(protocol: Protocol.TCP, remotePort: 443);
             record.Action = EventAction.Allow;
-            var result = NewService().ExplainAgainst(record, config, FirewallMode.Normal);
+            var result = ExplanationService.ExplainAgainst(record, config, FirewallMode.Normal);
 
             Assert.Equal(ReasonId.AllowedByMatchedRule, result.PrimaryReason);
         }

@@ -190,6 +190,22 @@
         </StackPanel>
       </Button>
 
+      <!-- History -->
+      <Button Classes="menuItem" x:Name="BtnHistory" Click="OnHistoryClick">
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <TextBlock Classes="menuIcon" Text="&#xE81C;" />
+          <TextBlock Text="History..." />
+        </StackPanel>
+      </Button>
+
+      <!-- Stats -->
+      <Button Classes="menuItem" x:Name="BtnStats" Click="OnStatsClick">
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <TextBlock Classes="menuIcon" Text="&#xE9D9;" />
+          <TextBlock Text="Stats..." />
+        </StackPanel>
+      </Button>
+
       <!-- Logs -->
       <Button Classes="menuItem" x:Name="BtnLogs" Click="OnLogsClick">
         <StackPanel Orientation="Horizontal" Spacing="10">
@@ -221,24 +237,6 @@
           <TextBlock Text="Window..." />
         </Button>
       </StackPanel>
-
-      <Separator Classes="menuSep" />
-
-      <!-- Allow Local Subnet -->
-      <Button Classes="menuItem" x:Name="BtnAllowLocalSubnet" Click="OnAllowLocalSubnetClick">
-        <StackPanel Orientation="Horizontal" Spacing="8">
-          <TextBlock x:Name="IndLocalSubnet" Classes="indicator" Text="☐" />
-          <TextBlock Text="Allow Local Subnet" />
-        </StackPanel>
-      </Button>
-
-      <!-- Enable Hosts Blocklist -->
-      <Button Classes="menuItem" x:Name="BtnEnableHostsBlocklist" Click="OnEnableHostsBlocklistClick">
-        <StackPanel Orientation="Horizontal" Spacing="8">
-          <TextBlock x:Name="IndHostsBlocklist" Classes="indicator" Text="☐" />
-          <TextBlock Text="Enable Hosts Blocklist" />
-        </StackPanel>
-      </Button>
 
       <Separator Classes="menuSep" />
 

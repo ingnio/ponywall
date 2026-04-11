@@ -554,7 +554,7 @@ namespace pylorak.TinyWall.History
             }
         }
 
-        private static FirewallEventRecord MapRecord(SqliteDataReader r)
+        internal static FirewallEventRecord MapRecord(SqliteDataReader r)
         {
             var rec = new FirewallEventRecord
             {

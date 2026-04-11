@@ -24,12 +24,6 @@ namespace pylorak.TinyWall
         [ObservableProperty]
         private string _trafficRateText = "--";
 
-        [ObservableProperty]
-        private bool _isLocalSubnetAllowed;
-
-        [ObservableProperty]
-        private bool _isHostsBlocklistEnabled;
-
         public event EventHandler? QuitRequested;
 
         public TrayViewModel(Controller controller)
@@ -77,54 +71,6 @@ namespace pylorak.TinyWall
             }
         }
 
-
-        [RelayCommand]
-        private void ToggleLocalSubnet()
-        {
-            try
-            {
-                Guid changeset = System.Guid.Empty;
-                _controller.GetServerConfig(out var config, out _, ref changeset);
-                if (config == null) return;
-
-                config.ActiveProfile.AllowLocalSubnet = !config.ActiveProfile.AllowLocalSubnet;
-                var resp = _controller.SetServerConfig(config, changeset);
-                if (resp.Type == MessageType.PUT_SETTINGS)
-                {
-                    IsLocalSubnetAllowed = config.ActiveProfile.AllowLocalSubnet;
-                    NotificationService.Notify(pylorak.TinyWall.Resources.Messages.TheFirewallSettingsHaveBeenUpdated);
-                }
-            }
-            catch (Exception ex)
-            {
-                Utils.LogException(ex, Utils.LOG_ID_GUI);
-                NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
-            }
-        }
-
-        [RelayCommand]
-        private void ToggleHostsBlocklist()
-        {
-            try
-            {
-                Guid changeset = System.Guid.Empty;
-                _controller.GetServerConfig(out var config, out _, ref changeset);
-                if (config == null) return;
-
-                config.Blocklists.EnableHostsBlocklist = !config.Blocklists.EnableHostsBlocklist;
-                var resp = _controller.SetServerConfig(config, changeset);
-                if (resp.Type == MessageType.PUT_SETTINGS)
-                {
-                    IsHostsBlocklistEnabled = config.Blocklists.EnableHostsBlocklist;
-                    NotificationService.Notify(pylorak.TinyWall.Resources.Messages.TheFirewallSettingsHaveBeenUpdated);
-                }
-            }
-            catch (Exception ex)
-            {
-                Utils.LogException(ex, Utils.LOG_ID_GUI);
-                NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
-            }
-        }
 
         [RelayCommand]
         internal async Task ToggleLockAsync()
