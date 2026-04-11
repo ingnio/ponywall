@@ -20,9 +20,41 @@ namespace pylorak.TinyWall.DatabaseClasses
             get { return System.IO.Path.Combine(Utils.AppDataPath, "profiles.json"); }
         }
 
+        private const string EmbeddedSeedResourceName = "pylorak.TinyWall.DatabaseClasses.profiles.json";
+
         public static AppDatabase Load()
         {
-            return SerializationHelper.DeserializeFromFile(DBPath, new AppDatabase());
+            // Try the on-disk copy first. This is where the service persists
+            // any modifications (new known apps, user edits flushed through
+            // the pipe handler, etc.). Empty/missing/corrupt is handled by
+            // the fallback below.
+            try
+            {
+                if (System.IO.File.Exists(DBPath) && new System.IO.FileInfo(DBPath).Length > 0)
+                    return SerializationHelper.DeserializeFromFile(DBPath, new AppDatabase(), readOnlySource: true);
+            }
+            catch
+            {
+                // Fall through to embedded fallback. We do NOT re-throw or log
+                // here because the embedded fallback produces a working app,
+                // and the caller's try/catch (App.OnFrameworkInitializationCompleted)
+                // would otherwise catch this and leave us with an empty
+                // AppDatabase — exactly the bug this method is fixing.
+            }
+
+            // Fall back to the embedded seed shipped in PonyWall.Core.dll. This
+            // is the source of truth for a fresh install where no disk file
+            // exists yet (dev builds, manual extract, bin\Release launches
+            // that bypass the installer, first run after a PonyWall→PonyWall
+            // upgrade that wipes ProgramData, ...). The embedded copy is
+            // linked from installer/profiles.json at build time — see the
+            // EmbeddedResource entry in PonyWall.Core.csproj.
+            var asm = typeof(AppDatabase).Assembly;
+            using var seedStream = asm.GetManifestResourceStream(EmbeddedSeedResourceName)
+                ?? throw new System.IO.FileNotFoundException(
+                    $"Embedded seed resource '{EmbeddedSeedResourceName}' is missing from {asm.GetName().Name}. " +
+                    $"Check the EmbeddedResource entry in PonyWall.Core.csproj.");
+            return SerializationHelper.Deserialize(seedStream, new AppDatabase());
         }
 
         public void Save(string filePath)

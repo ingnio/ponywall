@@ -4,13 +4,16 @@
 # entries, each stored as an embedded PNG (Vista+ supports PNG-in-ICO natively
 # and this avoids hand-rolling DIB encoding with the AND-mask quirk).
 #
-# The source PNG can be any aspect ratio; the image is scaled to fit inside
-# each target square and padded with white (the source's own background
-# happens to be near-white with flame glow, so white padding blends in).
+# The source PNG can be any aspect ratio. The image is scaled to fit inside
+# each target square. Padding outside the aspect rectangle is transparent by
+# default — pass -BackgroundFill White (or any Color name) to get a solid
+# fill instead, useful when the source is RGB without alpha and you want
+# the icon to blend in on light-themed surfaces.
 
 param(
     [Parameter(Mandatory=$true)][string]$Source,
-    [Parameter(Mandatory=$true)][string]$Destination
+    [Parameter(Mandatory=$true)][string]$Destination,
+    [Parameter(Mandatory=$false)][string]$BackgroundFill = ''
 )
 
 Add-Type -AssemblyName System.Drawing
@@ -34,8 +37,13 @@ try {
                 $g.PixelOffsetMode     = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
                 $g.CompositingQuality  = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
 
-                # Paint white background so we preserve the source's light feel.
-                $g.Clear([System.Drawing.Color]::White)
+                # Default canvas state for Format32bppArgb is fully transparent,
+                # which is what we want for icons (so whatever the OS paints
+                # behind the tray/taskbar shows through around the artwork).
+                # Only opt into a solid fill if -BackgroundFill was specified.
+                if (-not [string]::IsNullOrEmpty($BackgroundFill)) {
+                    $g.Clear([System.Drawing.Color]::FromName($BackgroundFill))
+                }
 
                 # Fit-inside scale + center.
                 $scale   = [Math]::Min($size / $srcW, $size / $srcH)

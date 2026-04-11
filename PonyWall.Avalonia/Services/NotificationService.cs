@@ -228,9 +228,10 @@ namespace pylorak.TinyWall
 
             if (action == Action_AllowOnce)
             {
+                // No success notify: the user clicked an action button on a
+                // toast. Popping another toast to confirm the first one worked
+                // is redundant noise. Errors still notify below.
                 _controller.AddTemporaryException(new[] { exception });
-                Notify(string.Format(CultureInfo.CurrentCulture,
-                    "Allowed {0} for this session.", appName ?? subject.ToString()));
                 return;
             }
 
@@ -263,14 +264,11 @@ namespace pylorak.TinyWall
 
             config.ActiveProfile.AddExceptions(toAdd);
             var resp = _controller.SetServerConfig(config, changeset);
-            if (resp.Type == MessageType.PUT_SETTINGS)
+            if (resp.Type != MessageType.PUT_SETTINGS)
             {
-                string verb = action == Action_BlockAlways ? "Blocked" : "Allowed";
-                Notify(string.Format(CultureInfo.CurrentCulture,
-                    "{0} {1} permanently.", verb, appName ?? subject.ToString()));
-            }
-            else
-            {
+                // Error still surfaces — silent failure would leave the user
+                // with no idea the toast button didn't take effect. Success
+                // is intentionally silent (see AllowOnce comment above).
                 Notify("Firewall rule update failed.", NotificationLevel.Error);
             }
         }

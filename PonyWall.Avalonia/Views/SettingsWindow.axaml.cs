@@ -215,7 +215,7 @@ namespace pylorak.TinyWall.Views
                 txtPasswordAgain.Text = string.Empty;
 
                 // Version label
-                lblVersion.Text = string.Format(CultureInfo.CurrentCulture, "TinyWall {0}",
+                lblVersion.Text = string.Format(CultureInfo.CurrentCulture, "PonyWall {0}",
                     System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "");
             }
             finally

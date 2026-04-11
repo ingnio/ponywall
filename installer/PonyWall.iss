@@ -60,6 +60,13 @@ Source: "..\publish\{#MyServiceExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\CHANGES.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
+; Seed the default application-definitions database. Contains all the
+; well-known apps (browsers, system services, etc.) and their Special
+; Exceptions Recommended/Optional classifications. Without this file the
+; Settings > Special Exceptions tab renders as empty lists. onlyifdoesntexist
+; so a user's customized config isn't clobbered on reinstall; uninsneveruninstall
+; so the user's config survives an uninstall (logs are cleaned up separately).
+Source: "profiles.json"; DestDir: "{commonappdata}\PonyWall"; Flags: onlyifdoesntexist uninsneveruninstall
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

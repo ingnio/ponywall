@@ -286,13 +286,15 @@ namespace pylorak.TinyWall
                 {
                     var (tmpConfig, newPassword) = result.Value;
 
-                    // Apply server config
+                    // Apply server config. No success toast: the user clicked
+                    // OK in Settings and the dialog closing is confirmation
+                    // enough. Keep the error toast because a silent failure
+                    // would leave the user thinking the change took effect.
                     var resp = _controller.SetServerConfig(tmpConfig.Service, _clientChangeset);
                     if (resp.Type == MessageType.PUT_SETTINGS)
                     {
                         var putResp = (TwMessagePutSettings)resp;
                         _clientChangeset = putResp.Changeset;
-                        NotificationService.Notify(pylorak.TinyWall.Resources.Messages.TheFirewallSettingsHaveBeenUpdated);
                     }
                     else
                     {

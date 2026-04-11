@@ -373,11 +373,28 @@ namespace pylorak.TinyWall.Views
             mnuGoogleRemote.IsEnabled = hasRemote;
         }
 
-        private void MnuCreateException_Click(object? sender, RoutedEventArgs e)
+        private async void MnuCreateException_Click(object? sender, RoutedEventArgs e)
         {
             var rec = GetSelectedRecord();
             if (rec is null || _controller is null || string.IsNullOrEmpty(rec.AppPath))
                 return;
+
+            // Immediate visual feedback. The rest of this handler makes a
+            // pipe round-trip (GetServerConfig + SetServerConfig) which
+            // ends in the service reinstalling its WFP filter set — total
+            // wall time is typically 1-3 seconds, during which the UI
+            // would otherwise look frozen and the user would click the
+            // menu item a second time. Disable the trigger, set a busy
+            // cursor, and write a progress line to the existing status
+            // text before the await, so Avalonia's dispatcher paints
+            // these changes before we start the background work.
+            var controller = _controller;
+            var appName = System.IO.Path.GetFileName(rec.AppPath);
+            var prevCursor = Cursor;
+            var prevStatus = txtStatus.Text;
+            Cursor = new Cursor(StandardCursorType.Wait);
+            mnuCreateException.IsEnabled = false;
+            txtStatus.Text = $"Creating exception for {appName}…";
 
             try
             {
@@ -386,32 +403,58 @@ namespace pylorak.TinyWall.Views
                 if (exceptions == null || exceptions.Count == 0)
                     exceptions = new List<FirewallExceptionV3> { new FirewallExceptionV3(subject, new TcpUdpPolicy(true)) };
 
-                Guid changeset = Guid.Empty;
-                _controller.GetServerConfig(out var config, out _, ref changeset);
-                if (config == null)
+                // Push the pipe work off the UI thread so Avalonia can
+                // keep repainting the tray, the menu animations, and any
+                // status/cursor updates while the service is busy.
+                MessageType respType = MessageType.RESPONSE_ERROR;
+                bool configMissing = false;
+                await Task.Run(() =>
                 {
+                    Guid changeset = Guid.Empty;
+                    controller.GetServerConfig(out var config, out _, ref changeset);
+                    if (config == null)
+                    {
+                        configMissing = true;
+                        return;
+                    }
+                    config.ActiveProfile.AddExceptions(exceptions);
+                    var resp = controller.SetServerConfig(config, changeset);
+                    respType = resp.Type;
+                }).ConfigureAwait(true);
+
+                if (configMissing)
+                {
+                    txtStatus.Text = "Service not reachable.";
                     NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
                     return;
                 }
 
-                config.ActiveProfile.AddExceptions(exceptions);
-                var resp = _controller.SetServerConfig(config, changeset);
-                if (resp.Type == MessageType.PUT_SETTINGS)
+                if (respType == MessageType.PUT_SETTINGS)
                 {
-                    NotificationService.Notify(
-                        string.Format(CultureInfo.CurrentCulture,
-                            pylorak.TinyWall.Resources.Messages.FirewallRulesForUnrecognizedChanged,
-                            exceptions[0].Subject.ToString()));
+                    // Success path is intentionally silent beyond the
+                    // status line — no toast. The status bar update is
+                    // the user-visible confirmation that their click
+                    // landed. (Matches the same "no success toast"
+                    // convention applied to Settings OK and first-block
+                    // toast action buttons.)
+                    txtStatus.Text = $"Exception created for {exceptions[0].Subject}.";
                 }
                 else
                 {
+                    txtStatus.Text = "Failed to create exception.";
                     NotificationService.Notify(pylorak.TinyWall.Resources.Messages.OperationFailed, NotificationLevel.Error);
                 }
             }
             catch (Exception ex)
             {
                 Utils.LogException(ex, Utils.LOG_ID_GUI);
+                txtStatus.Text = "Failed to create exception.";
                 NotificationService.Notify("Failed to create exception: " + ex.Message, NotificationLevel.Error);
+            }
+            finally
+            {
+                Cursor = prevCursor;
+                mnuCreateException.IsEnabled = true;
             }
         }
 

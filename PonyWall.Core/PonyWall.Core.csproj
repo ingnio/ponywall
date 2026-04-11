@@ -75,5 +75,14 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="History\Migrations\001_initial.sql" />
+    <!-- Seed application-definitions database. Linked from installer/ so
+         there's exactly one copy tracked in git (the installer ships the same
+         file to %ProgramData%\PonyWall\profiles.json on fresh install, and
+         AppDatabase.Load uses this embedded copy as a fallback when the disk
+         file is missing/empty/corrupt — critical for dev builds that skip
+         the installer entirely). -->
+    <EmbeddedResource Include="..\installer\profiles.json">
+      <LogicalName>pylorak.TinyWall.DatabaseClasses.profiles.json</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
