@@ -1,69 +1,82 @@
 <br />
 <div align="center">
-  <h3 align="center">TinyWall</h3>
+  <h3 align="center">PonyWall</h3>
 
   <p align="center">
-    A free, lightweight and non-intrusive firewall
+    A lightweight Windows firewall with forensic-grade observability.
     <br />
-    <a href="https://tinywall.pados.hu"><strong>Website »</strong></a>
+    <em>Fork of TinyWall · Avalonia UI · .NET 8</em>
   </p>
 </div>
 
 ## About this repository
 
-This is the source code of TinyWall as found at its [website](https://tinywall.pados.hu). Upstream development is now largely inactive, but this repository is provided for anyone who would like to submit their own improvements or fork the project.
+**PonyWall is a fork of [TinyWall](https://github.com/pylorak/tinywall)** by Károly Pados (<https://tinywall.pados.hu>), modified extensively and continued under a new name starting April 2026.
+
+The fork exists because the architectural changes required for the new direction — a port from WinForms to Avalonia, retargeting to .NET 8, splitting the service into its own binary, and adding a SQLite-backed event store with an explanation engine — are too invasive to land as PRs against upstream. Per upstream's own guidance in its README, redistributions must use a different name. This is that different name.
+
+Upstream's design goals ("lightweight, non-intrusive") are respected where possible, but PonyWall deliberately trades some footprint for forensics: it records every blocked event in a persistent history, recomputes explanations against the ruleset snapshot that was active at the time of capture, and surfaces that information through a HistoryWindow, a Stats window, and Windows toast notifications. See [`Docs/EXPLAINABILITY.md`](Docs/EXPLAINABILITY.md) for the design contract.
+
+## How PonyWall differs from upstream TinyWall
+
+- **UI**: Ported from WinForms to [Avalonia 11](https://avaloniaui.net/) with compiled bindings. Runs on .NET 8 with single-file publish and partial trimming.
+- **Service split**: The firewall service is its own binary (`PonyWallService.exe`) separate from the tray UI (`PonyWall.exe` — still sitting in the `TinyWall.Avalonia.exe` source path for now, will be renamed in a later commit).
+- **Observability stack**: SQLite event store (hot/warm schema), per-rule ruleset snapshots (SHA-256 keyed), explanation engine that classifies each event against its historical ruleset and surfaces evidence chips + near-miss rules, forensic JSON export.
+- **Stats**: A dashboard showing top apps/destinations, reason distribution, 24h sparkline, and event-store health.
+- **First-block toasts**: Windows toast notification when a never-before-seen app is blocked, with Allow once / Allow always / Block always action buttons. Deduped per-app with a persistent seen-apps map.
+- **Live tail + time range filters** in HistoryWindow.
+- **Identity rename**: `PonyWall` service, `PonyWallController` pipe, `%ProgramData%\PonyWall\` — can be installed side-by-side with upstream TinyWall without collisions. **Existing TinyWall config is not auto-migrated.**
+
+## Status
+
+**Pre-release.** Version `0.1.0`. I'm dogfooding it as my daily firewall on Windows 11. Expect rough edges.
 
 ## How to build
 
-### Necessary tools
+### Prerequisites
 
-- Microsoft Visual Studio 2019 or 2022
-- [Wix v3.14 Toolset](https://github.com/wixtoolset/wix3/releases/tag/wix3141rtm)
-- [Visual Studio extension for Wix v3 Toolset](https://marketplace.visualstudio.com/items?itemName=WixToolset.WiXToolset)
+- Visual Studio 2022 or 2026 (Build Tools edition is enough — the solution uses classic MSBuild because of COM interop)
+- .NET 8 SDK
+- [Inno Setup 6](https://jrsoftware.org/isdl.php) (only needed if you want to build the installer)
 
-### To build the application
+### Building the binaries
 
-1. Open the solution file in Visual Studio and compile the `TinyWall` project. The other projects referenced inside the solution need not be compiled separately as they will be statically compiled into the application.
-1. Done.
+```
+msbuild PonyWall.sln /p:Configuration=Release
+```
 
-### To update/build build the database of known applications
+Or, for the single-file self-contained publish used by the installer:
 
-1. Adjust the individual JSON files in the `TinyWall\Database` folder.
-1. Start the application with the `/develtool` flag.
-1. Use the `Database creator` tab to create one combined database file in JSON format. The output file will be called `profiles.json`.
-1. To use the new database in debug builds, copy the output file to the `TinyWall\bin\Debug` folder.
-1. Done.
+```
+publish.cmd
+```
 
-### To build the installer
+This produces `PonyWall.exe` and `PonyWallService.exe` under `TinyWall.Avalonia\bin\Release\publish\` (the output path still uses the old project folder name).
 
-1. Copy the compiled application files and all dependencies into the `MsiSetup\Sources\ProgramFiles\TinyWall` folder.
-1. Update the files as necessary inside the `MsiSetup\Sources\CommonAppData\TinyWall` folder. See instructions above about creating the database.
-1. Open the solution file in Visual Studio and compile the `MsiSetup` project.
-1. Done.
+### Building the installer
+
+```
+"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\PonyWall.iss
+```
 
 ## Contributing
 
-Please don't open issues for feature requests or bug reports. Any changes you'd like you will need to implement yourself. If you have improvements that you would like to integrate into TinyWall, please fork the repo and create a pull request.
+Issues and PRs are welcome on this repo. For substantial changes, please open an issue first so we can discuss scope — this is a small-team project and I care about not letting scope creep derail the explainability goals. See `Docs/EXPLAINABILITY.md` for the design contract that guides what belongs in PonyWall.
 
-1. Fork the Project
-1. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-1. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-1. Push to the Branch (`git push origin feature/AmazingFeature`)
-1. Open a Pull Request
-
-For complex features or large changes, please contact me first if your changes are still within the scope of the application.
-
-If you prefer that, you can also build and distribute your own version of the binaries. In this case though you need to choose a different name other than TinyWall for your application.
+Bugs caught during dogfooding are especially welcome. The observability stack is new code and probably has sharp edges.
 
 ## License
 
-- TaskDialog wrapper (code in directory `pylorak.Windows\TaskDialog`) written by KevinGre ([link](https://www.codeproject.com/Articles/17026/TaskDialog-for-WinForms)) and placed under Public Domain.
-- All other code in the repository is under the GNU GPLv3 License. See `LICENSE.txt` for more information.
+PonyWall is licensed under the **GNU GPLv3** (same as upstream TinyWall). See `LICENSE.txt` for the full text.
 
-## Contact
+- Original TinyWall code: Copyright © 2011 Károly Pados
+- PonyWall modifications: Copyright © 2026 ingnio
+- The `TaskDialog` wrapper in `pylorak.Windows\TaskDialog` is Public Domain (originally by KevinGre, [source](https://www.codeproject.com/Articles/17026/TaskDialog-for-WinForms)), retained from upstream.
 
-Károly Pados - find e-mail at the bottom of the project website
+Per GPLv3 section 5(a), this fork carries prominent notices of modification: this README, the `CHANGES.md` file, and each modified file's git history via `git log`/`git blame`.
 
-Website: <https://tinywall.pados.hu>
+## Credits
 
-GitHub: <https://github.com/pylorak/tinywall>
+- **Károly Pados** — original author of TinyWall, the foundation this project builds on. PonyWall exists because TinyWall's core firewall logic (WFP filter management, rule model, app database) is solid enough to be worth preserving and extending. Upstream: <https://tinywall.pados.hu>, <https://github.com/pylorak/tinywall>
+- **Avalonia UI** — the cross-platform .NET UI framework that made the port viable.
+- **SQLite** via Microsoft.Data.Sqlite — powers the event store.

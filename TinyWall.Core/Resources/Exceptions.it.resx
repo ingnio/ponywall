@@ -145,7 +145,7 @@
     <value>Sincronizzazione orologio</value>
   </data>
 	<data name="TinyWall" xml:space="preserve">
-		<value>TinyWall</value>
+		<value>PonyWall</value>
 	</data>
 	<data name="VPN_L2TP_IPSec" xml:space="preserve">
 		<value>VPN L2TP/IPSec</value>

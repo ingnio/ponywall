@@ -87,12 +87,12 @@
     <TrimmerRootAssembly Include="SQLitePCLRaw.core" />
   </ItemGroup>
   <PropertyGroup>
-    <Product>TinyWall</Product>
-    <AssemblyTitle>TinyWall Avalonia</AssemblyTitle>
-    <Company>Karoly Pados</Company>
-    <Description>A free, lightweight and non-intrusive firewall.</Description>
-    <Copyright>Copyright (c) 2011 Karoly Pados</Copyright>
-    <Version>3.4.1</Version>
+    <Product>PonyWall</Product>
+    <AssemblyTitle>PonyWall</AssemblyTitle>
+    <Company>ingnio</Company>
+    <Description>A lightweight Windows firewall with forensic-grade observability. Fork of TinyWall.</Description>
+    <Copyright>Copyright (c) 2011 Károly Pados, 2026 ingnio. Licensed under GPL-3.0-or-later.</Copyright>
+    <Version>0.1.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.2.7" />

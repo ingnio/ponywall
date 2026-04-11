@@ -121,20 +121,20 @@
     <value>업데이트에 필요한 권한을 획득할 수 없습니다.</value>
   <comment></comment></data>
 	<data name="TinyWallUpdater" xml:space="preserve">
-    <value>TinyWall 업데이트</value>
+    <value>PonyWall 업데이트</value>
   <comment></comment></data>
 	<data name="ErrorCheckingForUpdates" xml:space="preserve">
     <value>업데이트 서버에 연결할 수 없습니다.
-서버가 다운 상태일 수 있습니다. 또는 TinyWall이 인터넷에 연결할 수 있는지 확인하고 다시 시도해주세요.</value>
+서버가 다운 상태일 수 있습니다. 또는 PonyWall이 인터넷에 연결할 수 있는지 확인하고 다시 시도해주세요.</value>
   <comment></comment></data>
 	<data name="UpdateAvailable" xml:space="preserve">
-    <value>TinyWall의 새로운 버전 {0} 사용 가능! 지금 업데이트하시겠습니까?</value>
+    <value>PonyWall의 새로운 버전 {0} 사용 가능! 지금 업데이트하시겠습니까?</value>
   <comment></comment></data>
 	<data name="DownloadingUpdate" xml:space="preserve">
     <value>업데이트 내려받는 중...</value>
   <comment></comment></data>
 	<data name="NoUpdateAvailable" xml:space="preserve">
-    <value>TinyWall의 최신 버전을 사용 중입니다. 업데이트가 필요하지 않습니다.</value>
+    <value>PonyWall의 최신 버전을 사용 중입니다. 업데이트가 필요하지 않습니다.</value>
   <comment></comment></data>
 	<data name="DownloadInterrupted" xml:space="preserve">
     <value>다운로드가 중단되었습니다.</value>
@@ -143,17 +143,17 @@
     <value>업데이트 시작 중...</value>
   <comment></comment></data>
 	<data name="TinyWallIsCurrentlyLocked" xml:space="preserve">
-    <value>TinyWall이 현재 잠겨 있습니다. 잠금을 해제하고 다시 시도하세요.</value>
+    <value>PonyWall이 현재 잠겨 있습니다. 잠금을 해제하고 다시 시도하세요.</value>
   <comment></comment></data>
 	<data name="PleaseWaitWhileTinyWallChecksForUpdates" xml:space="preserve">
-    <value>TinyWall이 업데이트를 확인하는 동안 잠시 기다려 주세요.</value>
+    <value>PonyWall이 업데이트를 확인하는 동안 잠시 기다려 주세요.</value>
   <comment></comment></data>
 	<data name="CouldNotWhitelistProcess" xml:space="preserve">
     <value>{0}의 프로세스를 허용할 수 없습니다.</value>
     <comment>Param0 is a file path.</comment>
   </data>
 	<data name="TinyWall" xml:space="preserve">
-    <value>TinyWall</value>
+    <value>PonyWall</value>
   <comment></comment></data>
 	<data name="CouldNotCloseProcess" xml:space="preserve">
     <value>{0}({1}) 프로세스를 종료할 수 없습니다.</value>
@@ -170,7 +170,7 @@
 트레이 메뉴에서 권한 상승을 선택하고 다시 시도하세요.</value>
   </data>
 	<data name="TinyWallSettingsFileFilter" xml:space="preserve">
-    <value>TinyWall 설정</value>
+    <value>PonyWall 설정</value>
     <comment>File filter description</comment>
   </data>
 	<data name="AllFilesFileFilter" xml:space="preserve">
@@ -199,7 +199,7 @@
     <comment>Tray menu text</comment>
   </data>
 	<data name="UpdateAvailableBubble" xml:space="preserve">
-    <value>TinyWall의 새 버전 {0} 사용 가능! 업데이트를 시작하려면 이 버블을 누르세요.</value>
+    <value>PonyWall의 새 버전 {0} 사용 가능! 업데이트를 시작하려면 이 버블을 누르세요.</value>
     <comment>Param0 is version number of new version</comment>
   </data>
 	<data name="TheFirewallIsNowOperatingAsRecommended" xml:space="preserve">
@@ -215,7 +215,7 @@
     <value>방화벽이 현재 비활성화되었습니다.</value>
   <comment></comment></data>
 	<data name="TheTinyWallServiceIsUnavailable" xml:space="preserve">
-    <value>TinyWall 서비스 사용 불가! 서비스가 제대로 설치되었고 시작되었는지 확인한 다음 다시 시도해주세요.</value>
+    <value>PonyWall 서비스 사용 불가! 서비스가 제대로 설치되었고 시작되었는지 확인한 다음 다시 시도해주세요.</value>
   <comment></comment></data>
 	<data name="TrafficIn" xml:space="preserve">
     <value>수신</value>
@@ -241,7 +241,7 @@
     <value>작업 실패됨.</value>
   </data>
 	<data name="CommunicationWithTheServiceError" xml:space="preserve">
-    <value>TinyWall 서비스와의 통신 중 오류가 발생했습니다.</value>
+    <value>PonyWall 서비스와의 통신 중 오류가 발생했습니다.</value>
   </data>
 	<data name="ClickOnAWindowWhitelisting" xml:space="preserve">
     <value>허용할 응용 프로그램을 선택하려면 열린 창의 내부 영역을 누릅니다.</value>
@@ -259,7 +259,7 @@
     <value>인식되지 않은 {0}의 방화벽 규칙이 변경되었습니다. 예외를 편집하려면 이 팝업을 누르세요.</value>
   </data>
 	<data name="TinyWallHasBeenUnlocked" xml:space="preserve">
-    <value>TinyWall이 잠금 해제되었습니다. 이제 구성을 수정하는 명령을 issue할 수 있습니다.</value>
+    <value>PonyWall이 잠금 해제되었습니다. 이제 구성을 수정하는 명령을 issue할 수 있습니다.</value>
     <comment>Deprecated</comment>
   </data>
 	<data name="UnlockFailed" xml:space="preserve">
@@ -336,14 +336,14 @@
   </data>
 	<data name="YouAreAboutToEnterLearningMode" xml:space="preserve">
     <value>자동 학습을 시작하시겠습니까?
-자동 학습 모드에서 TinyWall은 모든 트래픽을 허용하고 네트워크를 사용한 응용 프로그램을 기억합니다. 학습 모드를 종료하면 TinyWall이 자동으로 예외를 추가합니다. 하지만 구성의 "특별 예외"에 대해서는 규칙을 학습 할 수 없다는 점을 알아두세요.
+자동 학습 모드에서 PonyWall은 모든 트래픽을 허용하고 네트워크를 사용한 응용 프로그램을 기억합니다. 학습 모드를 종료하면 PonyWall이 자동으로 예외를 추가합니다. 하지만 구성의 "특별 예외"에 대해서는 규칙을 학습 할 수 없다는 점을 알아두세요.
 
 학습 모드로 진입하기 전에 시스템에 맬웨어가 없는지 확인해주세요. 새로 설치된 시스템에서 학습 모드를 실행하는 것이 가장 좋으며 이 모드를 사용하기 전에 컴퓨터에서 바이러스를 검사하여 무결성을 확인한 상태에서 학습 모드를 사용하는 것이 좋습니다.
 
 지금 학습 모드로 진입하시겠습니까?</value>
   </data>
 	<data name="DidYouInitiateTheUninstall" xml:space="preserve">
-    <value>TinyWall의 제거/업데이트를 시작하셨나요?</value>
+    <value>PonyWall의 제거/업데이트를 시작하셨나요?</value>
   </data>
 	<data name="PortListInvalid" xml:space="preserve">
     <value>포트 목록의 형식이 유효하지 않습니다.

@@ -121,20 +121,20 @@
     <value>Nebylo možné navýšit na privilegia nezbytné pro aktualizaci.</value>
   </data>
   <data name="TinyWallUpdater" xml:space="preserve">
-    <value>TinyWall Aktualizátor</value>
+    <value>PonyWall Aktualizátor</value>
   </data>
   <data name="ErrorCheckingForUpdates" xml:space="preserve">
     <value>Nemohu se spojit s aktualizačním serverem.
-Server může být vypnutý, ale prosím ujistěte se, že TinyWall má přístup k internetu a akci zkuste znovu.</value>
+Server může být vypnutý, ale prosím ujistěte se, že PonyWall má přístup k internetu a akci zkuste znovu.</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
-    <value>Novější verze {0} aplikace TinyWall je dostupná. Chcete nyní aktualizovat?</value>
+    <value>Novější verze {0} aplikace PonyWall je dostupná. Chcete nyní aktualizovat?</value>
   </data>
   <data name="DownloadingUpdate" xml:space="preserve">
     <value>Stahuji aktualizaci...</value>
   </data>
   <data name="NoUpdateAvailable" xml:space="preserve">
-    <value>Máte nejnovější verzi aplikace TinyWall. Žádná aktualizace není dostupná.</value>
+    <value>Máte nejnovější verzi aplikace PonyWall. Žádná aktualizace není dostupná.</value>
   </data>
   <data name="DownloadInterrupted" xml:space="preserve">
     <value>Stahování přerušeno.</value>
@@ -143,10 +143,10 @@ Server může být vypnutý, ale prosím ujistěte se, že TinyWall má přístu
     <value>Započínám aktualizaci...</value>
   </data>
   <data name="TinyWallIsCurrentlyLocked" xml:space="preserve">
-    <value>TinyWall je momentálně uzamčen. Odemkněte jej a akci zopakujte.</value>
+    <value>PonyWall je momentálně uzamčen. Odemkněte jej a akci zopakujte.</value>
   </data>
   <data name="PleaseWaitWhileTinyWallChecksForUpdates" xml:space="preserve">
-    <value>Prosím vyčkejte zatímco TinyWall vyhledává aktualizace.</value>
+    <value>Prosím vyčkejte zatímco PonyWall vyhledává aktualizace.</value>
   </data>
   <data name="CouldNotWhitelistProcess" xml:space="preserve">
     <value>Nebylo možné přidat do whitelistu proces v {0}.</value>
@@ -165,7 +165,7 @@ Server může být vypnutý, ale prosím ujistěte se, že TinyWall má přístu
 Zvolte Navýšit v tray menu a akci zkuste znovu.</value>
   </data>
   <data name="TinyWallSettingsFileFilter" xml:space="preserve">
-    <value>TinyWall Nastavení</value>
+    <value>PonyWall Nastavení</value>
   </data>
   <data name="AllFilesFileFilter" xml:space="preserve">
     <value>Všechny soubory</value>
@@ -189,7 +189,7 @@ Zvolte Navýšit v tray menu a akci zkuste znovu.</value>
     <value>Zamknout</value>
   </data>
   <data name="UpdateAvailableBubble" xml:space="preserve">
-    <value>Novější verze {0} aplikace TinyWall je dostupná. Klikněte na tuto bublinu pro zahájení aktualizace.</value>
+    <value>Novější verze {0} aplikace PonyWall je dostupná. Klikněte na tuto bublinu pro zahájení aktualizace.</value>
   </data>
   <data name="TheFirewallIsNowOperatingAsRecommended" xml:space="preserve">
     <value>Firewall nyní běží v doporučeném módu.</value>
@@ -204,7 +204,7 @@ Zvolte Navýšit v tray menu a akci zkuste znovu.</value>
     <value>Firewall je nyní vypnut.</value>
   </data>
   <data name="TheTinyWallServiceIsUnavailable" xml:space="preserve">
-    <value>Služba TinyWall je nedostupná. Ujistěte se, že je nainstalována a spuštěna, následně akci zopakujte.</value>
+    <value>Služba PonyWall je nedostupná. Ujistěte se, že je nainstalována a spuštěna, následně akci zopakujte.</value>
   </data>
   <data name="TrafficIn" xml:space="preserve">
     <value>Přích</value>
@@ -228,7 +228,7 @@ Zvolte Navýšit v tray menu a akci zkuste znovu.</value>
     <value>Operace selhala.</value>
   </data>
   <data name="CommunicationWithTheServiceError" xml:space="preserve">
-    <value>Komunikace se službou TinyWall selhala.</value>
+    <value>Komunikace se službou PonyWall selhala.</value>
   </data>
   <data name="ClickOnAWindowWhitelisting" xml:space="preserve">
     <value>Klikněte do vnitřku libovolného okna pro selekci jeho aplikace pro přidání do whitelistu.</value>
@@ -246,7 +246,7 @@ Zvolte Navýšit v tray menu a akci zkuste znovu.</value>
     <value>Firewall pravidla pro neznámou aplikaci {0} byla změněna. Klikněte na toto upozornění pro editaci vyjímky.</value>
   </data>
   <data name="TinyWallHasBeenUnlocked" xml:space="preserve">
-    <value>TinyWall byl odemčen. Nyní můžete provádět akce měnící nastavení.</value>
+    <value>PonyWall byl odemčen. Nyní můžete provádět akce měnící nastavení.</value>
   </data>
   <data name="UnlockFailed" xml:space="preserve">
     <value>Odemčení selhalo. Zkuste to prosím znovu.</value>
@@ -310,14 +310,14 @@ Zvolte Navýšit v tray menu a akci zkuste znovu.</value>
   </data>
   <data name="YouAreAboutToEnterLearningMode" xml:space="preserve">
     <value>Opravdu chcete spustit automatický trénink?
-V tomto módu TinyWall povolí veškerou komunikaci a zapamatuje si, které aplikace využívaly připojení k internetu. Po ukončení automaticky přidá vyjímky pro všechny zapamatované programy. Tento režim nefunguje pro speciální vyjímky.
+V tomto módu PonyWall povolí veškerou komunikaci a zapamatuje si, které aplikace využívaly připojení k internetu. Po ukončení automaticky přidá vyjímky pro všechny zapamatované programy. Tento režim nefunguje pro speciální vyjímky.
 
 Před vstupem do tréninkového módu se ujistěte, že se ve vašem systému nenachází aktivní malware. Nejlepší je spuštění tréninkového módu na čistě instalovaném systému a je doporučeno zkontrolovat svůj počítač na malware před použitím tohoto módu.
 
 Chcete nyní přejít do tréninkového módu?</value>
   </data>
   <data name="DidYouInitiateTheUninstall" xml:space="preserve">
-    <value>Vyvolal jste odinstalaci/aktualizaci aplikace TinyWall?</value>
+    <value>Vyvolal jste odinstalaci/aktualizaci aplikace PonyWall?</value>
   </data>
   <data name="PortListInvalid" xml:space="preserve">
     <value>Formát listu portů je neplatný.

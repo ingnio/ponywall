@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:pylorak.TinyWall.ViewModels"
         x:Class="pylorak.TinyWall.Views.SettingsWindow"
-        Title="TinyWall Settings"
+        Title="PonyWall Settings"
         Width="720" Height="580"
         MinWidth="620" MinHeight="480"
         CanResize="True"
@@ -41,7 +41,7 @@
             <Border Classes="card">
               <StackPanel Spacing="8">
                 <TextBlock Text="Password Protection" Classes="sectionHeader" />
-                <TextBlock Text="If set, a password will be required to access TinyWall settings."
+                <TextBlock Text="If set, a password will be required to access PonyWall settings."
                            TextWrapping="Wrap" Classes="subtitle" />
                 <CheckBox Name="chkChangePassword" Content="Change password"
                           Checked="ChkChangePassword_Changed" Unchecked="ChkChangePassword_Changed" />
@@ -203,8 +203,8 @@
             <!-- App info card -->
             <Border Classes="card">
               <StackPanel Spacing="8">
-                <TextBlock Name="lblVersion" Text="TinyWall" Classes="pageTitle" />
-                <TextBlock Text="A free, lightweight and non-intrusive firewall."
+                <TextBlock Name="lblVersion" Text="PonyWall" Classes="pageTitle" />
+                <TextBlock Text="A lightweight Windows firewall with forensic-grade observability. Fork of TinyWall."
                            TextWrapping="Wrap" Classes="subtitle" />
               </StackPanel>
             </Border>

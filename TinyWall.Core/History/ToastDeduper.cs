@@ -9,7 +9,7 @@ namespace pylorak.TinyWall.History
     /// <summary>
     /// Tracks the (app_path -> last_toasted_unix_ms) map used by the
     /// first-block toast feature. Persists to a small JSON file under
-    /// %ProgramData%\TinyWall so that long-running apps that have already
+    /// %ProgramData%\PonyWall so that long-running apps that have already
     /// been seen don't re-toast every time the service restarts.
     ///
     /// Thread-safe: <see cref="ShouldToast"/> is called from the WFP

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace pylorak.TinyWall.Logging
 {
     /// <summary>
-    /// Logger provider that writes to %ProgramData%\TinyWall\logs\{category}.log,
+    /// Logger provider that writes to %ProgramData%\PonyWall\logs\{category}.log,
     /// preserving the legacy Utils.Log file format (blank line, dashed header,
     /// message body, blank line) so that existing log readers continue to work.
     ///

@@ -121,20 +121,20 @@
     <value>לצערנו אין לך הרשאות ניהול הנחוצות לעדכון. ניתן לנסות פעולה שוב, כמנהל-מערכת.</value>
   </data>
 	<data name="TinyWallUpdater" xml:space="preserve">
-    <value>עדכון TinyWall</value>
+    <value>עדכון PonyWall</value>
   </data>
 	<data name="ErrorCheckingForUpdates" xml:space="preserve">
-    <value>לא ניתן לגשת לשרת-העדכונים של TinyWall.
-כדאי לוודא שליישום TinyWall יש רשות לגשת לאינטרנט, שהאינטרנט מחובר, ולנסות שוב.</value>
+    <value>לא ניתן לגשת לשרת-העדכונים של PonyWall.
+כדאי לוודא שליישום PonyWall יש רשות לגשת לאינטרנט, שהאינטרנט מחובר, ולנסות שוב.</value>
   </data>
 	<data name="UpdateAvailable" xml:space="preserve">
-    <value>גרסה חדשה זמינה ({0}), האם לעדכן את TinyWall?</value>
+    <value>גרסה חדשה זמינה ({0}), האם לעדכן את PonyWall?</value>
   </data>
 	<data name="DownloadingUpdate" xml:space="preserve">
     <value>מוריד עדכון חדש...</value>
   </data>
 	<data name="NoUpdateAvailable" xml:space="preserve">
-    <value>TinyWall מעודכן לגרסה החדשה ביותר.</value>
+    <value>PonyWall מעודכן לגרסה החדשה ביותר.</value>
   </data>
 	<data name="DownloadInterrupted" xml:space="preserve">
     <value>ההורדה הופסקה...</value>
@@ -143,10 +143,10 @@
     <value>ההורדה החלה...</value>
   </data>
 	<data name="TinyWallIsCurrentlyLocked" xml:space="preserve">
-    <value>TinyWall נעול כרגע. ניתן להסיר את הנעילה ולנסות שוב.</value>
+    <value>PonyWall נעול כרגע. ניתן להסיר את הנעילה ולנסות שוב.</value>
   </data>
 	<data name="PleaseWaitWhileTinyWallChecksForUpdates" xml:space="preserve">
-    <value>יש להמתין, TinyWall בודק האם קיימים עדכונים זמינים.</value>
+    <value>יש להמתין, PonyWall בודק האם קיימים עדכונים זמינים.</value>
   </data>
 	<data name="CouldNotWhitelistProcess" xml:space="preserve">
     <value>לא ניתן להוסיף את היישום {0} לרשימת היישומים-המותרים</value>
@@ -162,7 +162,7 @@
     <value>יש צורך בהרשאת מנהל-מערכת כדי לבצע פעולה זו. בחירה ב Elevate מהתפריט-הקופץ בתחתית המסך יכולה לעזור, לאחר מכן יש לנסות שוב.</value>
   </data>
 	<data name="TinyWallSettingsFileFilter" xml:space="preserve">
-    <value>הגדרות TinyWall</value>
+    <value>הגדרות PonyWall</value>
     <comment>File filter description</comment>
   </data>
 	<data name="AllFilesFileFilter" xml:space="preserve">
@@ -191,7 +191,7 @@
     <comment>Tray menu text</comment>
   </data>
 	<data name="UpdateAvailableBubble" xml:space="preserve">
-    <value>גרסה חדשה {0} של TinyWall זמינה להורדה. ניתן ללחוץ כאן לעדכון.</value>
+    <value>גרסה חדשה {0} של PonyWall זמינה להורדה. ניתן ללחוץ כאן לעדכון.</value>
     <comment>Param0 is version number of new version</comment>
   </data>
 	<data name="TheFirewallIsNowOperatingAsRecommended" xml:space="preserve">
@@ -207,7 +207,7 @@
     <value>חומת-האש מבוטלת כעת.</value>
   </data>
 	<data name="TheTinyWallServiceIsUnavailable" xml:space="preserve">
-    <value>יישום מסוג-שירות TinyWall לא זמין. יש לוודא כי היישום מסוג-שירות של TinyWall מותקן ורץ. ניתן להשתמש ב services.msc כדי לברר זאת, ולנסות שוב.</value>
+    <value>יישום מסוג-שירות PonyWall לא זמין. יש לוודא כי היישום מסוג-שירות של PonyWall מותקן ורץ. ניתן להשתמש ב services.msc כדי לברר זאת, ולנסות שוב.</value>
   </data>
 	<data name="TrafficIn" xml:space="preserve">
     <value>תעבורת-רשת נכנסת</value>
@@ -233,7 +233,7 @@
     <value>הפעולה לא-הצליחה!</value>
   </data>
 	<data name="CommunicationWithTheServiceError" xml:space="preserve">
-    <value>היישום מסוג-שירות של TinyWall מדווח על שגיאה.</value>
+    <value>היישום מסוג-שירות של PonyWall מדווח על שגיאה.</value>
   </data>
 	<data name="ClickOnAWindowWhitelisting" xml:space="preserve">
     <value>באמצעות מצביע העכבר הקלק על חלקו הפנימי של חלון פתוח לבחירתך, כדי להוסיף לרשימת היישומים המותרים.</value>
@@ -251,10 +251,10 @@
     <value>כלל חומת-האש מזוהה {0} השתנה. הקלד על הודעה זו כדי לערוך מחדש את כלל החריגה.</value>
   </data>
 	<data name="TinyWallHasBeenUnlocked" xml:space="preserve">
-    <value>TinyWall פתוח לשינויים, כעת באפשרותך לשנות הגדרות.</value>
+    <value>PonyWall פתוח לשינויים, כעת באפשרותך לשנות הגדרות.</value>
   </data>
 	<data name="UnlockFailed" xml:space="preserve">
-    <value>הסיסמה שהוכנסה לא מאפשרת לפתוח את נעילת TinyWall, ניתן לנסות שוב עם הסיסמה הנכונה.</value>
+    <value>הסיסמה שהוכנסה לא מאפשרת לפתוח את נעילת PonyWall, ניתן לנסות שוב עם הסיסמה הנכונה.</value>
   </data>
 	<data name="CouldNotElevatePrivileges" xml:space="preserve">
     <value>פעולת elevate נכשלה, לא ניתן לקבל הרשאות ניהול.</value>
@@ -335,7 +335,7 @@
 האם להפעיל מצב למידה-אוטומטית?</value>
   </data>
 	<data name="DidYouInitiateTheUninstall" xml:space="preserve">
-    <value>הפעלת עדכון/הסרה של TinyWall?</value>
+    <value>הפעלת עדכון/הסרה של PonyWall?</value>
   </data>
 	<data name="PortListInvalid" xml:space="preserve">
     <value>רשימת-הפורטים לא תקינה.

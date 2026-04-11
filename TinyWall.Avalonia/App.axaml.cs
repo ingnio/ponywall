@@ -38,7 +38,7 @@ namespace pylorak.TinyWall
                 desktop.MainWindow = null;
 
                 // Initialize the Controller (pipe client to the TinyWall service)
-                _controller = new Controller("TinyWallController");
+                _controller = new Controller("PonyWallController");
 
                 // Wire up first-block toast button click dispatch. Must
                 // happen exactly once per app startup, before any toast
@@ -103,7 +103,7 @@ namespace pylorak.TinyWall
             var trayIcons = new TrayIcons();
             _trayIcon = new TrayIcon
             {
-                ToolTipText = "TinyWall"
+                ToolTipText = "PonyWall"
             };
 
             // Left-click: show custom styled popup menu
@@ -709,7 +709,7 @@ namespace pylorak.TinyWall
                 _ => pylorak.TinyWall.Resources.Messages.FirewallModeUnknown
             };
 
-            _trayIcon.ToolTipText = $"TinyWall - {modeText}";
+            _trayIcon.ToolTipText = $"PonyWall - {modeText}";
         }
     }
 }

@@ -121,19 +121,19 @@
     <value>Недостаточно прав для выполнения обновления.</value>
   </data>
   <data name="TinyWallUpdater" xml:space="preserve">
-    <value>Обновление TinyWall </value>
+    <value>Обновление PonyWall </value>
   </data>
   <data name="ErrorCheckingForUpdates" xml:space="preserve">
-    <value>Не могу соединиться с сервером обновлений. Сервер может быть недоступен. Пожалйста убедитесь, что TinyWall имеет доступ к интернету, а потом попробуйте обновиться снова.  </value>
+    <value>Не могу соединиться с сервером обновлений. Сервер может быть недоступен. Пожалйста убедитесь, что PonyWall имеет доступ к интернету, а потом попробуйте обновиться снова.  </value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
-    <value>Новая версия {0} TinyWall доступна для загрузки и установки. Вы хотите обновить программу прямо сейчас?</value>
+    <value>Новая версия {0} PonyWall доступна для загрузки и установки. Вы хотите обновить программу прямо сейчас?</value>
   </data>
   <data name="DownloadingUpdate" xml:space="preserve">
     <value>Загрузка обновлений...</value>
   </data>
   <data name="NoUpdateAvailable" xml:space="preserve">
-    <value>У вас самая новая версия TinyWall. Обновление не нужно.</value>
+    <value>У вас самая новая версия PonyWall. Обновление не нужно.</value>
   </data>
   <data name="DownloadInterrupted" xml:space="preserve">
     <value>Загрузка прервана.</value>
@@ -142,10 +142,10 @@
     <value>Начинаем обновление...</value>
   </data>
   <data name="TinyWallIsCurrentlyLocked" xml:space="preserve">
-    <value>TinyWall заблокирована. Разблокируйте программу и повторите попытку.</value>
+    <value>PonyWall заблокирована. Разблокируйте программу и повторите попытку.</value>
   </data>
   <data name="PleaseWaitWhileTinyWallChecksForUpdates" xml:space="preserve">
-    <value>Пожалуйста подождите, пока TinyWall проверит доступность обновлений.</value>
+    <value>Пожалуйста подождите, пока PonyWall проверит доступность обновлений.</value>
   </data>
   <data name="CouldNotWhitelistProcess" xml:space="preserve">
     <value>Процесс {0} не удалось добавить в белый список.</value>
@@ -163,7 +163,7 @@
     <value>У вас нет прав администратора для выполнения этой операции. Выберите повышение прав в меню трея и попробуйте снова.</value>
   </data>
   <data name="TinyWallSettingsFileFilter" xml:space="preserve">
-    <value>Настройки TinyWall </value>
+    <value>Настройки PonyWall </value>
   </data>
   <data name="AllFilesFileFilter" xml:space="preserve">
     <value>Все файлы</value>
@@ -184,7 +184,7 @@
     <value>Блокировать</value>
   </data>
   <data name="UpdateAvailableBubble" xml:space="preserve">
-    <value>Новая версия {0} TinyWall доступна. Нажмите на сюда для запуска процесса обновления.</value>
+    <value>Новая версия {0} PonyWall доступна. Нажмите на сюда для запуска процесса обновления.</value>
   </data>
   <data name="TheFirewallIsNowOperatingAsRecommended" xml:space="preserve">
     <value>Фаервол работает в рекомендуемом режиме.</value>
@@ -199,7 +199,7 @@
     <value>Фаервол выключен.</value>
   </data>
   <data name="TheTinyWallServiceIsUnavailable" xml:space="preserve">
-    <value>Служба TinyWall недоступна. Убедитесь, что она установлена и запущена, и повторите попытку.</value>
+    <value>Служба PonyWall недоступна. Убедитесь, что она установлена и запущена, и повторите попытку.</value>
   </data>
   <data name="TrafficIn" xml:space="preserve">
     <value>Входящий</value>
@@ -220,7 +220,7 @@
     <value>Операция не выполнена.</value>
   </data>
   <data name="CommunicationWithTheServiceError" xml:space="preserve">
-    <value>При взаимодействии со службой TinyWall произошла ошибка.</value>
+    <value>При взаимодействии со службой PonyWall произошла ошибка.</value>
   </data>
   <data name="ClickOnAWindowWhitelisting" xml:space="preserve">
     <value>Щелкните мышкой по содержимому любого окна, для его добавления в белый список</value>
@@ -238,7 +238,7 @@
     <value>Правило фаервола для неизвестной программы {0} изменилось. Щелкните по этому сообщению для редактирования исключения.</value>
   </data>
   <data name="TinyWallHasBeenUnlocked" xml:space="preserve">
-    <value>Программа TinyWall разблокирована. Теперь вы можете выполнят команды, изменяющие ее настройки.</value>
+    <value>Программа PonyWall разблокирована. Теперь вы можете выполнят команды, изменяющие ее настройки.</value>
   </data>
   <data name="UnlockFailed" xml:space="preserve">
     <value>Разблокировка неудачна. Попробуйте снова с другим паролем.</value>
@@ -307,14 +307,14 @@
     <value>Автообучение.</value>
   </data>
   <data name="YouAreAboutToEnterLearningMode" xml:space="preserve">
-    <value>Вы уверены, что хотите включить режим автообучения? В этом режиме TinyWall пропускает любой трафик и запоминает приложения, использующие сеть. Когда вы выйдете из режима обучения, TinyWall добавит исключения автоматически. Обратите внимание на то, что правила для "Специальных исключений", в процессе обучения не создаются.
+    <value>Вы уверены, что хотите включить режим автообучения? В этом режиме PonyWall пропускает любой трафик и запоминает приложения, использующие сеть. Когда вы выйдете из режима обучения, PonyWall добавит исключения автоматически. Обратите внимание на то, что правила для "Специальных исключений", в процессе обучения не создаются.
 
 Перед входом в режим обучения убедитесь, что в вашей системе нет вредоносных прграмм. Самый хороший вариант - запуск режима обучения на только что установленной операционной системе. Также рекомендуется проверить компьютер на вирусы.
 
 Вы уверены, что хотите запустить режим обучения прямо сейчас?</value>
   </data>
   <data name="DidYouInitiateTheUninstall" xml:space="preserve">
-    <value>Удалить TinyWall?</value>
+    <value>Удалить PonyWall?</value>
   </data>
   <data name="PortListInvalid" xml:space="preserve">
     <value>Неправильный формат списка портов. Вы можете использовать одно или несколько чисел в диапозоне 1-65535, отделяя их запятыми. Можно использовать звездочку (*) для задания всевозможных портов.</value>

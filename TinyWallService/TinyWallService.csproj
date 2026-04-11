@@ -12,12 +12,12 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
-    <Product>TinyWall Service</Product>
-    <AssemblyTitle>TinyWallService</AssemblyTitle>
-    <Company>Károly Pados</Company>
-    <Description>TinyWall firewall service host.</Description>
-    <Copyright>Copyright © 2011 Károly Pados</Copyright>
-    <Version>3.4.1</Version>
+    <Product>PonyWall Service</Product>
+    <AssemblyTitle>PonyWallService</AssemblyTitle>
+    <Company>ingnio</Company>
+    <Description>PonyWall firewall service host.</Description>
+    <Copyright>Copyright © 2011 Károly Pados, 2026 ingnio. Licensed under GPL-3.0-or-later.</Copyright>
+    <Version>0.1.0</Version>
   </PropertyGroup>
 
   <!-- Publish profile: build with: dotnet publish -c Release -r win-x64 -->

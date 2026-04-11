@@ -122,13 +122,13 @@
   </data>
   <data name="ErrorCheckingForUpdates" xml:space="preserve">
     <value>Geen toegang tot update server.
-de server kan momenteel onberijkbaar zijn, of TinyWall heeft zelf geen toegang tot het internet. Sta TinyWall internettoegang toe en probeer opnieuw.</value>
+de server kan momenteel onberijkbaar zijn, of PonyWall heeft zelf geen toegang tot het internet. Sta PonyWall internettoegang toe en probeer opnieuw.</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
-    <value>Een nieuwere versie {0} van TinyWall os beschikbaar. Wil u nu bijwerken?</value>
+    <value>Een nieuwere versie {0} van PonyWall os beschikbaar. Wil u nu bijwerken?</value>
   </data>
   <data name="NoUpdateAvailable" xml:space="preserve">
-    <value>U heeft de laatste versie van TinyWall. Geen update nodig.</value>
+    <value>U heeft de laatste versie van PonyWall. Geen update nodig.</value>
   </data>
   <data name="DownloadInterrupted" xml:space="preserve">
     <value>Download onderbroken.</value>
@@ -137,10 +137,10 @@ de server kan momenteel onberijkbaar zijn, of TinyWall heeft zelf geen toegang t
     <value>Begin update...</value>
   </data>
   <data name="TinyWallIsCurrentlyLocked" xml:space="preserve">
-    <value>TinyWall is voor het ogenblik ontoegankelijk. Geef TinyWall vrij en herprobeer.</value>
+    <value>PonyWall is voor het ogenblik ontoegankelijk. Geef PonyWall vrij en herprobeer.</value>
   </data>
   <data name="PleaseWaitWhileTinyWallChecksForUpdates" xml:space="preserve">
-    <value>Even geduld. TinyWall kijkt na op updates.</value>
+    <value>Even geduld. PonyWall kijkt na op updates.</value>
   </data>
   <data name="CouldNotWhitelistProcess" xml:space="preserve">
     <value>Opnemen van proces {0}  in whitelist niet geslaagd.</value>
@@ -161,7 +161,7 @@ de server kan momenteel onberijkbaar zijn, of TinyWall heeft zelf geen toegang t
 Kies verhoogde rechten vanuit het tray menu en probeer opnieuw.</value>
   </data>
   <data name="TinyWallSettingsFileFilter" xml:space="preserve">
-    <value>TinyWall Instellingen</value>
+    <value>PonyWall Instellingen</value>
     <comment>File filter description</comment>
   </data>
   <data name="AllFilesFileFilter" xml:space="preserve">
@@ -179,7 +179,7 @@ Kies verhoogde rechten vanuit het tray menu en probeer opnieuw.</value>
     <comment>Tray menu text</comment>
   </data>
   <data name="UpdateAvailableBubble" xml:space="preserve">
-    <value>Een nieuwere versie {0} van TinyWall is beschikbaar. Click deze melding om het update proces op te starten.</value>
+    <value>Een nieuwere versie {0} van PonyWall is beschikbaar. Click deze melding om het update proces op te starten.</value>
     <comment>Param0 is version number of new version</comment>
   </data>
   <data name="TheFirewallIsNowOperatingAsRecommended" xml:space="preserve">
@@ -195,7 +195,7 @@ Kies verhoogde rechten vanuit het tray menu en probeer opnieuw.</value>
     <value>De firewall is nu uitgeschakeld.</value>
   </data>
   <data name="TheTinyWallServiceIsUnavailable" xml:space="preserve">
-    <value>De TinyWall service is niet beschikbaar. Verzeker u ervan dat de service correct is geïnstalleerd en probeer daarna opnieuw.</value>
+    <value>De PonyWall service is niet beschikbaar. Verzeker u ervan dat de service correct is geïnstalleerd en probeer daarna opnieuw.</value>
   </data>
   <data name="TrafficOut" xml:space="preserve">
     <value>Uit</value>
@@ -214,7 +214,7 @@ Kies verhoogde rechten vanuit het tray menu en probeer opnieuw.</value>
     <value>Uitvoering mislukt.</value>
   </data>
   <data name="CommunicationWithTheServiceError" xml:space="preserve">
-    <value>Communicatie met TinyWall service onderbroken door fout.</value>
+    <value>Communicatie met PonyWall service onderbroken door fout.</value>
   </data>
   <data name="ClickOnAWindowWhitelisting" xml:space="preserve">
     <value>Klik op de binnenkant van het open venster om de toepassing op te nemen in de whitelist.</value>
@@ -229,7 +229,7 @@ Kies verhoogde rechten vanuit het tray menu en probeer opnieuw.</value>
     <value>Firewall regels voor niet herkend {0} zijn gewijzigd. Click deze pop-up om de uitzondering te bewerken.</value>
   </data>
   <data name="TinyWallHasBeenUnlocked" xml:space="preserve">
-    <value>TinyWall is vrij gegeven. U kan nu opdrachten toevoegen die de configuratie wijzigen.</value>
+    <value>PonyWall is vrij gegeven. U kan nu opdrachten toevoegen die de configuratie wijzigen.</value>
   </data>
   <data name="UnlockFailed" xml:space="preserve">
     <value>Vrij geven niet gelukt. Probeer opnieuw met een nieuw wachtwoord.</value>
@@ -303,7 +303,7 @@ Vooraleer u de leermodus inschakeld is het aan te raden er zeker van te zijn dat
 Wil automatisch leren nu inschakelen?</value>
   </data>
   <data name="DidYouInitiateTheUninstall" xml:space="preserve">
-    <value>Heeft u de desinstallatie van TinyWall opgestart?</value>
+    <value>Heeft u de desinstallatie van PonyWall opgestart?</value>
   </data>
   <data name="PortListInvalid" xml:space="preserve">
     <value>De opmaak van de poortlijst is ongeldig.

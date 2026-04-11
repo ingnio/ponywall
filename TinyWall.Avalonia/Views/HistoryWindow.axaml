@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:pylorak.TinyWall.ViewModels"
         x:Class="pylorak.TinyWall.Views.HistoryWindow"
-        Title="TinyWall History"
+        Title="PonyWall History"
         Width="1280" Height="620"
         MinWidth="900" MinHeight="420"
         CanResize="True"

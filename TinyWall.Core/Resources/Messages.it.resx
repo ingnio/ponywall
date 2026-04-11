@@ -121,15 +121,15 @@
     <value>Privilegi mancanti per aggiornare.</value>
   </data>
 	<data name="TinyWallUpdater" xml:space="preserve">
-    <value>Aggiornamento di TinyWall</value>
+    <value>Aggiornamento di PonyWall</value>
   </data>
 	<data name="ErrorCheckingForUpdates" xml:space="preserve">
     <value>Non è possibile accedere al server di aggiornamento.
-Il server potrebbe essere assente o assicurarsi che a TinyWall sia stato concesso l'accesso a internet, quindi riprovare.
+Il server potrebbe essere assente o assicurarsi che a PonyWall sia stato concesso l'accesso a internet, quindi riprovare.
 </value>
   </data>
 	<data name="UpdateAvailable" xml:space="preserve">
-    <value>La versione aggiornata {0} di TinyWall è disponibile, vuoi aggiornare adesso ?</value>
+    <value>La versione aggiornata {0} di PonyWall è disponibile, vuoi aggiornare adesso ?</value>
   </data>
 	<data name="DownloadingUpdate" xml:space="preserve">
     <value>Scaricamento dell'aggiornamento...</value>
@@ -144,7 +144,7 @@ Il server potrebbe essere assente o assicurarsi che a TinyWall sia stato concess
     <value>Avvio aggiornamento...</value>
   </data>
 	<data name="TinyWallIsCurrentlyLocked" xml:space="preserve">
-    <value>TinyWall è attualmente bloccato, sbloccarlo e ritentare.</value>
+    <value>PonyWall è attualmente bloccato, sbloccarlo e ritentare.</value>
   </data>
 	<data name="PleaseWaitWhileTinyWallChecksForUpdates" xml:space="preserve">
     <value>Verifica degli aggiornamenti in corso...</value>
@@ -168,7 +168,7 @@ Selezionare Eleva dal menu, quindi riprovare.
  </value>
   </data>
 	<data name="TinyWallSettingsFileFilter" xml:space="preserve">
-    <value>Impostazioni di TinyWall</value>
+    <value>Impostazioni di PonyWall</value>
   </data>
 	<data name="AllFilesFileFilter" xml:space="preserve">
     <value>Tutti i file</value>
@@ -192,7 +192,7 @@ Selezionare Eleva dal menu, quindi riprovare.
     <value>Blocca</value>
   </data>
 	<data name="UpdateAvailableBubble" xml:space="preserve">
-    <value>La versione aggiornata {0} di TinyWall è disponibile, clicca questo fumetto per aggiornare.</value>
+    <value>La versione aggiornata {0} di PonyWall è disponibile, clicca questo fumetto per aggiornare.</value>
   </data>
 	<data name="TheFirewallIsNowOperatingAsRecommended" xml:space="preserve">
     <value>Il firewall sta operando nella configurazione raccomandata.</value>
@@ -207,7 +207,7 @@ Selezionare Eleva dal menu, quindi riprovare.
     <value>Il firewall è stato disabilitato.</value>
   </data>
 	<data name="TheTinyWallServiceIsUnavailable" xml:space="preserve">
-    <value>Servizio di TinyWall assente, verificare che sia avviato correttamente.</value>
+    <value>Servizio di PonyWall assente, verificare che sia avviato correttamente.</value>
   </data>
 	<data name="SettingHaveChangedRetry" xml:space="preserve">
     <value>La configurazione è cambiata mentre stavi apportando modifiche, applicare le modifiche nuovamente.</value>
@@ -225,7 +225,7 @@ Selezionare Eleva dal menu, quindi riprovare.
     <value>Operazione fallita.</value>
   </data>
 	<data name="CommunicationWithTheServiceError" xml:space="preserve">
-    <value>Comunicazione con il processo di TinyWall fallita.</value>
+    <value>Comunicazione con il processo di PonyWall fallita.</value>
   </data>
 	<data name="ClickOnAWindowWhitelisting" xml:space="preserve">
     <value>Clicca sulla zona interna di qualsiasi finestra aperta per aggiungerla alla whitelist.
@@ -361,7 +361,7 @@ Potrebbe riuscire se si tenta di nuovo.
 </value>
   </data>
 	<data name="TinyWall" xml:space="preserve">
-		<value>TinyWall</value>
+		<value>PonyWall</value>
 	</data>
 	<data name="TrafficIn" xml:space="preserve">
 		<value>Ingresso</value>

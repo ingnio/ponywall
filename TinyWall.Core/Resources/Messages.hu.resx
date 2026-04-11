@@ -121,13 +121,13 @@
     <value>Nincs megfelelő jogosultságom a frissítéshez :/</value>
   </data>
   <data name="TinyWallUpdater" xml:space="preserve">
-    <value>TinyWall Frissítés</value>
+    <value>PonyWall Frissítés</value>
   </data>
   <data name="ErrorCheckingForUpdates" xml:space="preserve">
-    <value>A frissítő szerver nem elérhető. Győződj meg róla, hogy a TinyWall rendelkezik-e engedélyezett internetkapcsolattal és próbáld meg újra.</value>
+    <value>A frissítő szerver nem elérhető. Győződj meg róla, hogy a PonyWall rendelkezik-e engedélyezett internetkapcsolattal és próbáld meg újra.</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
-    <value>A TinyWall egy újabb verziója {0} elérhető. Szeretnéd most frissíteni?</value>
+    <value>A PonyWall egy újabb verziója {0} elérhető. Szeretnéd most frissíteni?</value>
   </data>
   <data name="DownloadingUpdate" xml:space="preserve">
     <value>Frissítés letöltése...</value>
@@ -142,7 +142,7 @@
     <value>Frissítés indul...</value>
   </data>
   <data name="PleaseWaitWhileTinyWallChecksForUpdates" xml:space="preserve">
-    <value>A TinyWall frissítéseket keres...</value>
+    <value>A PonyWall frissítéseket keres...</value>
   </data>
   <data name="CouldNotWhitelistProcess" xml:space="preserve">
     <value>Nem sikerült kizárólistához adni a következő folyamatot {0}.</value>
@@ -162,7 +162,7 @@
     <value>Ezt a feladatot csak Adminisztrátor módban lehet végrehajtani. A tálcán lévő menüben választhatod ki.</value>
   </data>
   <data name="TinyWallSettingsFileFilter" xml:space="preserve">
-    <value>TinyWall Beállítások</value>
+    <value>PonyWall Beállítások</value>
     <comment>File filter description</comment>
   </data>
   <data name="AllFilesFileFilter" xml:space="preserve">
@@ -191,7 +191,7 @@
     <comment>Tray menu text</comment>
   </data>
   <data name="UpdateAvailableBubble" xml:space="preserve">
-    <value>A TinyWall egy újabb verziója {0} elérhető. Kattints erre a buborékra a frissítéshez.</value>
+    <value>A PonyWall egy újabb verziója {0} elérhető. Kattints erre a buborékra a frissítéshez.</value>
     <comment>Param0 is version number of new version</comment>
   </data>
   <data name="TheFirewallIsNowOperatingAsRecommended" xml:space="preserve">
@@ -207,7 +207,7 @@
     <value>A tűzfal jelenleg ki van kapcsolva.</value>
   </data>
   <data name="TheTinyWallServiceIsUnavailable" xml:space="preserve">
-    <value>A TinyWall szolgáltatás nem elérhető.</value>
+    <value>A PonyWall szolgáltatás nem elérhető.</value>
   </data>
   <data name="TrafficIn" xml:space="preserve">
     <value>Be</value>
@@ -233,7 +233,7 @@
     <value>Végrehajtás sikertelen..</value>
   </data>
   <data name="CommunicationWithTheServiceError" xml:space="preserve">
-    <value>Hiba történt a TinyWall szolgáltatással való kommunikáció során.</value>
+    <value>Hiba történt a PonyWall szolgáltatással való kommunikáció során.</value>
   </data>
   <data name="ClickOnAWindowWhitelisting" xml:space="preserve">
     <value>Kattints bármely ablakra, az alkalmazás kizáró-listához adásához.</value>
@@ -251,7 +251,7 @@
     <value>A következő tűzfal szabályozása megváltozott: {0} . Kattints ide a kivétel szerkesztéséhez.</value>
   </data>
   <data name="TinyWallHasBeenUnlocked" xml:space="preserve">
-    <value>TinyWall feloldva. Módosíthatod a konfigurációt.</value>
+    <value>PonyWall feloldva. Módosíthatod a konfigurációt.</value>
   </data>
   <data name="UnlockFailed" xml:space="preserve">
     <value>Feloldás sikertelen. Próbáld másik jelszóval.</value>
@@ -335,7 +335,7 @@ Mielőtt bekapcsolod a tanuló módot, győződj meg róla, hogy a rendszered ma
 Engedélyezed az automatikus tanuló módot?</value>
   </data>
   <data name="DidYouInitiateTheUninstall" xml:space="preserve">
-    <value>Te kezdeményezted a TinyWall eltávolítását vagy frissítését?</value>
+    <value>Te kezdeményezted a PonyWall eltávolítását vagy frissítését?</value>
   </data>
   <data name="PortListInvalid" xml:space="preserve">
     <value>A post lista formázása helytelen.

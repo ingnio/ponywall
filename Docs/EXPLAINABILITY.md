@@ -214,7 +214,7 @@ public sealed record RemediationAction(
 
 ### 5.1 Location and access control
 
-- File path: `%ProgramData%\TinyWall\history.db`
+- File path: `%ProgramData%\PonyWall\history.db`
 - DACL: `BUILTIN\Administrators` full control only. No user, no service,
   no world access. The service process already runs as `LocalSystem`
   which has SYSTEM-level access.
@@ -442,7 +442,7 @@ document and lists the specific acceptance criteria it meets.
 | `ExplanationService` implementation | `TinyWall.Core/History/ExplanationService.cs` |
 | Reason enum + Confidence enum | `TinyWall.Core/History/ReasonId.cs` |
 | Explanation records | `TinyWall.Core/History/Explanation.cs` |
-| History DB file | `%ProgramData%\TinyWall\history.db` |
+| History DB file | `%ProgramData%\PonyWall\history.db` |
 | History UI window | `TinyWall.Avalonia/Views/HistoryWindow.axaml` |
 | History viewmodel | `TinyWall.Avalonia/ViewModels/HistoryViewModel.cs` |
 | This document | `Docs/EXPLAINABILITY.md` |

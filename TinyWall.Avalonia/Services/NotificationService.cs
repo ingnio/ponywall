@@ -71,7 +71,7 @@ namespace pylorak.TinyWall
             try
             {
                 new ToastContentBuilder()
-                    .AddText("TinyWall")
+                    .AddText("PonyWall")
                     .AddText(message)
                     .Show();
             }

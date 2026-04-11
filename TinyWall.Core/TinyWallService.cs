@@ -64,7 +64,7 @@ namespace pylorak.TinyWall
         private bool DisplayCurrentlyOn = true;
         private readonly ServerState VisibleState = new();
 
-        private readonly Engine WfpEngine = new("TinyWall Session", "", FWPM_SESSION_FLAGS.None, 5000);
+        private readonly Engine WfpEngine = new("PonyWall Session", "", FWPM_SESSION_FLAGS.None, 5000);
         private readonly ManagementEventWatcher ProcessStartWatcher = new(new WqlEventQuery("SELECT * FROM Win32_ProcessStartTrace"));
         private readonly EventMerger RuleReloadEventMerger = new(1000);
 
@@ -364,7 +364,7 @@ namespace pylorak.TinyWall
             // Install provider
             var provider = new FWPM_PROVIDER0();
             provider.displayData.name = "Karoly Pados";
-            provider.displayData.description = "TinyWall Provider";
+            provider.displayData.description = "PonyWall Provider";
             provider.serviceName = TinyWallService.SERVICE_NAME;
             provider.flags = FWPM_PROVIDER_FLAGS.FWPM_PROVIDER_FLAG_PERSISTENT;
             provider.providerKey = TINYWALL_PROVIDER_KEY;
@@ -376,7 +376,7 @@ namespace pylorak.TinyWall
             foreach (var layer in layerKeys)
             {
                 var slKey = GetSublayerKey(layer);
-                using var wfpSublayer = new Sublayer($"TinyWall Sublayer for {layer}");
+                using var wfpSublayer = new Sublayer($"PonyWall Sublayer for {layer}");
                 wfpSublayer.Weight = ushort.MaxValue >> 4;
                 wfpSublayer.SublayerKey = slKey;
                 wfpSublayer.ProviderKey = TINYWALL_PROVIDER_KEY;
@@ -1312,7 +1312,7 @@ namespace pylorak.TinyWall
         {
             try
             {
-                const string ATOM_NAME = "TinyWall-NoMachineReboot";
+                const string ATOM_NAME = "PonyWall-NoMachineReboot";
                 bool rebooted = !GlobalAtomTable.Exists(ATOM_NAME);
                 if (rebooted)
                     GlobalAtomTable.Add(ATOM_NAME);
@@ -1732,7 +1732,7 @@ namespace pylorak.TinyWall
             ReenumerateAdresses();
 
             // Fire up pipe
-            ServerPipe = new PipeServerEndpoint(new PipeDataReceived(PipeServerDataReceived), "TinyWallController");
+            ServerPipe = new PipeServerEndpoint(new PipeDataReceived(PipeServerDataReceived), "PonyWallController");
         }
 
         // Entry point for thread that actually issues commands to Windows Firewall.
@@ -2115,7 +2115,7 @@ namespace pylorak.TinyWall
             // Basic software health checks
             ServiceGlobals.HealthCheckCallback?.Invoke(Utils.LOG_ID_SERVICE);
 #else
-                using (var wfp = new Engine("TinyWall Cleanup Session", "", FWPM_SESSION_FLAGS.None, 5000))
+                using (var wfp = new Engine("PonyWall Cleanup Session", "", FWPM_SESSION_FLAGS.None, 5000))
                 using (var trx = wfp.BeginTransaction())
                 {
                     DeleteWfpObjects(wfp, true);
@@ -2136,8 +2136,8 @@ namespace pylorak.TinyWall
             "BFE"
         };
 
-        internal const string SERVICE_NAME = "TinyWall";
-        internal const string SERVICE_DISPLAY_NAME = "TinyWall Service";
+        internal const string SERVICE_NAME = "PonyWall";
+        internal const string SERVICE_DISPLAY_NAME = "PonyWall Service";
 
         private TinyWallServer? Server;
         private Thread? FirewallWorkerThread;

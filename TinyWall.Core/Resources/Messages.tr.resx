@@ -121,20 +121,20 @@
     <value>Güncelleme için gereken özel hakka terfi edilemedi.</value>
   </data>
   <data name="TinyWallUpdater" xml:space="preserve">
-    <value>TinyWall Güncelleyici</value>
+    <value>PonyWall Güncelleyici</value>
   </data>
   <data name="ErrorCheckingForUpdates" xml:space="preserve">
     <value>Güncelleme sunucusuna erişilemedi.
-Sunucu kapalı olabilir yada TinyWall'ın kendine internet erişimi verdiğinden emin olun, sonra tekrar deneyin.</value>
+Sunucu kapalı olabilir yada PonyWall'ın kendine internet erişimi verdiğinden emin olun, sonra tekrar deneyin.</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
-    <value>TinyWall'ın {0} sürümü çıktı. Şimdi güncellemek istiyormusunuz ?</value>
+    <value>PonyWall'ın {0} sürümü çıktı. Şimdi güncellemek istiyormusunuz ?</value>
   </data>
   <data name="DownloadingUpdate" xml:space="preserve">
     <value>Güncelleme indiriliyor...</value>
   </data>
   <data name="NoUpdateAvailable" xml:space="preserve">
-    <value>TinyWall'ın en son sürümüne sahipsiniz. Şu an güncelleştirme yok.</value>
+    <value>PonyWall'ın en son sürümüne sahipsiniz. Şu an güncelleştirme yok.</value>
   </data>
   <data name="DownloadInterrupted" xml:space="preserve">
     <value>İndirme koptu.</value>
@@ -143,10 +143,10 @@ Sunucu kapalı olabilir yada TinyWall'ın kendine internet erişimi verdiğinden
     <value>Güncelleme başlıyor...</value>
   </data>
   <data name="TinyWallIsCurrentlyLocked" xml:space="preserve">
-    <value>TinyWall şu an kilitli. Kilidi açıp tekrar deneyin.</value>
+    <value>PonyWall şu an kilitli. Kilidi açıp tekrar deneyin.</value>
   </data>
   <data name="PleaseWaitWhileTinyWallChecksForUpdates" xml:space="preserve">
-    <value>TinyWall güncelleme varmı diye kontrol ederken lütfen bekleyin.</value>
+    <value>PonyWall güncelleme varmı diye kontrol ederken lütfen bekleyin.</value>
   </data>
   <data name="CouldNotWhitelistProcess" xml:space="preserve">
     <value>{0} beyazliste işlemi yapılamadı.</value>
@@ -165,7 +165,7 @@ Sunucu kapalı olabilir yada TinyWall'ın kendine internet erişimi verdiğinden
 Sistem menüsünden Yönetici olarak çalıştır'ı seçin ve tekrar deneyin.</value>
   </data>
   <data name="TinyWallSettingsFileFilter" xml:space="preserve">
-    <value>TinyWall Ayarları</value>
+    <value>PonyWall Ayarları</value>
   </data>
   <data name="AllFilesFileFilter" xml:space="preserve">
     <value>Bütün dosyalar</value>
@@ -189,7 +189,7 @@ Sistem menüsünden Yönetici olarak çalıştır'ı seçin ve tekrar deneyin.</
     <value>Kilit</value>
   </data>
   <data name="UpdateAvailableBubble" xml:space="preserve">
-    <value>TinyWall'ın {0} sürümü çıktı. Güncelleme işlemini başlatmak için burayı tıklayın.</value>
+    <value>PonyWall'ın {0} sürümü çıktı. Güncelleme işlemini başlatmak için burayı tıklayın.</value>
   </data>
   <data name="TheFirewallIsNowOperatingAsRecommended" xml:space="preserve">
     <value>Firewall şuan tavsiye modunda çalışıyor.</value>
@@ -204,7 +204,7 @@ Sistem menüsünden Yönetici olarak çalıştır'ı seçin ve tekrar deneyin.</
     <value>Firewall şuan aktif değil.</value>
   </data>
   <data name="TheTinyWallServiceIsUnavailable" xml:space="preserve">
-    <value>TinyWall servisi mevcut değil. TinyWall'ın kurulmuş ve servisin başlamış olduğundan emin olun.</value>
+    <value>PonyWall servisi mevcut değil. PonyWall'ın kurulmuş ve servisin başlamış olduğundan emin olun.</value>
   </data>
   <data name="TrafficIn" xml:space="preserve">
     <value>İç</value>
@@ -228,7 +228,7 @@ Sistem menüsünden Yönetici olarak çalıştır'ı seçin ve tekrar deneyin.</
     <value>İşlem başarısız</value>
   </data>
   <data name="CommunicationWithTheServiceError" xml:space="preserve">
-    <value>TinyWall hizmetiyle iletişim bir hatayla karşılaştı.</value>
+    <value>PonyWall hizmetiyle iletişim bir hatayla karşılaştı.</value>
   </data>
   <data name="ClickOnAWindowWhitelisting" xml:space="preserve">
     <value>Beyazlisteye almak istediğiniz uygulamanın açık penceresinin üstüne tıklayın.</value>
@@ -246,7 +246,7 @@ Sistem menüsünden Yönetici olarak çalıştır'ı seçin ve tekrar deneyin.</
     <value>Onaylanmamış firewall kuralı {0} değiştirildi. İstisnayı düzenlemek için bu pencereye tıklayın.</value>
   </data>
   <data name="TinyWallHasBeenUnlocked" xml:space="preserve">
-    <value>TinyWall'ın kilidi açıldı. Şimdi konfigürasyonu düzenleyebilirsiniz.</value>
+    <value>PonyWall'ın kilidi açıldı. Şimdi konfigürasyonu düzenleyebilirsiniz.</value>
   </data>
   <data name="UnlockFailed" xml:space="preserve">
     <value>Açma başarısız. Parolayı tekrar girmeyi deneyin.</value>
@@ -313,14 +313,14 @@ Sistem menüsünden Yönetici olarak çalıştır'ı seçin ve tekrar deneyin.</
   </data>
   <data name="YouAreAboutToEnterLearningMode" xml:space="preserve">
     <value>Otomatik öğrenme modunu başlatmak istediğinizden emin misiniz ?
-Otomatik öğrenme modunda TinyWall bütün trafiğe izin verecek ve hangi uygulamaların ağı kullandığını kayıt altına alacak. Öğrenme modundan çıktığınız zaman, TinyWall sizin için uygulamaları otomatik olarak kayıt edecektir. Ancak dikkat, kurallar konfigürasyona özel istisnalar içermez.
+Otomatik öğrenme modunda PonyWall bütün trafiğe izin verecek ve hangi uygulamaların ağı kullandığını kayıt altına alacak. Öğrenme modundan çıktığınız zaman, PonyWall sizin için uygulamaları otomatik olarak kayıt edecektir. Ancak dikkat, kurallar konfigürasyona özel istisnalar içermez.
 
 Öğrenme moduna girmeden önce, bilgisayarınızda virüs yada zararlı yazılım olmadığından emin olmalısınız. Öğrenme modunu en iyi şekilde kullanma yöntemi, yeni kurulmuş bir Windows ve bir virüs programıyla komple taranmış bilgisayarda çalıştırmaktır.
 
 Şimdi öğrenme modunu başlatmak istiyormusunuz ?</value>
   </data>
   <data name="DidYouInitiateTheUninstall" xml:space="preserve">
-    <value>TinyWall'ın kaldırılıp güncellenmesi başlasın mı?</value>
+    <value>PonyWall'ın kaldırılıp güncellenmesi başlasın mı?</value>
   </data>
   <data name="PortListInvalid" xml:space="preserve">
     <value>Port listesi biçimi geçersiz.

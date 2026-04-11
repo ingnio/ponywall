@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:pylorak.TinyWall.ViewModels"
         x:Class="pylorak.TinyWall.Views.StatsWindow"
-        Title="TinyWall Stats"
+        Title="PonyWall Stats"
         Width="980" Height="640"
         MinWidth="720" MinHeight="500"
         CanResize="True"

@@ -30,7 +30,7 @@ namespace pylorak.TinyWall
             TinyWallLog.Configure(loggerFactory);
 
             // Single-instance check
-            _singleInstanceMutex = new Mutex(true, @"Local\TinyWallController", out bool createdNew);
+            _singleInstanceMutex = new Mutex(true, @"Local\PonyWallController", out bool createdNew);
             if (!createdNew)
             {
                 // Another instance is already running
