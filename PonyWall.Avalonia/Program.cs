@@ -29,6 +29,26 @@ namespace pylorak.TinyWall
             });
             TinyWallLog.Configure(loggerFactory);
 
+            // Point the service-registration path at the sibling PonyWallService.exe.
+            // Must happen before either the /install branch or the normal-launch
+            // branch — both of them read Utils.ServiceExecutablePath.
+            string serviceExePath = Path.Combine(
+                Path.GetDirectoryName(Utils.ExecutablePath)!,
+                "PonyWallService.exe");
+            if (File.Exists(serviceExePath))
+                Utils.ServiceExecutablePath = serviceExePath;
+
+            // /install mode: this process was spawned by a non-elevated parent via
+            // UAC in order to install the Windows service. We deliberately skip
+            // the single-instance mutex (the parent still holds it, and it's
+            // Local-scoped so the elevated child sees it too) and we do NOT start
+            // the UI — just install the service and exit so the parent's
+            // p.WaitForExit() can return and proceed to launch the UI.
+            if (Array.Exists(args, a => string.Equals(a, "/install", StringComparison.OrdinalIgnoreCase)))
+            {
+                return InstallServiceAsAdmin() ? 0 : 1;
+            }
+
             // Single-instance check
             _singleInstanceMutex = new Mutex(true, @"Local\PonyWallController", out bool createdNew);
             if (!createdNew)
@@ -39,13 +59,6 @@ namespace pylorak.TinyWall
 
             try
             {
-                // Point service registration at the sibling PonyWallService.exe
-                string serviceExePath = Path.Combine(
-                    Path.GetDirectoryName(Utils.ExecutablePath)!,
-                    "PonyWallService.exe");
-                if (File.Exists(serviceExePath))
-                    Utils.ServiceExecutablePath = serviceExePath;
-
                 // Ensure the service is installed and running
                 EnsureServiceRunning();
 
@@ -75,41 +88,14 @@ namespace pylorak.TinyWall
             // Service not running — try to install and start it
             if (Utils.RunningAsAdmin())
             {
-                try
-                {
-                    using var scm = new ServiceControlManager(
-                        ServiceControlAccessRights.SC_MANAGER_CONNECT |
-                        ServiceControlAccessRights.SC_MANAGER_CREATE_SERVICE);
-                    scm.InstallService(
-                        TinyWallService.SERVICE_NAME,
-                        TinyWallService.SERVICE_DISPLAY_NAME,
-                        Utils.ServiceExecutablePath,
-                        TinyWallService.ServiceDependencies,
-                        ServiceStartMode.Automatic);
-                    scm.SetLoadOrderGroup(TinyWallService.SERVICE_NAME, "NetworkProvider");
-                }
-                catch (Exception e)
-                {
-                    Utils.LogException(e, Utils.LOG_ID_GUI);
-                }
-
-                try
-                {
-                    using var sc = new ServiceController(TinyWallService.SERVICE_NAME);
-                    if (sc.Status == ServiceControllerStatus.Stopped)
-                    {
-                        sc.Start();
-                        sc.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(5));
-                    }
-                }
-                catch (Exception e)
-                {
-                    Utils.LogException(e, Utils.LOG_ID_GUI);
-                }
+                InstallServiceAsAdmin();
             }
             else
             {
-                // Not admin — re-launch self with /install to trigger UAC
+                // Not admin — re-launch self with /install to trigger UAC. The
+                // elevated child hits the /install branch at the top of Main,
+                // which skips the single-instance mutex and calls
+                // InstallServiceAsAdmin directly. See Main for the contract.
                 try
                 {
                     using Process p = Utils.StartProcess(Utils.ExecutablePath, "/install", true);
@@ -119,6 +105,55 @@ namespace pylorak.TinyWall
                 {
                     Utils.LogException(e, Utils.LOG_ID_GUI);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Installs and starts the PonyWall service. Caller MUST already be
+        /// running elevated — this method does not check or prompt for UAC.
+        /// Invoked from two places:
+        ///   (1) The normal launch path's EnsureServiceRunning, when the UI
+        ///       itself was launched as admin.
+        ///   (2) Main's /install branch, which handles the elevated child
+        ///       process spawned by a non-elevated parent via UAC.
+        /// Returns true on success, false if either the install or start failed
+        /// (exceptions are caught and logged in both cases).
+        /// </summary>
+        private static bool InstallServiceAsAdmin()
+        {
+            try
+            {
+                using var scm = new ServiceControlManager(
+                    ServiceControlAccessRights.SC_MANAGER_CONNECT |
+                    ServiceControlAccessRights.SC_MANAGER_CREATE_SERVICE);
+                scm.InstallService(
+                    TinyWallService.SERVICE_NAME,
+                    TinyWallService.SERVICE_DISPLAY_NAME,
+                    Utils.ServiceExecutablePath,
+                    TinyWallService.ServiceDependencies,
+                    ServiceStartMode.Automatic);
+                scm.SetLoadOrderGroup(TinyWallService.SERVICE_NAME, "NetworkProvider");
+            }
+            catch (Exception e)
+            {
+                Utils.LogException(e, Utils.LOG_ID_GUI);
+                return false;
+            }
+
+            try
+            {
+                using var sc = new ServiceController(TinyWallService.SERVICE_NAME);
+                if (sc.Status == ServiceControllerStatus.Stopped)
+                {
+                    sc.Start();
+                    sc.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(5));
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                Utils.LogException(e, Utils.LOG_ID_GUI);
+                return false;
             }
         }
 
