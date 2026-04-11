@@ -78,6 +78,17 @@
               </StackPanel>
             </Border>
 
+            <!-- Notifications card -->
+            <Border Classes="card">
+              <StackPanel Spacing="4">
+                <TextBlock Text="Notifications" Classes="sectionHeader" />
+                <CheckBox Name="chkFirstBlockToasts"
+                          Content="Show a toast when a new app is blocked for the first time" />
+                <TextBlock Classes="hint" TextWrapping="Wrap"
+                           Text="Includes Allow once / Allow always / Block always buttons. Per-app cooldown is 5 minutes." />
+              </StackPanel>
+            </Border>
+
             <!-- Blocklists card -->
             <Border Classes="card">
               <StackPanel Spacing="4">

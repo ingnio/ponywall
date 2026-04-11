@@ -42,6 +42,7 @@ namespace pylorak.TinyWall
         private readonly Timer BackfillTimer;
         private readonly CancellationTokenSource BackfillCts = new();
         private long _currentRulesetId;
+        private readonly History.ToastDeduper ToastDeduper = new();
         private readonly FileLocker FileLocker = new();
         private readonly HostsFileManager HostsFileManager = new();
         private DateTime LastControllerCommandTime = DateTime.Now;
@@ -1450,9 +1451,27 @@ namespace pylorak.TinyWall
                             VisibleState.HasPassword = PasswordLock.HasPassword;
                             VisibleState.Locked = PasswordLock.Locked;
 
-                            var ret = args.CreateResponse(ServiceGlobals.ServerChangeset, ServiceGlobals.Config, VisibleState);
-                            VisibleState.ClientNotifs.Clear();  // TODO: VisibleState is a reference so it cleants notifs before client could receive them
-                            return ret;
+                            // Snapshot the queues into a fresh ServerState so
+                            // the response carries them by value. The previous
+                            // version cleared the live lists after returning a
+                            // reference, which (depending on serialization
+                            // timing) made the UI miss them entirely.
+                            var snapshot = new ServerState
+                            {
+                                HasPassword = VisibleState.HasPassword,
+                                Locked = VisibleState.Locked,
+                                Update = VisibleState.Update,
+                                Mode = VisibleState.Mode,
+                                ClientNotifs = new List<MessageType>(VisibleState.ClientNotifs),
+                            };
+                            lock (VisibleState.PendingToasts)
+                            {
+                                snapshot.PendingToasts = new List<History.FirstBlockToastInfo>(VisibleState.PendingToasts);
+                                VisibleState.PendingToasts.Clear();
+                            }
+                            VisibleState.ClientNotifs.Clear();
+
+                            return args.CreateResponse(ServiceGlobals.ServerChangeset, ServiceGlobals.Config, snapshot);
                         }
                         else
                         {
@@ -1526,6 +1545,9 @@ namespace pylorak.TinyWall
                         var args = (TwMessageSimple)req;
                         bool save_needed = false;
                         bool rule_reload_needed = false;
+
+                        // Persist any pending toast-deduper changes.
+                        try { ToastDeduper.Save(); } catch (Exception ex) { Utils.LogException(ex, Utils.LOG_ID_SERVICE); }
 
                         // Check for inactivity and lock if necessary
                         if (DateTime.Now - LastControllerCommandTime > TimeSpan.FromMinutes(10))
@@ -1891,6 +1913,85 @@ namespace pylorak.TinyWall
             }
 
             EventStore.Enqueue(entry, VisibleState.Mode, _currentRulesetId);
+
+            // First-block toast detection. Cheap dedupe + cooldown check on
+            // the WFP callback thread; the actual toast UI is rendered by
+            // the controller process when it next polls GET_SETTINGS.
+            //
+            // We only toast for apps the user has NOT already expressed
+            // intent about. Once any permanent exception exists for an
+            // app (whether Allow or Block), the user has seen the app and
+            // made a decision, so re-toasting would be noise.
+            if (entry.Event == EventLogEvent.BLOCKED
+                && ServiceGlobals.Config?.ActiveProfile?.EnableFirstBlockToasts == true
+                && !HasPermanentExceptionForSubject(entry.AppPath))
+            {
+                long nowMs = new DateTimeOffset(entry.Timestamp.ToUniversalTime(), TimeSpan.Zero).ToUnixTimeMilliseconds();
+                if (ToastDeduper.ShouldToast(entry.AppPath, nowMs))
+                {
+                    ToastDeduper.MarkToasted(entry.AppPath ?? string.Empty, nowMs);
+                    QueueFirstBlockToast(entry, nowMs);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns true if there's already a permanent (non-temporary)
+        /// user exception whose subject matches the given app path. Used
+        /// by the first-block toast gate — if the user has already added
+        /// a rule for this app, they don't need another notification.
+        /// Matches by ExecutableSubject path today; other subject types
+        /// fall through and get toasted (rare edge case).
+        /// </summary>
+        private static bool HasPermanentExceptionForSubject(string? appPath)
+        {
+            if (string.IsNullOrEmpty(appPath))
+                return false;
+
+            var profile = ServiceGlobals.Config?.ActiveProfile;
+            if (profile?.AppExceptions is null)
+                return false;
+
+            foreach (var ex in profile.AppExceptions)
+            {
+                if (ex.Timer != AppExceptionTimer.Permanent)
+                    continue;
+                if (ex.Subject is ExecutableSubject es
+                    && !string.IsNullOrEmpty(es.ExecutablePath)
+                    && string.Equals(es.ExecutablePath, appPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void QueueFirstBlockToast(FirewallLogEntry entry, long nowMs)
+        {
+            var info = new History.FirstBlockToastInfo
+            {
+                AppPath = entry.AppPath ?? string.Empty,
+                AppName = string.IsNullOrEmpty(entry.AppPath)
+                    ? "(unknown)"
+                    : System.IO.Path.GetFileName(entry.AppPath),
+                RemoteIp = entry.RemoteIp,
+                RemotePort = entry.RemotePort,
+                Protocol = entry.Protocol.ToString(),
+                Direction = entry.Direction.ToString(),
+                TimestampUtcMs = nowMs,
+            };
+
+            lock (VisibleState.PendingToasts)
+            {
+                // Bound the queue. If a flood happens between polls, drop
+                // the oldest pending toast rather than letting the list
+                // grow unbounded.
+                if (VisibleState.PendingToasts.Count >= 32)
+                    VisibleState.PendingToasts.RemoveAt(0);
+                VisibleState.PendingToasts.Add(info);
+            }
+
+            ServiceGlobals.ServerChangeset = Guid.NewGuid();
         }
 
         private void AutoLearnLogEntry(FirewallLogEntry entry)

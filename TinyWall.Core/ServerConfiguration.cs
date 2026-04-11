@@ -47,6 +47,9 @@ namespace pylorak.TinyWall
         [DataMember(EmitDefaultValue = false)]
         public bool DisplayOffBlock { get; set; } = false;
 
+        [DataMember(EmitDefaultValue = false)]
+        public bool EnableFirstBlockToasts { get; set; } = true;
+
         public ServerProfileConfiguration()
         { }
 

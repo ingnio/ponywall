@@ -40,6 +40,11 @@ namespace pylorak.TinyWall
                 // Initialize the Controller (pipe client to the TinyWall service)
                 _controller = new Controller("TinyWallController");
 
+                // Wire up first-block toast button click dispatch. Must
+                // happen exactly once per app startup, before any toast
+                // is shown — see Phase 5 in EXPLAINABILITY.md.
+                NotificationService.RegisterFirstBlockHandler(_controller);
+
                 // Load the application database (used by Settings, AppFinder, etc.)
                 try
                 {
@@ -603,10 +608,37 @@ namespace pylorak.TinyWall
                         _lastServerState = state;
                         _viewModel.CurrentMode = state.Mode;
                         _viewModel.IsLocked = state.Locked;
+
+                        // Drain any first-block toasts the service has
+                        // queued for us. The deduper on the service side
+                        // already enforces cooldown, so we render every
+                        // entry verbatim.
+                        if (state.PendingToasts != null && state.PendingToasts.Count > 0)
+                        {
+                            foreach (var toast in state.PendingToasts)
+                                NotificationService.ShowFirstBlockToast(toast);
+                        }
                     }
                     if (config != null)
                     {
                         _lastServerConfig = config;
+                    }
+                }
+
+                // Drain any toast body-click intents (clicking the toast
+                // itself rather than a button). The activator can fire
+                // from a background thread, so the actual window open
+                // happens here on the UI thread.
+                var bodyClicks = NotificationService.DrainBodyClickIntents();
+                if (bodyClicks.Count > 0 && _controller != null)
+                {
+                    foreach (var intent in bodyClicks)
+                    {
+                        var filter = !string.IsNullOrEmpty(intent.AppName)
+                            ? intent.AppName
+                            : intent.AppPath;
+                        if (!string.IsNullOrEmpty(filter))
+                            HistoryWindow.ShowHistoryFiltered(_controller, filter);
                     }
                 }
 

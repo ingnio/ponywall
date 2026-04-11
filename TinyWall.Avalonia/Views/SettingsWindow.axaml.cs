@@ -178,6 +178,7 @@ namespace pylorak.TinyWall.Views
                 chkAllowLocalSubnet.IsChecked = TmpConfig.Service.ActiveProfile.AllowLocalSubnet;
                 chkDisplayOffBlock.IsChecked = TmpConfig.Service.ActiveProfile.DisplayOffBlock;
                 chkLockHostsFile.IsChecked = TmpConfig.Service.LockHostsFile;
+                chkFirstBlockToasts.IsChecked = TmpConfig.Service.ActiveProfile.EnableFirstBlockToasts;
                 chkHostsBlocklist.IsChecked = TmpConfig.Service.Blocklists.EnableHostsBlocklist;
                 chkBlockMalwarePorts.IsChecked = TmpConfig.Service.Blocklists.EnablePortBlocklist;
                 chkEnableBlocklists.IsChecked = TmpConfig.Service.Blocklists.EnableBlocklists;
@@ -400,6 +401,7 @@ namespace pylorak.TinyWall.Views
             TmpConfig.Service.Blocklists.EnableBlocklists = chkEnableBlocklists.IsChecked == true;
             TmpConfig.Service.ActiveProfile.DisplayOffBlock = chkDisplayOffBlock.IsChecked == true;
             TmpConfig.Service.ActiveProfile.AllowLocalSubnet = chkAllowLocalSubnet.IsChecked == true;
+            TmpConfig.Service.ActiveProfile.EnableFirstBlockToasts = chkFirstBlockToasts.IsChecked == true;
 
             // Save language
             var selectedLang = comboLanguages.SelectedItem as LanguageItem;

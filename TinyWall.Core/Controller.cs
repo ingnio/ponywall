@@ -105,5 +105,16 @@ namespace pylorak.TinyWall
             else
                 return string.Empty;
         }
+
+        /// <summary>
+        /// Pushes one or more in-memory firewall exceptions that survive
+        /// only until the next REINIT or service restart. Used by the
+        /// "Allow once" toast button to grant a single-session pass for
+        /// an app without persisting it to ServerConfiguration.
+        /// </summary>
+        public MessageType AddTemporaryException(FirewallExceptionV3[] exceptions)
+        {
+            return Endpoint.QueueMessage(TwMessageAddTempException.CreateRequest(exceptions)).Response.Type;
+        }
     }
 }

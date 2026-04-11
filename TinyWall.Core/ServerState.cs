@@ -40,5 +40,12 @@ namespace pylorak.TinyWall
         public UpdateDescriptor? Update = null;
         public FirewallMode Mode = FirewallMode.Unknown;
         public List<MessageType> ClientNotifs = new();
+
+        /// <summary>
+        /// First-block toasts the service has queued for the UI to render.
+        /// Drained on every successful GET_SETTINGS poll. See
+        /// Docs/EXPLAINABILITY.md section 13.
+        /// </summary>
+        public List<History.FirstBlockToastInfo> PendingToasts = new();
     }
 }
