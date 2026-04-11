@@ -81,6 +81,10 @@
     <TrimmerRootAssembly Include="Avalonia.Win32" />
     <!-- Service controller is used for service install/start -->
     <TrimmerRootAssembly Include="System.ServiceProcess.ServiceController" />
+    <!-- Microsoft.Data.Sqlite + SQLitePCL provider use reflection and
+         native bundle activation that the trimmer can't statically trace. -->
+    <TrimmerRootAssembly Include="Microsoft.Data.Sqlite" />
+    <TrimmerRootAssembly Include="SQLitePCLRaw.core" />
   </ItemGroup>
   <PropertyGroup>
     <Product>TinyWall</Product>

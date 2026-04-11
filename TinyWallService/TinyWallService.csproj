@@ -53,6 +53,10 @@
     <TrimmerRootAssembly Include="pylorak.Windows" />
     <TrimmerRootAssembly Include="pylorak.Windows.Services" />
     <TrimmerRootAssembly Include="pylorak.Windows.WFP" />
+    <!-- Microsoft.Data.Sqlite + SQLitePCL provider use reflection and
+         native bundle activation that the trimmer can't statically trace. -->
+    <TrimmerRootAssembly Include="Microsoft.Data.Sqlite" />
+    <TrimmerRootAssembly Include="SQLitePCLRaw.core" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TinyWall.Core\TinyWall.Core.csproj" />

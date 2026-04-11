@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Management;
 using System.Threading;
+using pylorak.TinyWall.History;
 using pylorak.Windows;
 using pylorak.Windows.Services;
 using pylorak.Windows.WFP;
@@ -36,6 +37,8 @@ namespace pylorak.TinyWall
         private readonly Timer MinuteTimer;
 
         private readonly CircularBuffer<FirewallLogEntry> FirewallLogEntries = new(500);
+        private readonly FirewallEventStore EventStore = new();
+        private long _currentRulesetId;
         private readonly FileLocker FileLocker = new();
         private readonly HostsFileManager HostsFileManager = new();
         private DateTime LastControllerCommandTime = DateTime.Now;
@@ -1054,6 +1057,8 @@ namespace pylorak.TinyWall
             if (CommitLearnedRules() || PruneExpiredRules())
                 ServiceGlobals.Config.Save(ConfigSavePath);
 
+            _currentRulesetId = EventStore.GetOrCreateRulesetSnapshot(SerializationHelper.Serialize(ServiceGlobals.Config));
+
             ReapplySettings();
             InstallFirewallRules();
         }
@@ -1388,6 +1393,7 @@ namespace pylorak.TinyWall
                                 ServiceGlobals.ServerChangeset = Guid.NewGuid();
                                 ServiceGlobals.Config = args.Config;
                                 ServiceGlobals.Config.Save(ConfigSavePath);
+                                _currentRulesetId = EventStore.GetOrCreateRulesetSnapshot(SerializationHelper.Serialize(ServiceGlobals.Config));
                                 ReapplySettings();
                                 InstallFirewallRules();
                             }
@@ -1538,6 +1544,10 @@ namespace pylorak.TinyWall
                             UpdaterMethod();
                         }
 #endif
+
+                        // Hot-to-warm migration and retention cleanup for the history DB.
+                        try { EventStore.RunMaintenance(); }
+                        catch (Exception ex) { Utils.LogException(ex, Utils.LOG_ID_SERVICE); }
 
                         return args.CreateResponse();
                     }
@@ -1856,6 +1866,8 @@ namespace pylorak.TinyWall
             {
                 FirewallLogEntries.Enqueue(entry);
             }
+
+            EventStore.Enqueue(entry, VisibleState.Mode, _currentRulesetId);
         }
 
         private void AutoLearnLogEntry(FirewallLogEntry entry)
@@ -1959,6 +1971,7 @@ namespace pylorak.TinyWall
             GatewayFilterConditions.Dispose();
             DnsFilterConditions.Dispose();
             LogWatcher.Dispose();
+            EventStore.Dispose();
             HostsFileManager.Dispose();
             FileLocker.UnlockAll();
 
