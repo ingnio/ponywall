@@ -170,9 +170,19 @@ namespace pylorak.TinyWall.Views
 
             DateTime now = DateTime.Now;
 
+            // Query all four tables up front. The Active / Listen views use
+            // them conditionally below, but we ALSO use them as a fallback to
+            // recover PIDs for blocked firewall-log entries — see the big
+            // comment on _flowPidLookup below. Without this, the Services
+            // column is empty for every svchost row in the Blocked view
+            // because the FWPM net-event callback doesn't expose process IDs.
+            TcpTable tcp4Table = NetStat.GetExtendedTcp4Table(false);
+            TcpTable tcp6Table = NetStat.GetExtendedTcp6Table(false);
+            UdpTable udp4Table = NetStat.GetExtendedUdp4Table(false);
+            UdpTable udp6Table = NetStat.GetExtendedUdp6Table(false);
+
             // TCP4 table
-            TcpTable tcpTable = NetStat.GetExtendedTcp4Table(false);
-            foreach (TcpRow tcpRow in tcpTable)
+            foreach (TcpRow tcpRow in tcp4Table)
             {
                 if ((chkShowListen.IsChecked == true && tcpRow.State == TcpState.Listen)
                     || (chkShowActive.IsChecked == true && tcpRow.State != TcpState.Listen))
@@ -184,8 +194,7 @@ namespace pylorak.TinyWall.Views
             }
 
             // TCP6 table
-            tcpTable = NetStat.GetExtendedTcp6Table(false);
-            foreach (TcpRow tcpRow in tcpTable)
+            foreach (TcpRow tcpRow in tcp6Table)
             {
                 if ((chkShowListen.IsChecked == true && tcpRow.State == TcpState.Listen)
                     || (chkShowActive.IsChecked == true && tcpRow.State != TcpState.Listen))
@@ -201,22 +210,53 @@ namespace pylorak.TinyWall.Views
             {
                 var dummyEP = new IPEndPoint(0, 0);
 
-                var udpTable = NetStat.GetExtendedUdp4Table(false);
-                foreach (UdpRow udpRow in udpTable)
+                foreach (UdpRow udpRow in udp4Table)
                 {
                     var path = GetPathFromPidCached(procCache, udpRow.ProcessId, _controller);
                     var pi = ProcessInfo.Create(udpRow.ProcessId, path, packageList, servicePids);
                     AddRow(rows, pi, "UDP", udpRow.LocalEndPoint, dummyEP, "Listen", now, RuleDirection.Invalid);
                 }
 
-                udpTable = NetStat.GetExtendedUdp6Table(false);
-                foreach (UdpRow udpRow in udpTable)
+                foreach (UdpRow udpRow in udp6Table)
                 {
                     var path = GetPathFromPidCached(procCache, udpRow.ProcessId, _controller);
                     var pi = ProcessInfo.Create(udpRow.ProcessId, path, packageList, servicePids);
                     AddRow(rows, pi, "UDP", udpRow.LocalEndPoint, dummyEP, "Listen", now, RuleDirection.Invalid);
                 }
             }
+
+            // Build a (Protocol, localIp, localPort) → PID lookup used to
+            // recover owning PIDs for blocked firewall-log entries. The WFP
+            // FWPM_NET_EVENT_HEADER doesn't carry a process id at all — the
+            // service-side WfpNetEventCallback fills FirewallLogEntry.ProcessId
+            // with 0 for every blocked row. That cascades through
+            // ServicePidMap.GetServicesInPid(0) returning an empty set, and
+            // AddRow writing an empty Services column. Long-lived UDP bindings
+            // (Dnscache, mDNS, LLMNR, NetBIOS, SSDP — i.e. the svchost rows
+            // the user actually sees in a fresh PonyWall install) still have
+            // their socket in the UDP table with a correct PID, so we can
+            // recover it by 5-tuple intersection.
+            //
+            // Key by the stringified local address so we don't have to care
+            // about IPv4-mapped-v6 quirks or scope-id differences between
+            // the two tables.
+            var flowPidLookup = new Dictionary<(Protocol proto, string ip, int port), uint>();
+            void AddPidToLookup(Protocol proto, IPEndPoint ep, uint pid)
+            {
+                if (pid == 0) return;
+                var key = (proto, ep.Address.ToString(), ep.Port);
+                // First-writer-wins: the Windows TCP/UDP tables can legitimately
+                // have duplicate local endpoints for different sockets (e.g.
+                // TCP TIME_WAIT lingering next to a fresh LISTEN on the same
+                // port). We'd rather return the wrong PID than no PID at all,
+                // and the first-writer almost always matches.
+                if (!flowPidLookup.ContainsKey(key))
+                    flowPidLookup[key] = pid;
+            }
+            foreach (TcpRow r in tcp4Table) AddPidToLookup(Protocol.TCP, r.LocalEndPoint, r.ProcessId);
+            foreach (TcpRow r in tcp6Table) AddPidToLookup(Protocol.TCP, r.LocalEndPoint, r.ProcessId);
+            foreach (UdpRow r in udp4Table) AddPidToLookup(Protocol.UDP, r.LocalEndPoint, r.ProcessId);
+            foreach (UdpRow r in udp6Table) AddPidToLookup(Protocol.UDP, r.LocalEndPoint, r.ProcessId);
 
             // Firewall log (blocked entries)
             var fwLog = Controller.EndReadFwLog(fwLogRequest.Response);
@@ -296,12 +336,47 @@ namespace pylorak.TinyWall.Views
                     }
                 }
 
+                // Local helper: resolve a blocked entry's PID from
+                // flowPidLookup, trying the exact (proto, ip, port) key
+                // first, then the wildcard-bound variants (0.0.0.0 / :: for
+                // UDP sockets bound to all interfaces). Returns 0 if no
+                // match, leaving entry.ProcessId untouched.
+                uint RecoverPid(Protocol proto, string? localIp, int localPort)
+                {
+                    if (string.IsNullOrEmpty(localIp) || localPort == 0)
+                        return 0;
+                    if (flowPidLookup.TryGetValue((proto, localIp, localPort), out uint pid))
+                        return pid;
+                    // UDP bindings on 0.0.0.0 / :: receive on every interface.
+                    // A multicast/broadcast datagram sent from such a socket
+                    // will have a concrete local IP in the WFP event but the
+                    // table entry shows the wildcard.
+                    if (flowPidLookup.TryGetValue((proto, "0.0.0.0", localPort), out pid))
+                        return pid;
+                    if (flowPidLookup.TryGetValue((proto, "::", localPort), out pid))
+                        return pid;
+                    return 0;
+                }
+
                 for (int i = 0; i < filteredLog.Count; ++i)
                 {
                     FirewallLogEntry entry = filteredLog[i];
 
                     // Correct path capitalization
                     entry.AppPath = Utils.GetExactPath(entry.AppPath);
+
+                    // Recover the owning PID from the live TCP/UDP tables
+                    // if the WFP callback didn't give us one (which is
+                    // always the case on the blocked path — see the
+                    // flowPidLookup comment above). Only fills in ProcessId
+                    // when it's currently 0; we trust non-zero values that
+                    // came from the Security audit log in Learning mode.
+                    if (entry.ProcessId == 0)
+                    {
+                        uint recovered = RecoverPid(entry.Protocol, entry.LocalIp, entry.LocalPort);
+                        if (recovered != 0)
+                            entry.ProcessId = recovered;
+                    }
 
                     var pi = ProcessInfo.Create(entry.ProcessId, entry.AppPath ?? string.Empty, entry.PackageId, packageList, servicePids);
                     AddRow(rows, pi, entry.Protocol.ToString(), new IPEndPoint(IPAddress.Parse(entry.LocalIp ?? "::"), entry.LocalPort), new IPEndPoint(IPAddress.Parse(entry.RemoteIp ?? "::"), entry.RemotePort), "Blocked", entry.Timestamp, entry.Direction);
