@@ -49,7 +49,14 @@
 
         <DataGrid.ContextMenu>
           <ContextMenu Name="rowContextMenu" Opening="ContextMenu_Opening">
-            <MenuItem Header="Unblock" Name="mnuUnblock" Click="MnuUnblock_Click" />
+            <MenuItem Header="Allow">
+              <MenuItem Header="This destination only" Name="mnuAllowThisDest" Click="MnuAllowThisDest_Click" />
+              <MenuItem Header="Anywhere" Name="mnuAllowAnywhere" Click="MnuAllowAnywhere_Click" />
+            </MenuItem>
+            <MenuItem Header="Block">
+              <MenuItem Header="This destination only" Name="mnuBlockThisDest" Click="MnuBlockThisDest_Click" />
+              <MenuItem Header="Anywhere" Name="mnuBlockAnywhere" Click="MnuBlockAnywhere_Click" />
+            </MenuItem>
             <Separator />
             <MenuItem Header="Close Process" Name="mnuCloseProcess" Click="MnuCloseProcess_Click" />
             <Separator />

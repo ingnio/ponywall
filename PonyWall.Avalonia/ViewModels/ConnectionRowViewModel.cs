@@ -17,5 +17,6 @@ namespace pylorak.TinyWall.ViewModels
         public uint Pid { get; set; }
         public string Path { get; set; } = string.Empty;
         public ProcessInfo? ProcessInfo { get; set; }
+        public RuleDirection RawDirection { get; set; }
     }
 }

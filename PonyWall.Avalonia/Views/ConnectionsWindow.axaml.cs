@@ -415,7 +415,8 @@ namespace pylorak.TinyWall.Views
                     Timestamp = ts.ToString("yyyy/MM/dd HH:mm:ss"),
                     Pid = pi.Pid,
                     Path = pi.Path,
-                    ProcessInfo = pi
+                    ProcessInfo = pi,
+                    RawDirection = dir
                 });
             }
             catch (Exception ex)
@@ -460,15 +461,44 @@ namespace pylorak.TinyWall.Views
                 return;
             }
 
-            // Disable Close Process if PID is 0
             mnuCloseProcess.IsEnabled = selected.Pid != 0;
+
+            // "This destination only" needs a non-empty remote address to
+            // build a scoped RuleDef. For listening sockets and flows with
+            // no remote endpoint the option is greyed out.
+            bool hasRemote = !string.IsNullOrEmpty(selected.RemoteAddress)
+                && selected.RemoteAddress != "::"
+                && selected.RemoteAddress != "0.0.0.0";
+            bool hasPath = !string.IsNullOrEmpty(selected.Path) && selected.Path != "System";
+            mnuAllowThisDest.IsEnabled = hasPath && hasRemote;
+            mnuAllowAnywhere.IsEnabled = hasPath;
+            mnuBlockThisDest.IsEnabled = hasPath && hasRemote;
+            mnuBlockAnywhere.IsEnabled = hasPath;
         }
 
-        private void MnuUnblock_Click(object? sender, RoutedEventArgs e)
+        // ===== Allow / Block context menu handlers =====
+
+        private void MnuAllowThisDest_Click(object? sender, RoutedEventArgs e)
+            => ApplyRuleFromContextMenu(ScopeKind.ThisDest, RuleAction.Allow);
+
+        private void MnuAllowAnywhere_Click(object? sender, RoutedEventArgs e)
+            => ApplyRuleFromContextMenu(ScopeKind.Anywhere, RuleAction.Allow);
+
+        private void MnuBlockThisDest_Click(object? sender, RoutedEventArgs e)
+            => ApplyRuleFromContextMenu(ScopeKind.ThisDest, RuleAction.Block);
+
+        private void MnuBlockAnywhere_Click(object? sender, RoutedEventArgs e)
+            => ApplyRuleFromContextMenu(ScopeKind.Anywhere, RuleAction.Block);
+
+        private enum ScopeKind { ThisDest, Anywhere }
+
+        private void ApplyRuleFromContextMenu(ScopeKind scope, RuleAction action)
         {
             var selected = dataGrid.SelectedItems.Cast<ConnectionRowViewModel>().ToList();
             if (selected.Count == 0) return;
 
+            var prevCursor = Cursor;
+            Cursor = new Cursor(StandardCursorType.Wait);
             try
             {
                 var exceptions = new List<FirewallExceptionV3>();
@@ -485,11 +515,55 @@ namespace pylorak.TinyWall.Views
                     else
                         continue;
 
-                    var appExceptions = ServiceGlobals.AppDatabase?.GetExceptionsForApp(subject, false, out _);
-                    if (appExceptions != null && appExceptions.Count > 0)
-                        exceptions.AddRange(appExceptions);
-                    else
-                        exceptions.Add(new FirewallExceptionV3(subject, new TcpUdpPolicy(true)));
+                    if (scope == ScopeKind.Anywhere && action == RuleAction.Allow)
+                    {
+                        // Broad allow — check if the app database has a known
+                        // template for this app (e.g., Chrome's predefined
+                        // rules), which is narrower and more appropriate than
+                        // a raw unrestricted policy. Fall back to unrestricted
+                        // only if no template is found.
+                        var appExceptions = ServiceGlobals.AppDatabase?.GetExceptionsForApp(subject, false, out _);
+                        if (appExceptions != null && appExceptions.Count > 0)
+                            exceptions.AddRange(appExceptions);
+                        else
+                            exceptions.Add(new FirewallExceptionV3(subject, new UnrestrictedPolicy { LocalNetworkOnly = false }));
+                    }
+                    else if (scope == ScopeKind.Anywhere && action == RuleAction.Block)
+                    {
+                        exceptions.Add(new FirewallExceptionV3(subject, HardBlockPolicy.Instance));
+                    }
+                    else if (scope == ScopeKind.ThisDest)
+                    {
+                        // Scoped rule narrowed by the row's flow tuple.
+                        // Same pattern as the toast's BuildScopedRuleListPolicy.
+                        Protocol proto = Enum.TryParse<Protocol>(row.Protocol, true, out var p) ? p : Protocol.Any;
+                        int remotePort = int.TryParse(row.RemotePort, out var rp) ? rp : 0;
+                        RuleDirection dir = row.RawDirection;
+                        if (dir == RuleDirection.Invalid) dir = RuleDirection.InOut;
+
+                        string ruleName = (action == RuleAction.Allow ? "Allow " : "Block ")
+                            + System.IO.Path.GetFileName(pi.Path) + " to "
+                            + (string.IsNullOrEmpty(row.RemoteAddress) ? "unknown" : row.RemoteAddress);
+
+                        var rule = new RuleDef
+                        {
+                            Name = ruleName,
+                            Action = action,
+                            Application = pi.Path,
+                            RemoteAddresses = string.IsNullOrEmpty(row.RemoteAddress) ? null : row.RemoteAddress,
+                            RemotePorts = remotePort > 0
+                                ? remotePort.ToString(CultureInfo.InvariantCulture)
+                                : null,
+                            Protocol = proto,
+                            Direction = dir,
+                        };
+
+                        var policy = new RuleListPolicy
+                        {
+                            Rules = new List<RuleDef> { rule }
+                        };
+                        exceptions.Add(new FirewallExceptionV3(subject, policy));
+                    }
                 }
 
                 if (exceptions.Count == 0) return;
@@ -498,14 +572,20 @@ namespace pylorak.TinyWall.Views
                 _controller.GetServerConfig(out var config, out ServerState? _dummyState, ref changeset);
                 if (config != null)
                 {
+                    // For "Anywhere" scope, replace any existing exceptions for
+                    // the same subject so broad rules don't stack on top of
+                    // prior scoped ones (same convention as the toast's
+                    // replaceExisting flag). Scoped rules accumulate.
+                    if (scope == ScopeKind.Anywhere)
+                    {
+                        foreach (var ex in exceptions)
+                            config.ActiveProfile.AppExceptions.RemoveAll(e => e.Subject.Equals(ex.Subject));
+                    }
+
                     config.ActiveProfile.AddExceptions(exceptions);
                     var resp = _controller.SetServerConfig(config, changeset);
                     if (resp.Type == MessageType.PUT_SETTINGS)
                     {
-                        NotificationService.Notify(
-                            string.Format(System.Globalization.CultureInfo.CurrentCulture,
-                                pylorak.TinyWall.Resources.Messages.FirewallRulesForUnrecognizedChanged,
-                                exceptions[0].Subject.ToString()));
                         UpdateList();
                     }
                     else
@@ -518,6 +598,10 @@ namespace pylorak.TinyWall.Views
             {
                 Utils.LogException(ex, Utils.LOG_ID_GUI);
                 NotificationService.Notify(pylorak.TinyWall.Resources.Messages.CommunicationWithTheServiceError, NotificationLevel.Error);
+            }
+            finally
+            {
+                Cursor = prevCursor;
             }
         }
 
