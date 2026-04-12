@@ -23,6 +23,7 @@ namespace pylorak.TinyWall.Views
         public event Action? ConnectionsRequested;
         public event Action? HistoryRequested;
         public event Action? StatsRequested;
+        public event Action? RulesRequested;
         public event Action? LogsRequested;
         public event Action? WhitelistExeRequested;
         public event Action? WhitelistProcessRequested;
@@ -225,6 +226,12 @@ namespace pylorak.TinyWall.Views
         private void OnStatsClick(object? sender, RoutedEventArgs e)
         {
             StatsRequested?.Invoke();
+            Close();
+        }
+
+        private void OnRulesClick(object? sender, RoutedEventArgs e)
+        {
+            RulesRequested?.Invoke();
             Close();
         }
 

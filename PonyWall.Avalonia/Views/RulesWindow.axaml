@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="pylorak.TinyWall.Views.RulesWindow"
+        Title="PonyWall Firewall Rules"
+        Width="1050" Height="600"
+        WindowStartupLocation="CenterScreen"
+        Icon="avares://PonyWall/Assets/firewall.ico"
+        x:CompileBindings="True"
+        x:DataType="vm:RuleRowViewModel"
+        xmlns:vm="using:pylorak.TinyWall.ViewModels">
+
+  <Grid RowDefinitions="Auto,*,Auto">
+    <!-- Filter -->
+    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8" Spacing="8">
+      <TextBlock Text="Filter:" VerticalAlignment="Center" />
+      <TextBox Name="txtFilter" Width="500"
+               Watermark="Type to filter... (-, AND, OR, &quot;phrase&quot;)"
+               TextChanged="TxtFilter_TextChanged" />
+      <Button Content="Refresh" Click="BtnRefresh_Click" />
+    </StackPanel>
+
+    <!-- DataGrid -->
+    <DataGrid Grid.Row="1" Name="dataGrid"
+              AutoGenerateColumns="False"
+              IsReadOnly="True"
+              CanUserReorderColumns="True"
+              CanUserResizeColumns="True"
+              CanUserSortColumns="True"
+              GridLinesVisibility="Horizontal"
+              HeadersVisibility="Column"
+              SelectionMode="Single">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Action"    Binding="{Binding Path=Action}"          Width="60"  MinWidth="50" />
+        <DataGridTextColumn Header="App"       Binding="{Binding Path=App}"             Width="200" MinWidth="100" />
+        <DataGridTextColumn Header="Service"   Binding="{Binding Path=Service}"         Width="100" MinWidth="60" />
+        <DataGridTextColumn Header="Protocol"  Binding="{Binding Path=Protocol}"        Width="70"  MinWidth="50" />
+        <DataGridTextColumn Header="Direction" Binding="{Binding Path=Direction}"       Width="70"  MinWidth="50" />
+        <DataGridTextColumn Header="Remote Addresses" Binding="{Binding Path=RemoteAddresses}" Width="150" MinWidth="80" />
+        <DataGridTextColumn Header="Remote Ports"     Binding="{Binding Path=RemotePorts}"     Width="100" MinWidth="60" />
+        <DataGridTextColumn Header="Local Ports"      Binding="{Binding Path=LocalPorts}"      Width="100" MinWidth="60" />
+        <DataGridTextColumn Header="Source"    Binding="{Binding Path=Source}"          Width="180" MinWidth="80" />
+        <DataGridTextColumn Header="Rule Name" Binding="{Binding Path=RuleName}"       Width="150" MinWidth="80" />
+      </DataGrid.Columns>
+    </DataGrid>
+
+    <!-- Status bar -->
+    <TextBlock Grid.Row="2" Name="txtStatus" Margin="8,4" Classes="hint" Text="Loading..." />
+  </Grid>
+</Window>

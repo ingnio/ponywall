@@ -206,6 +206,14 @@
         </StackPanel>
       </Button>
 
+      <!-- Firewall Rules -->
+      <Button Classes="menuItem" x:Name="BtnRules" Click="OnRulesClick">
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <TextBlock Classes="menuIcon" Text="&#xE71D;" />
+          <TextBlock Text="Firewall Rules..." />
+        </StackPanel>
+      </Button>
+
       <!-- Logs -->
       <Button Classes="menuItem" x:Name="BtnLogs" Click="OnLogsClick">
         <StackPanel Orientation="Horizontal" Spacing="10">

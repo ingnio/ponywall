@@ -114,6 +114,10 @@ namespace pylorak.TinyWall
             try
             {
                 string body = BuildBodyLine(info);
+                // Show the full path in smaller text below the flow line
+                // so the user can distinguish e.g. two different tailscale
+                // binaries or a legit vs. suspicious exe with the same name.
+                string pathLine = string.IsNullOrEmpty(info.AppPath) ? string.Empty : info.AppPath;
                 string remotePortStr = info.RemotePort.ToString(CultureInfo.InvariantCulture);
 
                 var allowOnce = pylorak.TinyWall.Resources.Messages.FirstBlockNotif_JustThisTime ?? "Just this time";
@@ -132,23 +136,24 @@ namespace pylorak.TinyWall
                     .AddArgument(ArgKey_AppName, info.AppName)
                     .AddText("Blocked: " + info.AppName)
                     .AddText(body)
-                    // Allow scope combo — three items, default "Just this time"
-                    // (the lowest-commitment allow option for an unknown app).
+                    .AddAttributionText(pathLine)
+                    // Allow scope combo — three items. Default is the user's
+                    // last-used selection (persisted in ControllerSettings),
+                    // falling back to "Just this time" if no prior choice.
                     .AddComboBox(
                         ComboId_AllowScope,
                         allowScopeLabel,
-                        Scope_Once,
+                        GetLastAllowScope(),
                         (Scope_Once, allowOnce),
                         (Scope_ThisDest, scopeThisDest),
                         (Scope_Anywhere, scopeAnywhere))
-                    // Block scope combo — two items (no "Block once"; blocks
-                    // are the default for unknown apps so a session-only
-                    // block is a no-op). Default "This destination only"
-                    // is the least-collateral block option.
+                    // Block scope combo — two items. Default is the user's
+                    // last-used selection, falling back to "This destination
+                    // only" (least-collateral option).
                     .AddComboBox(
                         ComboId_BlockScope,
                         blockScopeLabel,
-                        Scope_ThisDest,
+                        GetLastBlockScope(),
                         (Scope_ThisDest, scopeThisDest),
                         (Scope_Anywhere, scopeAnywhere))
                     // Allow/Block buttons — carry the action + flow tuple.
@@ -315,6 +320,11 @@ namespace pylorak.TinyWall
             if (_controller == null || string.IsNullOrEmpty(ctx.AppPath))
                 return;
 
+            // Persist the scope the user chose so the next toast defaults
+            // to the same selection — saves repetitive dropdown changes
+            // for users who always pick the same scope.
+            PersistScopeChoice(ctx.Action, ctx.Scope);
+
             var subject = new ExecutableSubject(ctx.AppPath);
 
             // Allow + "Just this time" is the only session-scoped path;
@@ -448,6 +458,38 @@ namespace pylorak.TinyWall
             if (Enum.TryParse<RuleDirection>(s, ignoreCase: true, out var parsed))
                 return parsed;
             return RuleDirection.InOut;
+        }
+
+        // =================================================================
+        // Persisted scope defaults — read/write via ControllerSettings
+        // =================================================================
+
+        private static string GetLastAllowScope()
+        {
+            var s = ActiveConfig.Controller?.LastAllowScope;
+            // Validate — only return a known value, otherwise fall back.
+            return s == Scope_Once || s == Scope_ThisDest || s == Scope_Anywhere
+                ? s : Scope_Once;
+        }
+
+        private static string GetLastBlockScope()
+        {
+            var s = ActiveConfig.Controller?.LastBlockScope;
+            return s == Scope_ThisDest || s == Scope_Anywhere
+                ? s : Scope_ThisDest;
+        }
+
+        private static void PersistScopeChoice(string action, string? scope)
+        {
+            var ctrl = ActiveConfig.Controller;
+            if (ctrl == null) return;
+
+            if (action == Action_Allow && scope != null)
+                ctrl.LastAllowScope = scope;
+            else if (action == Action_Block && scope != null)
+                ctrl.LastBlockScope = scope;
+
+            try { ctrl.Save(); } catch { }
         }
 
         /// <summary>

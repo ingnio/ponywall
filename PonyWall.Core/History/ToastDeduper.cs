@@ -44,10 +44,16 @@ namespace pylorak.TinyWall.History
         }
 
         /// <summary>
-        /// Returns true if a first-block toast should be raised for the
-        /// given app path right now. If true, the caller MUST then call
-        /// <see cref="MarkToasted"/> with the same path so the cooldown
-        /// is honored.
+        /// Atomically checks whether a first-block toast should be raised
+        /// for the given app path AND, if so, marks it as toasted under the
+        /// same lock acquisition. Returns true if a toast should fire.
+        ///
+        /// The previous two-step API (ShouldToast + MarkToasted) had a
+        /// TOCTOU race: multiple WFP callback threads could slip through
+        /// ShouldToast before the first thread called MarkToasted, causing
+        /// a burst of duplicate toasts for the same app (e.g. Tailscale
+        /// making many rapid DNS attempts). Combining check+mark under one
+        /// lock closes that window.
         ///
         /// Apps with empty/null paths and the well-known noisy system
         /// hosts (System, svchost.exe) are always rejected.
@@ -76,14 +82,19 @@ namespace pylorak.TinyWall.History
                     if (nowUtcMs - last < cooldownMs)
                         return false;
                 }
+
+                // Mark atomically inside the same lock so no other thread
+                // can slip through between check and mark.
+                _lastToastedMs[appPath] = nowUtcMs;
+                _dirty = true;
                 return true;
             }
         }
 
         /// <summary>
-        /// Records the timestamp at which an app was just toasted.
-        /// Marks the deduper dirty so the next <see cref="Save"/> writes
-        /// the change to disk.
+        /// Explicitly records the timestamp at which an app was toasted.
+        /// Used by tests and any code that needs to seed the deduper
+        /// independently of the <see cref="ShouldToast"/> check+mark flow.
         /// </summary>
         public void MarkToasted(string appPath, long nowUtcMs)
         {

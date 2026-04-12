@@ -1927,9 +1927,12 @@ namespace pylorak.TinyWall
                 && !HasPermanentExceptionForSubject(entry.AppPath))
             {
                 long nowMs = new DateTimeOffset(entry.Timestamp.ToUniversalTime(), TimeSpan.Zero).ToUnixTimeMilliseconds();
+                // ShouldToast is now atomic: it checks the cooldown AND
+                // marks the app as toasted under the same lock, closing
+                // the TOCTOU race where concurrent WFP callbacks could
+                // slip through and produce duplicate toasts.
                 if (ToastDeduper.ShouldToast(entry.AppPath, nowMs))
                 {
-                    ToastDeduper.MarkToasted(entry.AppPath ?? string.Empty, nowMs);
                     QueueFirstBlockToast(entry, nowMs);
                 }
             }

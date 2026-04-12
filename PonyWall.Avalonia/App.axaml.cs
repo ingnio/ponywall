@@ -205,6 +205,10 @@ namespace pylorak.TinyWall
             mnuStats.Click += (_, _) => OpenStats();
             menu.Items.Add(mnuStats);
 
+            var mnuRules = new NativeMenuItem("Firewall Rules...");
+            mnuRules.Click += (_, _) => OpenRules();
+            menu.Items.Add(mnuRules);
+
             var mnuLogs = new NativeMenuItem("Open logs folder");
             mnuLogs.Click += (_, _) => OpenLogsFolder();
             menu.Items.Add(mnuLogs);
@@ -247,6 +251,7 @@ namespace pylorak.TinyWall
             menuWindow.ConnectionsRequested += () => OpenConnections();
             menuWindow.HistoryRequested += () => OpenHistory();
             menuWindow.StatsRequested += () => OpenStats();
+            menuWindow.RulesRequested += () => OpenRules();
             menuWindow.LogsRequested += () => OpenLogsFolder();
             menuWindow.WhitelistExeRequested += async () => await WhitelistByExecutableAsync();
             menuWindow.WhitelistProcessRequested += async () => await WhitelistByProcessAsync();
@@ -331,6 +336,12 @@ namespace pylorak.TinyWall
         private void OpenStats()
         {
             StatsWindow.ShowStats();
+        }
+
+        private void OpenRules()
+        {
+            if (_lastServerConfig != null)
+                Views.RulesWindow.ShowRules(_lastServerConfig);
         }
 
         private void OpenLogsFolder()

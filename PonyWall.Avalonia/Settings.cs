@@ -103,6 +103,15 @@ namespace pylorak.TinyWall
         [DataMember(EmitDefaultValue = false)]
         public Dictionary<string, int> SettingsFormAppListColumnWidths = new();
 
+        // First-block toast scope preferences. Persisted so the user's
+        // preferred scope carries across toasts and sessions (e.g., if you
+        // always pick "Anywhere", the next toast defaults to that instead
+        // of resetting to "Just this time").
+        [DataMember(EmitDefaultValue = false)]
+        public string? LastAllowScope;
+        [DataMember(EmitDefaultValue = false)]
+        public string? LastBlockScope;
+
         // Hotkeys
         [DataMember(EmitDefaultValue = false)]
         public bool EnableGlobalHotkeys = true;
