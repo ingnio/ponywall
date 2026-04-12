@@ -11,6 +11,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using pylorak.TinyWall.Filtering;
 using pylorak.TinyWall.ViewModels;
 
 namespace pylorak.TinyWall.Views
@@ -299,14 +300,16 @@ namespace pylorak.TinyWall.Views
 
         private void ApplyExceptionFilter()
         {
-            string filter = (txtExceptionFilter?.Text ?? string.Empty).Trim().ToUpperInvariant();
+            var filter = QueryFilter.Parse(txtExceptionFilter?.Text);
             _filteredExceptions.Clear();
 
             foreach (var item in _allExceptions)
             {
-                if (string.IsNullOrEmpty(filter)
-                    || item.Name.ToUpperInvariant().Contains(filter)
-                    || item.Type.ToUpperInvariant().Contains(filter))
+                // Also include Path in the searchable fields — the old code
+                // only searched Name and Type, which meant you couldn't find
+                // an exception by its on-disk location. Adding Path here is
+                // a drive-by fix; it costs nothing and matches user intent.
+                if (filter.Matches(item.Name, item.Type, item.Path))
                 {
                     _filteredExceptions.Add(item);
                 }

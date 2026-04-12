@@ -10,6 +10,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using pylorak.TinyWall.Filtering;
 using pylorak.TinyWall.ViewModels;
 using pylorak.Windows;
 using pylorak.Windows.NetStat;
@@ -120,28 +121,24 @@ namespace pylorak.TinyWall.Views
         private void ApplyFilter()
         {
             _connections.Clear();
-            if (string.IsNullOrEmpty(_filterText))
+            var filter = QueryFilter.Parse(_filterText);
+            foreach (var item in _allConnections)
             {
-                foreach (var item in _allConnections)
-                    _connections.Add(item);
-            }
-            else
-            {
-                var filter = _filterText.ToUpperInvariant();
-                foreach (var item in _allConnections)
+                // Same nine fields the old substring-match used. QueryFilter
+                // handles empty/whitespace/null input as match-everything, so
+                // no special case for the unfiltered path here.
+                if (filter.Matches(
+                        item.ProcessName,
+                        item.LocalAddress,
+                        item.RemoteAddress,
+                        item.LocalPort,
+                        item.RemotePort,
+                        item.Protocol,
+                        item.State,
+                        item.Services,
+                        item.Path))
                 {
-                    if ((item.ProcessName?.ToUpperInvariant().Contains(filter) == true)
-                        || (item.LocalAddress?.ToUpperInvariant().Contains(filter) == true)
-                        || (item.RemoteAddress?.ToUpperInvariant().Contains(filter) == true)
-                        || (item.LocalPort?.Contains(filter) == true)
-                        || (item.RemotePort?.Contains(filter) == true)
-                        || (item.Protocol?.ToUpperInvariant().Contains(filter) == true)
-                        || (item.State?.ToUpperInvariant().Contains(filter) == true)
-                        || (item.Services?.ToUpperInvariant().Contains(filter) == true)
-                        || (item.Path?.ToUpperInvariant().Contains(filter) == true))
-                    {
-                        _connections.Add(item);
-                    }
+                    _connections.Add(item);
                 }
             }
         }

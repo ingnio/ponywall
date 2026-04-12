@@ -9,6 +9,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using pylorak.TinyWall.Filtering;
 using pylorak.TinyWall.History;
 using pylorak.TinyWall.ViewModels;
 
@@ -26,6 +27,7 @@ namespace pylorak.TinyWall.Views
         private HistoryReader? _reader;
         private DispatcherTimer? _liveTailTimer;
         private string _searchText = string.Empty;
+        private QueryFilter _queryFilter = QueryFilter.Empty;
         private bool _suppressSelectionChanged;
 
         // Parameterless ctor required by Avalonia XAML designer; not used at runtime.
@@ -187,6 +189,7 @@ namespace pylorak.TinyWall.Views
         private void TxtFilter_TextChanged(object? sender, TextChangedEventArgs e)
         {
             _searchText = (txtFilter.Text ?? string.Empty).Trim();
+            _queryFilter = QueryFilter.Parse(_searchText);
             ReloadAsync();
         }
 
@@ -220,6 +223,16 @@ namespace pylorak.TinyWall.Views
                 // pane. We re-set the selection AFTER releasing suppression
                 // so the handler runs once with the new record.
                 HistoryRowViewModel? rowToReselect = null;
+                // When the user types a boolean query (anything SQL LIKE
+                // can't express — AND/OR/negation/phrases), BuildFilter
+                // leaves f.SearchText null so the server returns the
+                // unfiltered page, and we apply _queryFilter here over the
+                // same fields the SQL fast path searches (app name,
+                // app path, remote ip). A simple positive query is already
+                // fully filtered by SQL, so this client-side check is a
+                // no-op for it — every row passes.
+                bool applyingClientFilter = !_queryFilter.IsEmpty
+                    && !_queryFilter.TryGetSimpleLikePattern(out _);
                 _suppressSelectionChanged = true;
                 try
                 {
@@ -227,6 +240,11 @@ namespace pylorak.TinyWall.Views
                     _recordsById.Clear();
                     foreach (var rec in rows)
                     {
+                        if (applyingClientFilter
+                            && !_queryFilter.Matches(rec.AppName, rec.AppPath, rec.RemoteIp, rec.MatchedRuleId))
+                        {
+                            continue;
+                        }
                         var vm = HistoryRowViewModel.FromRecord(rec);
                         _rows.Add(vm);
                         _recordsById[rec.Id] = rec;
@@ -249,7 +267,16 @@ namespace pylorak.TinyWall.Views
                     ClearDetailsPane();
                 }
 
-                txtStatus.Text = $"Showing {_rows.Count} of {total} events (newest first, capped at {PageSize}).";
+                // Status text. Two shapes so the user knows when the
+                // boolean filter is post-fetch rather than SQL-backed.
+                if (applyingClientFilter)
+                {
+                    txtStatus.Text = $"Showing {_rows.Count} of {rows.Count} loaded events (boolean filter applied; page capped at {PageSize}).";
+                }
+                else
+                {
+                    txtStatus.Text = $"Showing {_rows.Count} of {total} events (newest first, capped at {PageSize}).";
+                }
             }
             catch (Exception ex)
             {
@@ -262,8 +289,16 @@ namespace pylorak.TinyWall.Views
         {
             var f = new HistoryFilter();
 
-            if (!string.IsNullOrWhiteSpace(_searchText))
-                f.SearchText = _searchText;
+            // Push down to the SQL LIKE fast path only when the query is a
+            // single positive term or phrase with no AND/OR/negation. For
+            // anything more complex (boolean operators) we leave SearchText
+            // null and apply _queryFilter in C# after the fetch — see the
+            // client-side filter pass in ReloadAsync. That's slower than
+            // SQL-side filtering but the alternative is translating a
+            // boolean expression into a WHERE clause which is a lot more
+            // code for a rare case.
+            if (_queryFilter.TryGetSimpleLikePattern(out var simplePattern))
+                f.SearchText = simplePattern;
 
             switch (cbAction.SelectedIndex)
             {
