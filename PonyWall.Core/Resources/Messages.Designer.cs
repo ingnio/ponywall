@@ -795,5 +795,68 @@ namespace pylorak.TinyWall.Resources {
                 return ResourceManager.GetString("YouDoNotHaveAdministrativePrivilegesNeeded", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Allow.
+        /// </summary>
+        internal static string FirstBlockNotif_Allow {
+            get {
+                return ResourceManager.GetString("FirstBlockNotif_Allow", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Allow scope.
+        /// </summary>
+        internal static string FirstBlockNotif_AllowScope {
+            get {
+                return ResourceManager.GetString("FirstBlockNotif_AllowScope", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Anywhere.
+        /// </summary>
+        internal static string FirstBlockNotif_Anywhere {
+            get {
+                return ResourceManager.GetString("FirstBlockNotif_Anywhere", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Block.
+        /// </summary>
+        internal static string FirstBlockNotif_Block {
+            get {
+                return ResourceManager.GetString("FirstBlockNotif_Block", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Block scope.
+        /// </summary>
+        internal static string FirstBlockNotif_BlockScope {
+            get {
+                return ResourceManager.GetString("FirstBlockNotif_BlockScope", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Just this time.
+        /// </summary>
+        internal static string FirstBlockNotif_JustThisTime {
+            get {
+                return ResourceManager.GetString("FirstBlockNotif_JustThisTime", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to This destination only.
+        /// </summary>
+        internal static string FirstBlockNotif_ThisDestinationOnly {
+            get {
+                return ResourceManager.GetString("FirstBlockNotif_ThisDestinationOnly", resourceCulture);
+            }
+        }
     }
 }

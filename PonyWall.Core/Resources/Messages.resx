@@ -391,4 +391,25 @@ The selected executable could be part of {0}. To ensure that this application ca
   <data name="SubjectTypeUwpApp" xml:space="preserve">
     <value>UWP Package</value>
   </data>
+  <data name="FirstBlockNotif_Allow" xml:space="preserve">
+    <value>Allow</value>
+  </data>
+  <data name="FirstBlockNotif_AllowScope" xml:space="preserve">
+    <value>Allow scope</value>
+  </data>
+  <data name="FirstBlockNotif_Anywhere" xml:space="preserve">
+    <value>Anywhere</value>
+  </data>
+  <data name="FirstBlockNotif_Block" xml:space="preserve">
+    <value>Block</value>
+  </data>
+  <data name="FirstBlockNotif_BlockScope" xml:space="preserve">
+    <value>Block scope</value>
+  </data>
+  <data name="FirstBlockNotif_JustThisTime" xml:space="preserve">
+    <value>Just this time</value>
+  </data>
+  <data name="FirstBlockNotif_ThisDestinationOnly" xml:space="preserve">
+    <value>This destination only</value>
+  </data>
 </root>

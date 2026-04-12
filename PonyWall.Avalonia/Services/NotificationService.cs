@@ -30,11 +30,30 @@ namespace pylorak.TinyWall
         internal const string ArgKey_Action = "action";
         internal const string ArgKey_AppPath = "appPath";
         internal const string ArgKey_AppName = "appName";
+        // Flow tuple carried on the Allow/Block buttons so the activator
+        // can reconstruct a scoped RuleDef at click time (see the Scope_
+        // handling in DispatchToastAction). These are read verbatim from
+        // FirstBlockToastInfo in ShowFirstBlockToast.
+        internal const string ArgKey_RemoteIp = "remoteIp";
+        internal const string ArgKey_RemotePort = "remotePort";
+        internal const string ArgKey_Protocol = "protocol";
+        internal const string ArgKey_Direction = "direction";
 
         internal const string Action_OpenHistory = "openHistory";
-        internal const string Action_AllowOnce = "allowOnce";
-        internal const string Action_AllowAlways = "allowAlways";
-        internal const string Action_BlockAlways = "blockAlways";
+        internal const string Action_Allow = "allow";
+        internal const string Action_Block = "block";
+
+        // Combo box IDs. Two separate boxes so the activator can read the
+        // scope for the clicked action without worrying about the other
+        // box's current value leaking into the decision.
+        internal const string ComboId_AllowScope = "allowScope";
+        internal const string ComboId_BlockScope = "blockScope";
+
+        // Scope item IDs. Machine identifiers — NOT localized. Display
+        // strings come from Messages.resx via FirstBlockNotif_*.
+        internal const string Scope_Once = "once";
+        internal const string Scope_ThisDest = "thisDest";
+        internal const string Scope_Anywhere = "anywhere";
 
         private static Controller? _controller;
         private static bool _activatedHandlerWired;
@@ -83,37 +102,75 @@ namespace pylorak.TinyWall
         }
 
         /// <summary>
-        /// Renders a first-block toast for the given app + flow. Three
-        /// action buttons (Allow once / Allow always / Block always) are
-        /// attached, and the toast body click navigates to History.
+        /// Renders a first-block toast for the given app + flow. Two
+        /// action buttons (Allow / Block) are attached, each paired with
+        /// a scope combo box so the user can pick how broad the rule
+        /// should be. The toast body click still navigates to History.
+        /// Selection-box values come back to the activator via
+        /// <see cref="ToastNotificationActivatedEventArgsCompat.UserInput"/>.
         /// </summary>
         internal static void ShowFirstBlockToast(FirstBlockToastInfo info)
         {
             try
             {
                 string body = BuildBodyLine(info);
+                string remotePortStr = info.RemotePort.ToString(CultureInfo.InvariantCulture);
+
+                var allowOnce = pylorak.TinyWall.Resources.Messages.FirstBlockNotif_JustThisTime ?? "Just this time";
+                var scopeThisDest = pylorak.TinyWall.Resources.Messages.FirstBlockNotif_ThisDestinationOnly ?? "This destination only";
+                var scopeAnywhere = pylorak.TinyWall.Resources.Messages.FirstBlockNotif_Anywhere ?? "Anywhere";
+                var allowScopeLabel = pylorak.TinyWall.Resources.Messages.FirstBlockNotif_AllowScope ?? "Allow scope";
+                var blockScopeLabel = pylorak.TinyWall.Resources.Messages.FirstBlockNotif_BlockScope ?? "Block scope";
+                var allowBtnLabel = pylorak.TinyWall.Resources.Messages.FirstBlockNotif_Allow ?? "Allow";
+                var blockBtnLabel = pylorak.TinyWall.Resources.Messages.FirstBlockNotif_Block ?? "Block";
 
                 var builder = new ToastContentBuilder()
+                    // Body-click intent: opens HistoryWindow filtered to
+                    // this app. Preserved from the old three-button layout.
                     .AddArgument(ArgKey_Action, Action_OpenHistory)
                     .AddArgument(ArgKey_AppPath, info.AppPath)
                     .AddArgument(ArgKey_AppName, info.AppName)
                     .AddText("Blocked: " + info.AppName)
                     .AddText(body)
+                    // Allow scope combo — three items, default "Just this time"
+                    // (the lowest-commitment allow option for an unknown app).
+                    .AddComboBox(
+                        ComboId_AllowScope,
+                        allowScopeLabel,
+                        Scope_Once,
+                        (Scope_Once, allowOnce),
+                        (Scope_ThisDest, scopeThisDest),
+                        (Scope_Anywhere, scopeAnywhere))
+                    // Block scope combo — two items (no "Block once"; blocks
+                    // are the default for unknown apps so a session-only
+                    // block is a no-op). Default "This destination only"
+                    // is the least-collateral block option.
+                    .AddComboBox(
+                        ComboId_BlockScope,
+                        blockScopeLabel,
+                        Scope_ThisDest,
+                        (Scope_ThisDest, scopeThisDest),
+                        (Scope_Anywhere, scopeAnywhere))
+                    // Allow/Block buttons — carry the action + flow tuple.
+                    // The scope is read from UserInput at activation time.
                     .AddButton(new ToastButton()
-                        .SetContent("Allow once")
-                        .AddArgument(ArgKey_Action, Action_AllowOnce)
+                        .SetContent(allowBtnLabel)
+                        .AddArgument(ArgKey_Action, Action_Allow)
                         .AddArgument(ArgKey_AppPath, info.AppPath)
-                        .AddArgument(ArgKey_AppName, info.AppName))
+                        .AddArgument(ArgKey_AppName, info.AppName)
+                        .AddArgument(ArgKey_RemoteIp, info.RemoteIp ?? string.Empty)
+                        .AddArgument(ArgKey_RemotePort, remotePortStr)
+                        .AddArgument(ArgKey_Protocol, info.Protocol ?? string.Empty)
+                        .AddArgument(ArgKey_Direction, info.Direction ?? string.Empty))
                     .AddButton(new ToastButton()
-                        .SetContent("Allow always")
-                        .AddArgument(ArgKey_Action, Action_AllowAlways)
+                        .SetContent(blockBtnLabel)
+                        .AddArgument(ArgKey_Action, Action_Block)
                         .AddArgument(ArgKey_AppPath, info.AppPath)
-                        .AddArgument(ArgKey_AppName, info.AppName))
-                    .AddButton(new ToastButton()
-                        .SetContent("Block always")
-                        .AddArgument(ArgKey_Action, Action_BlockAlways)
-                        .AddArgument(ArgKey_AppPath, info.AppPath)
-                        .AddArgument(ArgKey_AppName, info.AppName));
+                        .AddArgument(ArgKey_AppName, info.AppName)
+                        .AddArgument(ArgKey_RemoteIp, info.RemoteIp ?? string.Empty)
+                        .AddArgument(ArgKey_RemotePort, remotePortStr)
+                        .AddArgument(ArgKey_Protocol, info.Protocol ?? string.Empty)
+                        .AddArgument(ArgKey_Direction, info.Direction ?? string.Empty));
 
                 builder.Show();
             }
@@ -155,7 +212,36 @@ namespace pylorak.TinyWall
                 if (string.IsNullOrEmpty(action))
                     return;
 
-                Dispatcher.UIThread.Post(() => DispatchToastAction(action, appPath, appName));
+                // Parse the flow tuple off the button (empty strings for
+                // body-click activations, which don't carry these args).
+                string? remoteIp = parsed.Get(ArgKey_RemoteIp);
+                string remotePortStr = parsed.Get(ArgKey_RemotePort) ?? "0";
+                int remotePort = int.TryParse(remotePortStr, NumberStyles.Integer, CultureInfo.InvariantCulture, out var p) ? p : 0;
+                string? protocol = parsed.Get(ArgKey_Protocol);
+                string? direction = parsed.Get(ArgKey_Direction);
+
+                // Pick the scope combo box that matches the clicked action.
+                // Reading only the relevant one avoids a stale value from
+                // the other combo leaking into the decision.
+                string? scope = null;
+                if (action == Action_Allow)
+                    scope = args.UserInput.TryGetValue(ComboId_AllowScope, out var av) ? av?.ToString() : null;
+                else if (action == Action_Block)
+                    scope = args.UserInput.TryGetValue(ComboId_BlockScope, out var bv) ? bv?.ToString() : null;
+
+                var ctx = new ToastClickContext
+                {
+                    Action = action,
+                    Scope = scope,
+                    AppPath = appPath,
+                    AppName = appName,
+                    RemoteIp = remoteIp,
+                    RemotePort = remotePort,
+                    Protocol = protocol,
+                    Direction = direction,
+                };
+
+                Dispatcher.UIThread.Post(() => DispatchToastAction(ctx));
             }
             catch (Exception ex)
             {
@@ -163,11 +249,28 @@ namespace pylorak.TinyWall
             }
         }
 
-        private static void DispatchToastAction(string action, string? appPath, string? appName)
+        /// <summary>
+        /// Parsed toast activation context. Built on the background
+        /// activator thread, dispatched to the UI thread for the actual
+        /// firewall work.
+        /// </summary>
+        private sealed class ToastClickContext
+        {
+            public string Action { get; init; } = string.Empty;
+            public string? Scope { get; init; }
+            public string? AppPath { get; init; }
+            public string? AppName { get; init; }
+            public string? RemoteIp { get; init; }
+            public int RemotePort { get; init; }
+            public string? Protocol { get; init; }
+            public string? Direction { get; init; }
+        }
+
+        private static void DispatchToastAction(ToastClickContext ctx)
         {
             try
             {
-                switch (action)
+                switch (ctx.Action)
                 {
                     case Action_OpenHistory:
                         // Queue an intent for App.OnPollTimer to drain on
@@ -176,15 +279,14 @@ namespace pylorak.TinyWall
                         // (or process) that has no UI loop yet.
                         _pendingBodyClicks.Enqueue(new ToastBodyClickIntent
                         {
-                            AppPath = appPath,
-                            AppName = appName,
+                            AppPath = ctx.AppPath,
+                            AppName = ctx.AppName,
                         });
                         return;
 
-                    case Action_AllowOnce:
-                    case Action_AllowAlways:
-                    case Action_BlockAlways:
-                        ApplyAppRule(action, appPath, appName);
+                    case Action_Allow:
+                    case Action_Block:
+                        ApplyAppRule(ctx);
                         return;
                 }
             }
@@ -208,34 +310,60 @@ namespace pylorak.TinyWall
             return list;
         }
 
-        private static void ApplyAppRule(string action, string? appPath, string? appName)
+        private static void ApplyAppRule(ToastClickContext ctx)
         {
-            if (_controller == null || string.IsNullOrEmpty(appPath))
+            if (_controller == null || string.IsNullOrEmpty(ctx.AppPath))
                 return;
 
-            // Allow once is a temporary rule (push via the dedicated
-            // ADD_TEMPORARY_EXCEPTION channel). Allow/Block always are
-            // permanent rules (PUT_SETTINGS round-trip).
-            var subject = new ExecutableSubject(appPath);
-            ExceptionPolicy policy = action switch
-            {
-                Action_AllowOnce => new TcpUdpPolicy(true),
-                Action_AllowAlways => new UnrestrictedPolicy { LocalNetworkOnly = false },
-                Action_BlockAlways => HardBlockPolicy.Instance,
-                _ => throw new InvalidOperationException("unknown action: " + action),
-            };
-            var exception = new FirewallExceptionV3(subject, policy);
+            var subject = new ExecutableSubject(ctx.AppPath);
 
-            if (action == Action_AllowOnce)
+            // Allow + "Just this time" is the only session-scoped path;
+            // everything else is a permanent rule pushed via PUT_SETTINGS.
+            if (ctx.Action == Action_Allow && ctx.Scope == Scope_Once)
             {
-                // No success notify: the user clicked an action button on a
-                // toast. Popping another toast to confirm the first one worked
-                // is redundant noise. Errors still notify below.
-                _controller.AddTemporaryException(new[] { exception });
+                // Temporary exception — narrow by protocol/port isn't
+                // expressed here. Matches the previous "Allow once"
+                // behavior (TcpUdpPolicy unrestricted, session-only).
+                var tempException = new FirewallExceptionV3(subject, new TcpUdpPolicy(unrestricted: true));
+                _controller.AddTemporaryException(new[] { tempException });
                 return;
             }
 
-            // Permanent rule path — fetch config, append, push back.
+            // Build the policy for the permanent path. The scoped branch
+            // builds a RuleListPolicy with one RuleDef narrowed by the
+            // flow tuple carried on the button. Anywhere branches reuse
+            // the old unconditional policies.
+            ExceptionPolicy policy;
+            bool replaceExisting;
+            switch ((ctx.Action, ctx.Scope))
+            {
+                case (Action_Allow, Scope_ThisDest):
+                    policy = BuildScopedRuleListPolicy(RuleAction.Allow, ctx);
+                    replaceExisting = false; // accumulate scoped rules
+                    break;
+                case (Action_Allow, Scope_Anywhere):
+                    policy = new UnrestrictedPolicy { LocalNetworkOnly = false };
+                    replaceExisting = true;  // broad rule supersedes everything
+                    break;
+                case (Action_Block, Scope_ThisDest):
+                    policy = BuildScopedRuleListPolicy(RuleAction.Block, ctx);
+                    replaceExisting = false;
+                    break;
+                case (Action_Block, Scope_Anywhere):
+                    policy = HardBlockPolicy.Instance;
+                    replaceExisting = true;
+                    break;
+                default:
+                    // Unknown (action, scope) combination — either an
+                    // in-flight toast from an older build or a UserInput
+                    // lookup that returned null. Bail with an error toast
+                    // so the user can retry on the fresh toast.
+                    Notify($"Unknown toast action/scope: {ctx.Action}/{ctx.Scope}", NotificationLevel.Error);
+                    return;
+            }
+
+            var exception = new FirewallExceptionV3(subject, policy);
+
             Guid changeset = Guid.Empty;
             _controller.GetServerConfig(out var config, out _, ref changeset);
             if (config == null)
@@ -244,33 +372,82 @@ namespace pylorak.TinyWall
                 return;
             }
 
-            var existing = ServiceGlobals.AppDatabase?.GetExceptionsForApp(subject, false, out _);
-            var toAdd = (existing != null && existing.Count > 0)
-                ? existing
-                : new System.Collections.Generic.List<FirewallExceptionV3> { exception };
+            if (replaceExisting)
+            {
+                // Drop any pre-existing exceptions for this subject so the
+                // new broad rule replaces them. Prevents a HardBlock from
+                // coexisting with an older Unrestricted rule for the same
+                // app and producing confusing behavior.
+                config.ActiveProfile.AppExceptions.RemoveAll(ex => ex.Subject.Equals(subject));
+            }
 
-            // For block-always we override whatever the database says
-            // about this app and force a hard-block.
-            if (action == Action_BlockAlways)
-                toAdd = new System.Collections.Generic.List<FirewallExceptionV3> { exception };
-
-            // Drop any pre-existing exceptions for this subject so the
-            // new rule replaces them. AddExceptions only merges policies
-            // it knows how to merge — a HardBlock landing on top of an
-            // existing Unrestricted rule would otherwise leave both
-            // present and produce confusing behavior. The user clicked a
-            // toast button, so their intent for this subject is explicit.
-            config.ActiveProfile.AppExceptions.RemoveAll(ex => ex.Subject.Equals(subject));
-
-            config.ActiveProfile.AddExceptions(toAdd);
+            config.ActiveProfile.AddExceptions(new System.Collections.Generic.List<FirewallExceptionV3> { exception });
             var resp = _controller.SetServerConfig(config, changeset);
             if (resp.Type != MessageType.PUT_SETTINGS)
             {
                 // Error still surfaces — silent failure would leave the user
                 // with no idea the toast button didn't take effect. Success
-                // is intentionally silent (see AllowOnce comment above).
+                // is intentionally silent (matches the Settings OK and
+                // HistoryWindow create-exception conventions).
                 Notify("Firewall rule update failed.", NotificationLevel.Error);
             }
+        }
+
+        /// <summary>
+        /// Builds a RuleListPolicy with a single RuleDef narrowed by the
+        /// flow tuple carried on a toast click (remote IP + port +
+        /// protocol + direction). Used for both Allow→"This destination
+        /// only" and Block→"This destination only". Local port is
+        /// intentionally NOT included in the narrowing — outbound TCP
+        /// flows pick a new ephemeral local port every connection, so
+        /// pinning on LocalPort would make the rule match at most one
+        /// socket lifetime.
+        /// </summary>
+        private static RuleListPolicy BuildScopedRuleListPolicy(RuleAction action, ToastClickContext ctx)
+        {
+            Protocol protocol = ParseProtocol(ctx.Protocol);
+            RuleDirection direction = ParseDirection(ctx.Direction);
+
+            var rule = new RuleDef
+            {
+                Name = (action == RuleAction.Allow ? "Allow " : "Block ")
+                       + (ctx.AppName ?? "app") + " to "
+                       + (string.IsNullOrEmpty(ctx.RemoteIp) ? "unknown" : ctx.RemoteIp),
+                Action = action,
+                Application = ctx.AppPath,
+                // Null = any when not specified; empty flow fields from
+                // the toast (e.g. no remote IP extracted from a raw WFP
+                // event) fall through to the per-field null treatment.
+                RemoteAddresses = string.IsNullOrEmpty(ctx.RemoteIp) ? null : ctx.RemoteIp,
+                // Per the plan: RemotePort==0 is non-TCP/UDP (ICMP etc.)
+                // and we fall back to any-port narrowed by Protocol alone.
+                RemotePorts = ctx.RemotePort > 0
+                    ? ctx.RemotePort.ToString(CultureInfo.InvariantCulture)
+                    : null,
+                Protocol = protocol,
+                Direction = direction,
+            };
+
+            return new RuleListPolicy { Rules = new System.Collections.Generic.List<RuleDef> { rule } };
+        }
+
+        private static Protocol ParseProtocol(string? s)
+        {
+            if (string.IsNullOrEmpty(s)) return Protocol.Any;
+            // Try enum-by-name first (matches the strings the service
+            // puts into FirstBlockToastInfo.Protocol — see
+            // FirewallLogEntry.Protocol.ToString()).
+            if (Enum.TryParse<Protocol>(s, ignoreCase: true, out var parsed))
+                return parsed;
+            return Protocol.Any;
+        }
+
+        private static RuleDirection ParseDirection(string? s)
+        {
+            if (string.IsNullOrEmpty(s)) return RuleDirection.InOut;
+            if (Enum.TryParse<RuleDirection>(s, ignoreCase: true, out var parsed))
+                return parsed;
+            return RuleDirection.InOut;
         }
 
         /// <summary>

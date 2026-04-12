@@ -164,12 +164,23 @@
                       CanUserReorderColumns="False"
                       CanUserSortColumns="True"
                       SelectionMode="Extended"
+                      HeadersVisibility="Column"
                       BorderThickness="0">
               <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
-                <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100" />
-                <DataGridTextColumn Header="Path" Binding="{Binding Path}" Width="2*" />
-                <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="130" />
+                <!-- Explicit Path=Name/Type/Path/Date selectors: {Binding Path}
+                     without the Path= prefix was rendering empty under compiled
+                     bindings on Avalonia 11.2.7, because "Path" is also the name
+                     of the Binding markup extension's formal parameter and the
+                     parser disambiguates it to Binding.Path (the XPath-like
+                     selector itself) rather than to ExceptionListItemViewModel.Path.
+                     Writing the full Path=Name / Path=Path / ... form forces
+                     the parser to treat the right-hand side as a property name.
+                     MinWidth pins every column so star sizing can never
+                     collapse them to zero under tight parent layouts. -->
+                <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" Width="*" MinWidth="140" />
+                <DataGridTextColumn Header="Type" Binding="{Binding Path=Type}" Width="100" MinWidth="90" />
+                <DataGridTextColumn Header="Path" Binding="{Binding Path=Path}" Width="2*" MinWidth="200" />
+                <DataGridTextColumn Header="Date" Binding="{Binding Path=Date}" Width="130" MinWidth="120" />
               </DataGrid.Columns>
             </DataGrid>
           </Border>
