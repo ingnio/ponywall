@@ -341,7 +341,7 @@ namespace pylorak.TinyWall
         private void OpenRules()
         {
             if (_lastServerConfig != null)
-                Views.RulesWindow.ShowRules(_lastServerConfig);
+                Views.RulesWindow.ShowRules(_controller, _lastServerConfig);
         }
 
         private void OpenLogsFolder()

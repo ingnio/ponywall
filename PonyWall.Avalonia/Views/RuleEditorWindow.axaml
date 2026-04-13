@@ -1,0 +1,81 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="pylorak.TinyWall.Views.RuleEditorWindow"
+        Title="PonyWall — Rule Editor"
+        Width="550" Height="420"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Icon="avares://PonyWall/Assets/firewall.ico">
+
+  <Grid Margin="16" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="130" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <!-- App path -->
+    <TextBlock Grid.Row="0" Grid.Column="0" Text="Application:" VerticalAlignment="Center" Margin="0,0,0,8" />
+    <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+      <TextBox Grid.Column="0" Name="txtAppPath" Watermark="C:\path\to\app.exe (or * for all)" />
+      <Button Grid.Column="1" Content="Browse..." Click="BtnBrowse_Click" Margin="4,0,0,0" />
+    </Grid>
+
+    <!-- Service name -->
+    <TextBlock Grid.Row="1" Grid.Column="0" Text="Service name:" VerticalAlignment="Center" Margin="0,0,0,8" />
+    <TextBox Grid.Row="1" Grid.Column="1" Name="txtServiceName" Watermark="(optional, e.g. Dnscache)" Margin="0,0,0,8" />
+
+    <!-- Action -->
+    <TextBlock Grid.Row="2" Grid.Column="0" Text="Action:" VerticalAlignment="Center" Margin="0,0,0,8" />
+    <ComboBox Grid.Row="2" Grid.Column="1" Name="cbAction" Margin="0,0,0,8" SelectedIndex="0">
+      <ComboBoxItem Content="Allow" />
+      <ComboBoxItem Content="Block" />
+    </ComboBox>
+
+    <!-- Direction -->
+    <TextBlock Grid.Row="3" Grid.Column="0" Text="Direction:" VerticalAlignment="Center" Margin="0,0,0,8" />
+    <ComboBox Grid.Row="3" Grid.Column="1" Name="cbDirection" Margin="0,0,0,8" SelectedIndex="2">
+      <ComboBoxItem Content="In" />
+      <ComboBoxItem Content="Out" />
+      <ComboBoxItem Content="Both" />
+    </ComboBox>
+
+    <!-- Protocol -->
+    <TextBlock Grid.Row="4" Grid.Column="0" Text="Protocol:" VerticalAlignment="Center" Margin="0,0,0,8" />
+    <ComboBox Grid.Row="4" Grid.Column="1" Name="cbProtocol" Margin="0,0,0,8" SelectedIndex="0">
+      <ComboBoxItem Content="Any" />
+      <ComboBoxItem Content="TCP" />
+      <ComboBoxItem Content="UDP" />
+      <ComboBoxItem Content="TCP+UDP" />
+      <ComboBoxItem Content="ICMPv4" />
+      <ComboBoxItem Content="ICMPv6" />
+    </ComboBox>
+
+    <!-- Remote Addresses -->
+    <TextBlock Grid.Row="5" Grid.Column="0" Text="Remote addresses:" VerticalAlignment="Center" Margin="0,0,0,8" />
+    <TextBox Grid.Row="5" Grid.Column="1" Name="txtRemoteAddresses" Watermark="* (any), IP, CIDR, DNS, LocalSubnet" Margin="0,0,0,8" />
+
+    <!-- Remote Ports -->
+    <TextBlock Grid.Row="6" Grid.Column="0" Text="Remote ports:" VerticalAlignment="Center" Margin="0,0,0,8" />
+    <TextBox Grid.Row="6" Grid.Column="1" Name="txtRemotePorts" Watermark="* (any), 80, 443, 1000-2000" Margin="0,0,0,8" />
+
+    <!-- Local Ports -->
+    <TextBlock Grid.Row="7" Grid.Column="0" Text="Local ports:" VerticalAlignment="Center" Margin="0,0,0,8" />
+    <TextBox Grid.Row="7" Grid.Column="1" Name="txtLocalPorts" Watermark="* (any), 8080, 3000-3999" Margin="0,0,0,8" />
+
+    <!-- Rule name -->
+    <TextBlock Grid.Row="8" Grid.Column="0" Text="Rule name:" VerticalAlignment="Center" Margin="0,0,0,8" />
+    <TextBox Grid.Row="8" Grid.Column="1" Name="txtRuleName" Watermark="(optional descriptive label)" Margin="0,0,0,8" />
+
+    <!-- Spacer -->
+    <Panel Grid.Row="9" Grid.ColumnSpan="2" />
+
+    <!-- Buttons -->
+    <StackPanel Grid.Row="10" Grid.ColumnSpan="2" Orientation="Horizontal"
+                HorizontalAlignment="Right" Spacing="8">
+      <Button Content="OK" Name="btnOk" Click="BtnOk_Click" Width="80"
+              Classes="accent" IsDefault="True" />
+      <Button Content="Cancel" Name="btnCancel" Click="BtnCancel_Click" Width="80"
+              IsCancel="True" />
+    </StackPanel>
+  </Grid>
+</Window>

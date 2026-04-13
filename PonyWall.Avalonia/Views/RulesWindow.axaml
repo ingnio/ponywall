@@ -29,6 +29,13 @@
               GridLinesVisibility="Horizontal"
               HeadersVisibility="Column"
               SelectionMode="Single">
+      <DataGrid.ContextMenu>
+        <ContextMenu Name="rowContextMenu" Opening="ContextMenu_Opening">
+          <MenuItem Header="Create Rule..." Name="mnuCreate" Click="MnuCreate_Click" />
+          <MenuItem Header="Modify..." Name="mnuModify" Click="MnuModify_Click" />
+          <MenuItem Header="Delete" Name="mnuDelete" Click="MnuDelete_Click" />
+        </ContextMenu>
+      </DataGrid.ContextMenu>
       <DataGrid.Columns>
         <DataGridTextColumn Header="Action"    Binding="{Binding Path=Action}"          Width="60"  MinWidth="50" />
         <DataGridTextColumn Header="App"       Binding="{Binding Path=App}"             Width="200" MinWidth="100" />

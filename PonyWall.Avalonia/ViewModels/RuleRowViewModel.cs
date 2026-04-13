@@ -18,5 +18,14 @@ namespace pylorak.TinyWall.ViewModels
         public string LocalPorts { get; init; } = string.Empty;
         public string Source { get; init; } = string.Empty;
         public string RuleName { get; init; } = string.Empty;
+
+        // Back-references for CRUD operations. Null for non-User rules
+        // (Special Exceptions, Blocklist) which are read-only.
+        public FirewallExceptionV3? ParentException { get; init; }
+        public RuleDef? ParentRuleDef { get; init; }
+        public bool IsEditable { get; init; }
+
+        // Full path for the editor dialog (App shows just the filename)
+        public string AppFullPath { get; init; } = string.Empty;
     }
 }
