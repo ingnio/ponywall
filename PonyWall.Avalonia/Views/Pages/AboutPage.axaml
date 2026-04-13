@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="pylorak.TinyWall.Views.AboutPage">
+
+  <ScrollViewer Padding="16">
+    <StackPanel Spacing="16">
+
+      <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,4">
+        <TextBlock Name="lblVersion" Classes="pageTitle" />
+        <TextBlock Classes="pageTitleInfo" ToolTip.Tip="About PonyWall" />
+      </StackPanel>
+
+      <TextBlock TextWrapping="Wrap" Foreground="#aabbcc">
+        A lightweight Windows firewall with forensic-grade observability.
+      </TextBlock>
+
+      <Border Background="#1a2535" CornerRadius="8" Padding="16" Margin="0,8">
+        <StackPanel Spacing="8">
+          <TextBlock Text="Fork Information" FontWeight="SemiBold" />
+          <TextBlock TextWrapping="Wrap" Foreground="#8899aa">
+            PonyWall is a fork of TinyWall by Károly Pados, modified extensively
+            and continued under a new name. Licensed under GNU GPLv3.
+          </TextBlock>
+        </StackPanel>
+      </Border>
+
+      <Border Background="#1a2535" CornerRadius="8" Padding="16">
+        <StackPanel Spacing="8">
+          <TextBlock Text="Credits" FontWeight="SemiBold" />
+          <TextBlock TextWrapping="Wrap" Foreground="#8899aa">
+            Original TinyWall: Copyright © 2011 Károly Pados
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Foreground="#8899aa">
+            PonyWall modifications: Copyright © 2026 ingnio
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Foreground="#8899aa">
+            Avalonia UI — cross-platform .NET UI framework
+          </TextBlock>
+          <TextBlock TextWrapping="Wrap" Foreground="#8899aa">
+            SQLite via Microsoft.Data.Sqlite — event store
+          </TextBlock>
+        </StackPanel>
+      </Border>
+
+      <Border Background="#1a2535" CornerRadius="8" Padding="16">
+        <StackPanel Spacing="8">
+          <TextBlock Text="License" FontWeight="SemiBold" />
+          <TextBlock TextWrapping="Wrap" Foreground="#8899aa">
+            This program is free software: you can redistribute it and/or modify
+            it under the terms of the GNU General Public License as published by
+            the Free Software Foundation, either version 3 of the License, or
+            (at your option) any later version.
+          </TextBlock>
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

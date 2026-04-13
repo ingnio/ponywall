@@ -24,6 +24,7 @@ namespace pylorak.TinyWall.Views
         public event Action? HistoryRequested;
         public event Action? StatsRequested;
         public event Action? RulesRequested;
+        public event Action? OpenRequested;
         public event Action? LogsRequested;
         public event Action? WhitelistExeRequested;
         public event Action? WhitelistProcessRequested;
@@ -232,6 +233,12 @@ namespace pylorak.TinyWall.Views
         private void OnRulesClick(object? sender, RoutedEventArgs e)
         {
             RulesRequested?.Invoke();
+            Close();
+        }
+
+        private void OnOpenClick(object? sender, RoutedEventArgs e)
+        {
+            OpenRequested?.Invoke();
             Close();
         }
 

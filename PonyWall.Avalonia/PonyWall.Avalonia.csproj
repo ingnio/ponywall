@@ -113,5 +113,8 @@
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\firewall.ico" />
+    <AvaloniaResource Include="Assets\Fonts\CircularStd-Book.woff2" />
+    <AvaloniaResource Include="Assets\Fonts\CircularStd-Medium.woff2" />
+    <AvaloniaResource Include="Assets\Fonts\CircularStd-Bold.woff2" />
   </ItemGroup>
 </Project>

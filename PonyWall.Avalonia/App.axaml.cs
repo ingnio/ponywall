@@ -189,29 +189,9 @@ namespace pylorak.TinyWall
             menu.Items.Add(new NativeMenuItem("Change mode") { Menu = modeMenu });
             menu.Items.Add(new NativeMenuItemSeparator());
 
-            var mnuManage = new NativeMenuItem("Settings");
-            mnuManage.Click += async (_, _) => await OpenManageAsync();
-            menu.Items.Add(mnuManage);
-
-            var mnuConn = new NativeMenuItem("Connections...");
-            mnuConn.Click += (_, _) => OpenConnections();
-            menu.Items.Add(mnuConn);
-
-            var mnuHistory = new NativeMenuItem("History...");
-            mnuHistory.Click += (_, _) => OpenHistory();
-            menu.Items.Add(mnuHistory);
-
-            var mnuStats = new NativeMenuItem("Stats...");
-            mnuStats.Click += (_, _) => OpenStats();
-            menu.Items.Add(mnuStats);
-
-            var mnuRules = new NativeMenuItem("Firewall Rules...");
-            mnuRules.Click += (_, _) => OpenRules();
-            menu.Items.Add(mnuRules);
-
-            var mnuLogs = new NativeMenuItem("Open logs folder");
-            mnuLogs.Click += (_, _) => OpenLogsFolder();
-            menu.Items.Add(mnuLogs);
+            var mnuOpen = new NativeMenuItem("Open PonyWall");
+            mnuOpen.Click += (_, _) => OpenMainWindow();
+            menu.Items.Add(mnuOpen);
             menu.Items.Add(new NativeMenuItemSeparator());
 
             var mnuLock = new NativeMenuItem(_viewModel?.IsLocked == true
@@ -252,6 +232,7 @@ namespace pylorak.TinyWall
             menuWindow.HistoryRequested += () => OpenHistory();
             menuWindow.StatsRequested += () => OpenStats();
             menuWindow.RulesRequested += () => OpenRules();
+            menuWindow.OpenRequested += () => OpenMainWindow();
             menuWindow.LogsRequested += () => OpenLogsFolder();
             menuWindow.WhitelistExeRequested += async () => await WhitelistByExecutableAsync();
             menuWindow.WhitelistProcessRequested += async () => await WhitelistByProcessAsync();
@@ -321,28 +302,29 @@ namespace pylorak.TinyWall
             }
         }
 
-        private void OpenConnections()
+        private Views.MainWindow? _mainWindow;
+
+        private void OpenMainWindow(string? navigateTo = null)
         {
-            if (_controller == null) return;
-            ConnectionsWindow.ShowConnections(_controller);
+            if (_mainWindow == null || !_mainWindow.IsVisible)
+            {
+                _mainWindow = new Views.MainWindow(_controller, _lastServerConfig);
+                _mainWindow.Closed += (_, _) => _mainWindow = null;
+                _mainWindow.Show();
+            }
+            else
+            {
+                _mainWindow.Activate();
+            }
         }
 
-        private void OpenHistory()
-        {
-            if (_controller == null) return;
-            HistoryWindow.ShowHistory(_controller);
-        }
-
-        private void OpenStats()
-        {
-            StatsWindow.ShowStats();
-        }
-
-        private void OpenRules()
-        {
-            if (_lastServerConfig != null)
-                Views.RulesWindow.ShowRules(_controller, _lastServerConfig);
-        }
+        // Legacy entry points — delegate to the unified main window.
+        // Kept for backward compat with any remaining callers; new code
+        // should call OpenMainWindow directly.
+        private void OpenConnections() => OpenMainWindow("Connections");
+        private void OpenHistory() => OpenMainWindow("History");
+        private void OpenStats() => OpenMainWindow("Stats");
+        private void OpenRules() => OpenMainWindow("Rules");
 
         private void OpenLogsFolder()
         {

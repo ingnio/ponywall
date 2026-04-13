@@ -1,0 +1,139 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="pylorak.TinyWall.Views.MainWindow"
+        Title="PonyWall"
+        Width="1100" Height="700"
+        MinWidth="700" MinHeight="500"
+        WindowStartupLocation="CenterScreen"
+        Icon="avares://PonyWall/Assets/firewall.ico"
+        Background="#0f1923"
+        RequestedThemeVariant="Dark">
+
+  <Window.Styles>
+    <!-- Nav icon: Segoe Fluent outline, centered -->
+    <Style Selector="TextBlock.navIcon">
+      <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
+      <Setter Property="FontSize" Value="20" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="#8899aa" />
+    </Style>
+    <!-- Nav label: small text under icon -->
+    <Style Selector="TextBlock.navLabel">
+      <Setter Property="FontSize" Value="10" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="#8899aa" />
+      <Setter Property="Margin" Value="0,2,0,0" />
+    </Style>
+    <!-- Nav item container — generous horizontal padding so the
+         active-state background has visible breathing room on
+         both sides, matching the Radiograph reference. -->
+    <Style Selector="ListBoxItem.navItem">
+      <Setter Property="Padding" Value="0,12" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Margin" Value="8,2" />
+    </Style>
+    <!-- Selected state -->
+    <Style Selector="ListBoxItem.navItem:selected TextBlock.navIcon">
+      <Setter Property="Foreground" Value="#e0e8f0" />
+    </Style>
+    <Style Selector="ListBoxItem.navItem:selected TextBlock.navLabel">
+      <Setter Property="Foreground" Value="#e0e8f0" />
+    </Style>
+    <Style Selector="ListBoxItem.navItem:selected /template/ ContentPresenter">
+      <Setter Property="Background" Value="#1a2a3a" />
+    </Style>
+    <!-- Hover state -->
+    <Style Selector="ListBoxItem.navItem:pointerover TextBlock.navIcon">
+      <Setter Property="Foreground" Value="#c0d0e0" />
+    </Style>
+    <Style Selector="ListBoxItem.navItem:pointerover TextBlock.navLabel">
+      <Setter Property="Foreground" Value="#c0d0e0" />
+    </Style>
+  </Window.Styles>
+
+  <Grid ColumnDefinitions="80,*">
+    <!-- ============ Left nav sidebar ============ -->
+    <Border Grid.Column="0" Background="#0a1018">
+      <DockPanel>
+        <!-- Bottom section: About + Settings -->
+        <StackPanel DockPanel.Dock="Bottom" Margin="0,0,0,8">
+          <ListBox Name="navBottomList"
+                   SelectionChanged="NavList_SelectionChanged"
+                   Background="Transparent"
+                   BorderThickness="0">
+            <ListBoxItem Tag="About" Classes="navItem">
+              <StackPanel>
+                <TextBlock Text="&#xE946;" Classes="navIcon" />
+                <TextBlock Text="About" Classes="navLabel" />
+              </StackPanel>
+            </ListBoxItem>
+            <ListBoxItem Tag="Settings" Classes="navItem">
+              <StackPanel>
+                <TextBlock Text="&#xE713;" Classes="navIcon" />
+                <TextBlock Text="Settings" Classes="navLabel" />
+              </StackPanel>
+            </ListBoxItem>
+          </ListBox>
+        </StackPanel>
+
+        <!-- Main nav -->
+        <ListBox Name="navList"
+                 SelectionChanged="NavList_SelectionChanged"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 Margin="0,8,0,0">
+
+          <ListBoxItem Tag="Dashboard" Classes="navItem" IsSelected="True">
+            <StackPanel>
+              <TextBlock Text="&#xE9D9;" Classes="navIcon" />
+              <TextBlock Text="Dashboard" Classes="navLabel" />
+            </StackPanel>
+          </ListBoxItem>
+
+          <ListBoxItem Tag="Connections" Classes="navItem">
+            <StackPanel>
+              <TextBlock Text="&#xE839;" Classes="navIcon" />
+              <TextBlock Text="Connections" Classes="navLabel" />
+            </StackPanel>
+          </ListBoxItem>
+
+          <ListBoxItem Tag="History" Classes="navItem">
+            <StackPanel>
+              <TextBlock Text="&#xE81C;" Classes="navIcon" />
+              <TextBlock Text="History" Classes="navLabel" />
+            </StackPanel>
+          </ListBoxItem>
+
+          <ListBoxItem Tag="Rules" Classes="navItem">
+            <StackPanel>
+              <TextBlock Text="&#xE71D;" Classes="navIcon" />
+              <TextBlock Text="Rules" Classes="navLabel" />
+            </StackPanel>
+          </ListBoxItem>
+
+          <ListBoxItem Tag="Applications" Classes="navItem">
+            <StackPanel>
+              <TextBlock Text="&#xE74C;" Classes="navIcon" />
+              <TextBlock Text="Applications" Classes="navLabel" />
+            </StackPanel>
+          </ListBoxItem>
+
+          <ListBoxItem Tag="Logs" Classes="navItem">
+            <StackPanel>
+              <TextBlock Text="&#xE7C3;" Classes="navIcon" />
+              <TextBlock Text="Logs" Classes="navLabel" />
+            </StackPanel>
+          </ListBoxItem>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+    <!-- ============ Content area ============ -->
+    <Border Grid.Column="1" Background="#0f1923">
+      <ContentControl Name="pageHost" />
+    </Border>
+  </Grid>
+</Window>

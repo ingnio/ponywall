@@ -103,6 +103,12 @@ namespace pylorak.TinyWall
         [DataMember(EmitDefaultValue = false)]
         public Dictionary<string, int> SettingsFormAppListColumnWidths = new();
 
+        // Main window navigation state
+        [DataMember(EmitDefaultValue = false)]
+        public bool NavCollapsed;
+        [DataMember(EmitDefaultValue = false)]
+        public string? LastNavPage;
+
         // First-block toast scope preferences. Persisted so the user's
         // preferred scope carries across toasts and sessions (e.g., if you
         // always pick "Anywhere", the next toast defaults to that instead

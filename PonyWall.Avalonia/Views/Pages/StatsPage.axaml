@@ -1,0 +1,156 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:pylorak.TinyWall.ViewModels"
+             x:Class="pylorak.TinyWall.Views.StatsPage">
+
+  <ScrollViewer>
+  <Grid Margin="16" RowDefinitions="Auto,12,Auto,12,Auto,8,Auto"
+        x:CompileBindings="True"
+        x:DataType="vm:StatsViewModel">
+
+    <!-- Header + refresh -->
+    <DockPanel Grid.Row="0">
+      <Button Name="btnRefresh" DockPanel.Dock="Right" Content="Refresh"
+              Click="BtnRefresh_Click" />
+      <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+        <TextBlock Text="Firewall Statistics" Classes="pageTitle" />
+        <TextBlock Classes="pageTitleInfo"
+                   ToolTip.Tip="Overview of firewall activity and event store health" />
+      </StackPanel>
+    </DockPanel>
+
+    <!-- Store health card (full width) -->
+    <Border Grid.Row="2" Classes="card" Padding="16">
+      <StackPanel Spacing="6">
+        <TextBlock Text="Event store health" Classes="sectionHeader" />
+        <Grid ColumnDefinitions="Auto,12,*,24,Auto,12,*"
+              RowDefinitions="Auto,4,Auto,4,Auto">
+          <TextBlock Grid.Row="0" Grid.Column="0" Classes="hint" Text="Hot rows" />
+          <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding HotRowsText}" />
+          <TextBlock Grid.Row="0" Grid.Column="4" Classes="hint" Text="Warm rows" />
+          <TextBlock Grid.Row="0" Grid.Column="6" Text="{Binding WarmRowsText}" />
+
+          <TextBlock Grid.Row="2" Grid.Column="0" Classes="hint" Text="DB size" />
+          <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding DbSizeText}" />
+          <TextBlock Grid.Row="2" Grid.Column="4" Classes="hint" Text="Rulesets" />
+          <TextBlock Grid.Row="2" Grid.Column="6" Text="{Binding RulesetCountText}" />
+
+          <TextBlock Grid.Row="4" Grid.Column="0" Classes="hint" Text="Time range" />
+          <TextBlock Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="5"
+                     Text="{Binding TimeRangeText}"
+                     FontFamily="Consolas,Courier New,monospace" />
+        </Grid>
+      </StackPanel>
+    </Border>
+
+    <!-- Two-column body: charts left, lists right -->
+    <Grid Grid.Row="4" ColumnDefinitions="*,12,*" RowDefinitions="Auto,12,*">
+
+      <!-- Reason distribution (top-left) -->
+      <Border Grid.Row="0" Grid.Column="0" Classes="card" Padding="12">
+        <StackPanel Spacing="4">
+          <TextBlock Text="Decisions by reason" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8" />
+          <ItemsControl ItemsSource="{Binding Reasons}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="vm:StatsRowViewModel">
+                <StackPanel Margin="0,0,0,8">
+                  <ProgressBar Minimum="0" Maximum="1" Value="{Binding BarRatio}"
+                               Height="6" Foreground="#4CAF50" Background="#1f3040"
+                               CornerRadius="3" Margin="0,0,0,4" />
+                  <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="{Binding Label}"
+                               TextTrimming="CharacterEllipsis" FontSize="11" Foreground="#8899aa" />
+                    <TextBlock Grid.Column="1" Text="{Binding CountText}"
+                               FontSize="11" Foreground="#aabbcc" />
+                  </Grid>
+                </StackPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+
+      <!-- 24h sparkline (top-right) -->
+      <Border Grid.Row="0" Grid.Column="2" Classes="card" Padding="12">
+        <StackPanel Spacing="6">
+          <TextBlock Text="Events per hour, last 24h" FontSize="13" FontWeight="SemiBold" />
+          <ItemsControl ItemsSource="{Binding Last24Hours}" Height="80">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="4"
+                            VerticalAlignment="Bottom" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="vm:HourBucketViewModel">
+                <StackPanel VerticalAlignment="Bottom" ToolTip.Tip="{Binding Tooltip}">
+                  <Border Width="12"
+                          Height="{Binding BarHeight}"
+                          CornerRadius="2"
+                          Background="#4CAF50" />
+                </StackPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <TextBlock Text="(hover a bar for hour + count)" Classes="hint" FontSize="10" />
+        </StackPanel>
+      </Border>
+
+      <!-- Top blocked apps (bottom-left) -->
+      <Border Grid.Row="2" Grid.Column="0" Classes="card" Padding="12">
+        <StackPanel Spacing="4">
+          <TextBlock Text="Top apps" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8" />
+          <ItemsControl ItemsSource="{Binding TopApps}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="vm:StatsRowViewModel">
+                <StackPanel Margin="0,0,0,8">
+                  <ProgressBar Minimum="0" Maximum="1" Value="{Binding BarRatio}"
+                               Height="6" Foreground="#4CAF50" Background="#1f3040"
+                               CornerRadius="3" Margin="0,0,0,4" />
+                  <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="{Binding Label}"
+                               TextTrimming="CharacterEllipsis" FontSize="11" Foreground="#8899aa" />
+                    <TextBlock Grid.Column="1" Text="{Binding CountText}"
+                               FontSize="11" Foreground="#aabbcc" />
+                  </Grid>
+                </StackPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+
+      <!-- Top blocked destinations (bottom-right) -->
+      <Border Grid.Row="2" Grid.Column="2" Classes="card" Padding="12">
+        <StackPanel Spacing="4">
+          <TextBlock Text="Top remote addresses" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8" />
+          <ItemsControl ItemsSource="{Binding TopRemotes}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="vm:StatsRowViewModel">
+                <StackPanel Margin="0,0,0,8">
+                  <ProgressBar Minimum="0" Maximum="1" Value="{Binding BarRatio}"
+                               Height="6" Foreground="#4CAF50" Background="#1f3040"
+                               CornerRadius="3" Margin="0,0,0,4" />
+                  <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="{Binding Label}"
+                               TextTrimming="CharacterEllipsis" FontSize="11" Foreground="#8899aa"
+                               FontFamily="Consolas,Courier New,monospace" />
+                    <TextBlock Grid.Column="1" Text="{Binding CountText}"
+                               FontSize="11" Foreground="#aabbcc" />
+                  </Grid>
+                </StackPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+
+    </Grid>
+
+    <!-- Status bar -->
+    <TextBlock Grid.Row="6" Name="txtStatus" Classes="hint"
+               Text="Ready." HorizontalAlignment="Left" />
+
+  </Grid>
+  </ScrollViewer>
+</UserControl>

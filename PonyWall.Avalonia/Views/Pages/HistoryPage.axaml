@@ -1,0 +1,263 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:pylorak.TinyWall.ViewModels"
+             x:Class="pylorak.TinyWall.Views.HistoryPage"
+             KeyDown="Page_KeyDown">
+
+  <Grid Margin="16" RowDefinitions="Auto,12,Auto,12,*,8,Auto">
+
+    <!-- Header -->
+    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8">
+      <TextBlock Text="Firewall History" Classes="pageTitle" />
+      <TextBlock Classes="pageTitleInfo" ToolTip.Tip="Event log of every firewall decision with explanations" />
+    </StackPanel>
+
+    <!-- Filter bar card -->
+    <Border Grid.Row="2" Classes="card" Padding="12">
+      <StackPanel Spacing="8">
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <TextBlock Text="Action:" VerticalAlignment="Center" />
+          <ComboBox Name="cbAction" Width="110" SelectedIndex="0"
+                    SelectionChanged="Filter_Changed">
+            <ComboBoxItem Content="Any" />
+            <ComboBoxItem Content="Block" />
+            <ComboBoxItem Content="Allow" />
+          </ComboBox>
+
+          <TextBlock Text="Reason:" VerticalAlignment="Center" />
+          <ComboBox Name="cbReason" Width="200" SelectedIndex="0"
+                    SelectionChanged="Filter_Changed">
+            <ComboBoxItem Content="Any" />
+            <ComboBoxItem Content="Pending (unexplained)" Tag="0" />
+            <ComboBoxItem Content="Allowed — matched rule" Tag="10" />
+            <ComboBoxItem Content="Blocked — no rule" Tag="103" />
+            <ComboBoxItem Content="Blocked — firewall disabled" Tag="101" />
+            <ComboBoxItem Content="Blocked — block-all mode" Tag="100" />
+            <ComboBoxItem Content="Blocked — hard-block rule" Tag="102" />
+            <ComboBoxItem Content="Blocked — port mismatch" Tag="104" />
+            <ComboBoxItem Content="Blocked — wrong direction" Tag="106" />
+          </ComboBox>
+
+          <TextBlock Text="When:" VerticalAlignment="Center" />
+          <ComboBox Name="cbTimeRange" Width="140" SelectedIndex="0"
+                    SelectionChanged="Filter_Changed">
+            <ComboBoxItem Content="Any time" />
+            <ComboBoxItem Content="Last 5 minutes"  Tag="300" />
+            <ComboBoxItem Content="Last 15 minutes" Tag="900" />
+            <ComboBoxItem Content="Last hour"       Tag="3600" />
+            <ComboBoxItem Content="Last 6 hours"    Tag="21600" />
+            <ComboBoxItem Content="Last 24 hours"   Tag="86400" />
+            <ComboBoxItem Content="Last 72 hours"   Tag="259200" />
+          </ComboBox>
+
+          <Button Name="btnRefresh" Content="Refresh" Click="BtnRefresh_Click" />
+          <Button Name="btnExport" Content="Export..." Click="BtnExport_Click"
+                  ToolTip.Tip="Save the currently visible rows as a forensic JSON bundle." />
+          <CheckBox Name="chkLiveTail" Content="Live tail"
+                    IsCheckedChanged="ChkLiveTail_Changed"
+                    ToolTip.Tip="Re-query the history every 3 seconds." />
+        </StackPanel>
+        <TextBox Name="txtFilter"
+                 Watermark="Filter by app name, path, remote address, service..."
+                 TextChanged="TxtFilter_TextChanged" />
+      </StackPanel>
+    </Border>
+
+    <!-- Grid + collapsible details pane -->
+    <Grid Grid.Row="4" Name="gridContent" ColumnDefinitions="*">
+
+      <!-- DataGrid card -->
+      <Border Grid.Column="0" Classes="card" Padding="0">
+        <DataGrid Name="dataGrid"
+                  x:CompileBindings="True"
+                  x:DataType="vm:HistoryRowViewModel"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserReorderColumns="True"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True"
+                  SelectionMode="Single"
+                  SelectionChanged="DataGrid_SelectionChanged"
+                  BorderThickness="0">
+          <DataGrid.ContextMenu>
+            <ContextMenu Name="rowContextMenu" Opening="RowContextMenu_Opening">
+              <MenuItem Header="Create exception for this app..." Name="mnuCreateException"
+                        Click="MnuCreateException_Click" />
+              <Separator />
+              <MenuItem Header="Copy app path" Name="mnuCopyAppPath"
+                        Click="MnuCopyAppPath_Click" />
+              <MenuItem Header="Copy remote address" Name="mnuCopyRemote"
+                        Click="MnuCopyRemote_Click" />
+              <MenuItem Header="Open containing folder" Name="mnuOpenFolder"
+                        Click="MnuOpenFolder_Click" />
+              <Separator />
+              <MenuItem Header="Look up on VirusTotal" Name="mnuVirusTotal"
+                        Click="MnuVirusTotal_Click" />
+              <MenuItem Header="Search filename on Google" Name="mnuGoogleFilename"
+                        Click="MnuGoogleFilename_Click" />
+              <MenuItem Header="Search remote address on Google" Name="mnuGoogleRemote"
+                        Click="MnuGoogleRemote_Click" />
+            </ContextMenu>
+          </DataGrid.ContextMenu>
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="150" />
+            <DataGridTextColumn Header="Action" Binding="{Binding ActionLabel}" Width="65" />
+            <DataGridTextColumn Header="App" Binding="{Binding App}" Width="170" />
+            <DataGridTextColumn Header="Dir" Binding="{Binding Direction}" Width="50" />
+            <DataGridTextColumn Header="Proto" Binding="{Binding Protocol}" Width="55" />
+            <DataGridTextColumn Header="Remote" Binding="{Binding Remote}" Width="180" />
+            <DataGridTextColumn Header="L.Port" Binding="{Binding LocalPort}" Width="60" />
+            <DataGridTextColumn Header="Reason" Binding="{Binding ReasonLabel}" Width="200" />
+            <DataGridTextColumn Header="Conf" Binding="{Binding ConfidenceLabel}" Width="60" />
+            <DataGridTextColumn Header="Near" Binding="{Binding NearMissCount}" Width="50" />
+          </DataGrid.Columns>
+        </DataGrid>
+      </Border>
+
+      <!-- Drill-down pane (initially hidden, shown on row click) -->
+      <Border Grid.Column="1" Name="borderDetails" Classes="card" Padding="0"
+              IsVisible="False" Width="380">
+        <DockPanel>
+          <!-- Close button at top -->
+          <DockPanel DockPanel.Dock="Top" Margin="12,8,8,0">
+            <TextBlock Text="Event Details" FontWeight="SemiBold" VerticalAlignment="Center" />
+            <Button DockPanel.Dock="Right" Content="✕" Click="BtnCloseDetails_Click"
+                    Background="Transparent" BorderThickness="0" Padding="6,2"
+                    HorizontalAlignment="Right" Cursor="Hand" FontSize="14" />
+          </DockPanel>
+        <ScrollViewer Padding="12,4,12,12" HorizontalScrollBarVisibility="Disabled">
+          <Grid>
+
+            <!-- Details content -->
+            <StackPanel Name="pnlDetails"
+                        x:CompileBindings="True"
+                        x:DataType="vm:HistoryDetailsViewModel"
+                        IsVisible="False"
+                        Spacing="14">
+
+              <!-- Header: action badge + timestamp -->
+              <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <Border Padding="8,3" CornerRadius="4"
+                        Background="{Binding IsBlock, Converter={x:Static vm:BoolToBrushConverter.BlockAllow}}">
+                  <TextBlock Text="{Binding ActionLabel}" FontWeight="Bold" Foreground="White" />
+                </Border>
+                <TextBlock Text="{Binding Timestamp}" FontFamily="Consolas,Courier New,monospace" />
+              </StackPanel>
+
+              <!-- Reason block -->
+              <StackPanel Spacing="2">
+                <TextBlock Text="Reason" Classes="sectionHeader" />
+                <TextBlock Text="{Binding ReasonText}" TextWrapping="Wrap" FontSize="14" />
+                <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,4,0,0">
+                  <TextBlock Text="Confidence:" Classes="hint" />
+                  <TextBlock Text="{Binding ConfidenceText}" />
+                  <TextBlock Text="Mode:" Classes="hint" />
+                  <TextBlock Text="{Binding Mode}" />
+                  <TextBlock Text="Ruleset:" Classes="hint" />
+                  <TextBlock Text="{Binding RulesetIdText}" />
+                </StackPanel>
+              </StackPanel>
+
+              <!-- Status hint (e.g. snapshot missing) -->
+              <Border IsVisible="{Binding HasStatusHint}"
+                      Background="#332200" Padding="8,6" CornerRadius="3">
+                <TextBlock Text="{Binding StatusHint}" TextWrapping="Wrap"
+                           Foreground="#FFCC66" FontSize="12" />
+              </Border>
+
+              <!-- Subject -->
+              <StackPanel Spacing="2">
+                <TextBlock Text="App" Classes="sectionHeader" />
+                <TextBlock Text="{Binding AppName}" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding AppPath}" Classes="hint" TextWrapping="Wrap"
+                           FontFamily="Consolas,Courier New,monospace" FontSize="11" />
+                <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,2,0,0">
+                  <TextBlock Text="PID:" Classes="hint" />
+                  <TextBlock Text="{Binding Pid}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="6"
+                            IsVisible="{Binding HasServiceName}">
+                  <TextBlock Text="Service:" Classes="hint" />
+                  <TextBlock Text="{Binding ServiceName}" />
+                </StackPanel>
+              </StackPanel>
+
+              <!-- Flow -->
+              <StackPanel Spacing="2">
+                <TextBlock Text="Flow" Classes="sectionHeader" />
+                <Grid ColumnDefinitions="Auto,8,*" RowDefinitions="Auto,4,Auto,4,Auto,4,Auto">
+                  <TextBlock Grid.Row="0" Grid.Column="0" Text="Protocol" Classes="hint" />
+                  <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Protocol}" />
+                  <TextBlock Grid.Row="2" Grid.Column="0" Text="Direction" Classes="hint" />
+                  <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding DirectionLabel}" />
+                  <TextBlock Grid.Row="4" Grid.Column="0" Text="Local" Classes="hint" />
+                  <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding LocalEndpoint}"
+                             FontFamily="Consolas,Courier New,monospace" />
+                  <TextBlock Grid.Row="6" Grid.Column="0" Text="Remote" Classes="hint" />
+                  <TextBlock Grid.Row="6" Grid.Column="2" Text="{Binding RemoteEndpoint}"
+                             FontFamily="Consolas,Courier New,monospace" />
+                </Grid>
+              </StackPanel>
+
+              <!-- Evidence chips -->
+              <StackPanel Spacing="4" IsVisible="{Binding HasEvidence}">
+                <TextBlock Text="Evidence" Classes="sectionHeader" />
+                <ItemsControl ItemsSource="{Binding Evidence}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:EvidenceChipViewModel">
+                      <Border Margin="0,0,6,6" Padding="6,3" CornerRadius="10"
+                              BorderThickness="1" BorderBrush="#555"
+                              Background="#222">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                          <TextBlock Text="{Binding Label}" Classes="hint" FontSize="10" />
+                          <TextBlock Text="{Binding Value}" FontSize="11" />
+                        </StackPanel>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+
+              <!-- Near-miss rules -->
+              <StackPanel Spacing="4" IsVisible="{Binding HasNearMisses}">
+                <TextBlock Text="Near-miss rules" Classes="sectionHeader" />
+                <ItemsControl ItemsSource="{Binding NearMisses}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:NearMissViewModel">
+                      <Border Margin="0,0,0,4" Padding="8,6" CornerRadius="3"
+                              BorderThickness="1" BorderBrush="#444" Background="#1a1a1a">
+                        <StackPanel Spacing="2">
+                          <TextBlock Text="{Binding RuleName}" FontWeight="SemiBold" FontSize="12" />
+                          <TextBlock Text="{Binding Divergence}" Classes="hint" TextWrapping="Wrap" FontSize="11" />
+                        </StackPanel>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+
+              <!-- Matched rule -->
+              <StackPanel Spacing="2" IsVisible="{Binding HasMatchedRule}">
+                <TextBlock Text="Matched rule" Classes="sectionHeader" />
+                <TextBlock Text="{Binding MatchedRuleName}" TextWrapping="Wrap" />
+              </StackPanel>
+
+            </StackPanel>
+          </Grid>
+        </ScrollViewer>
+        </DockPanel>
+      </Border>
+
+    </Grid>
+
+    <!-- Status bar -->
+    <TextBlock Grid.Row="6" Name="txtStatus" Classes="hint"
+               Text="Ready." HorizontalAlignment="Left" />
+
+  </Grid>
+</UserControl>

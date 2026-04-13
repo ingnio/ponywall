@@ -15,15 +15,15 @@
     <Thickness x:Key="PageMargin">16</Thickness>
     <Thickness x:Key="SectionMargin">0,0,0,12</Thickness>
     <Thickness x:Key="CardPadding">16</Thickness>
-    <CornerRadius x:Key="CardCornerRadius">8</CornerRadius>
+    <CornerRadius x:Key="CardCornerRadius">4</CornerRadius>
     <CornerRadius x:Key="InputCornerRadius">6</CornerRadius>
     <CornerRadius x:Key="ButtonCornerRadius">6</CornerRadius>
 
     <!-- Card brushes (theme-aware) -->
     <SolidColorBrush x:Key="CardBackgroundLight" Color="#FFFFFF" />
     <SolidColorBrush x:Key="CardBorderLight" Color="#E0E0E0" />
-    <SolidColorBrush x:Key="CardBackgroundDark" Color="#2D2D2D" />
-    <SolidColorBrush x:Key="CardBorderDark" Color="#404040" />
+    <SolidColorBrush x:Key="CardBackgroundDark" Color="#1a2535" />
+    <SolidColorBrush x:Key="CardBorderDark" Color="Transparent" />
 
     <!-- Banner brushes -->
     <LinearGradientBrush x:Key="BannerGradientLight" StartPoint="0%,0%" EndPoint="100%,0%">
@@ -41,8 +41,7 @@
     <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
     <Setter Property="Padding" Value="{StaticResource CardPadding}" />
     <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderThickness" Value="0" />
   </Style>
 
   <!-- Light theme card override -->
@@ -55,8 +54,8 @@
             <SolidColorBrush x:Key="CardBd" Color="#E5E5E5" />
           </ResourceDictionary>
           <ResourceDictionary x:Key="Dark">
-            <SolidColorBrush x:Key="CardBg" Color="#2D2D2D" />
-            <SolidColorBrush x:Key="CardBd" Color="#404040" />
+            <SolidColorBrush x:Key="CardBg" Color="#1a2535" />
+            <SolidColorBrush x:Key="CardBd" Color="Transparent" />
           </ResourceDictionary>
         </ResourceDictionary.ThemeDictionaries>
       </ResourceDictionary>
@@ -73,14 +72,29 @@
   </Style>
 
   <Style Selector="TextBlock.pageTitle">
-    <Setter Property="FontWeight" Value="Bold" />
-    <Setter Property="FontSize" Value="20" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="FontSize" Value="22" />
     <Setter Property="Margin" Value="0,0,0,4" />
   </Style>
 
+  <!-- Info icon shown next to page titles -->
+  <Style Selector="TextBlock.pageTitleInfo">
+    <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
+    <Setter Property="Text" Value="&#xE946;" />
+    <Setter Property="FontSize" Value="16" />
+    <Setter Property="Foreground" Value="#556677" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+
   <Style Selector="TextBlock.subtitle">
-    <Setter Property="FontSize" Value="12" />
-    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Foreground" Value="#556677" />
+  </Style>
+
+  <Style Selector="TextBlock.hint">
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Foreground" Value="#445566" />
   </Style>
 
   <!-- ===== Modern Button Row ===== -->
@@ -91,14 +105,16 @@
     <Setter Property="Margin" Value="0,8,0,0" />
   </Style>
 
-  <!-- ===== Rounded TextBox ===== -->
+  <!-- ===== TextBox ===== -->
   <Style Selector="TextBox">
     <Setter Property="CornerRadius" Value="{StaticResource InputCornerRadius}" />
+    <Setter Property="BorderThickness" Value="0" />
   </Style>
 
-  <!-- ===== Rounded ComboBox ===== -->
+  <!-- ===== ComboBox ===== -->
   <Style Selector="ComboBox">
     <Setter Property="CornerRadius" Value="{StaticResource InputCornerRadius}" />
+    <Setter Property="BorderThickness" Value="0" />
   </Style>
 
   <!-- ===== Button Styling ===== -->
@@ -117,9 +133,19 @@
   <!-- ===== DataGrid Improvements ===== -->
   <Style Selector="DataGrid">
     <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
     <Setter Property="GridLinesVisibility" Value="None" />
+    <Setter Property="FontFamily" Value="Inter, Segoe UI Variable, Segoe UI" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Foreground" Value="#99aabb" />
+  </Style>
+
+  <Style Selector="DataGridRow:selected DataGridCell TextBlock">
+    <Setter Property="Foreground" Value="White" />
+  </Style>
+
+  <Style Selector="DataGridRow:selected">
+    <Setter Property="Foreground" Value="White" />
   </Style>
 
   <Style Selector="DataGridColumnHeader">
@@ -153,8 +179,7 @@
   <!-- ===== ListBox within cards ===== -->
   <Style Selector="ListBox">
     <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
   </Style>
 
   <!-- ===== Banner style ===== -->
