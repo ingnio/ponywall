@@ -36,12 +36,18 @@ try {
                 $g.SmoothingMode       = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
                 $g.PixelOffsetMode     = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
                 $g.CompositingQuality  = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
+                # SourceCopy replaces destination pixels entirely (including
+                # alpha), preserving the source image's transparency. The
+                # default SourceOver composites onto the existing bitmap
+                # content, which can flatten alpha to opaque white.
+                $g.CompositingMode     = [System.Drawing.Drawing2D.CompositingMode]::SourceCopy
 
-                # Default canvas state for Format32bppArgb is fully transparent,
-                # which is what we want for icons (so whatever the OS paints
-                # behind the tray/taskbar shows through around the artwork).
-                # Only opt into a solid fill if -BackgroundFill was specified.
+                # Explicitly clear to transparent so padding areas (for
+                # non-square sources) are fully transparent.
+                $g.Clear([System.Drawing.Color]::Transparent)
+
                 if (-not [string]::IsNullOrEmpty($BackgroundFill)) {
+                    $g.CompositingMode = [System.Drawing.Drawing2D.CompositingMode]::SourceOver
                     $g.Clear([System.Drawing.Color]::FromName($BackgroundFill))
                 }
 
