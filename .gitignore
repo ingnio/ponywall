@@ -44,3 +44,5 @@
 /MsiSetup/obj/
 /MsiSetup/bin/
 /MsiSetup/Sources/ProgramFiles/
+.claude/scheduled_tasks.lock
+.claude/settings.local.json
