@@ -43,6 +43,14 @@ namespace pylorak.TinyWall
         private readonly CancellationTokenSource BackfillCts = new();
         private long _currentRulesetId;
         private readonly History.ToastDeduper ToastDeduper = new();
+
+        // Apps whose Allow/Block decision is mid-flight: added when a
+        // PUT_SETTINGS arrives with a newly permanent exception, removed
+        // once InstallFirewallRules commits. Closes the WFP-callback race
+        // where packets arriving during the commit window still saw the
+        // old config and produced duplicate toasts.
+        private readonly object _pendingDecisionLock = new();
+        private readonly HashSet<string> _pendingDecisionApps = new(StringComparer.OrdinalIgnoreCase);
         private readonly FileLocker FileLocker = new();
         private readonly HostsFileManager HostsFileManager = new();
         private DateTime LastControllerCommandTime = DateTime.Now;
@@ -1407,6 +1415,28 @@ namespace pylorak.TinyWall
                         bool warning = (args.Changeset != ServiceGlobals.ServerChangeset);
                         if (!warning)
                         {
+                            var newlyDecided = CollectNewlyPermanentExecPaths(ServiceGlobals.Config, args.Config);
+                            if (newlyDecided.Count > 0)
+                            {
+                                lock (_pendingDecisionLock)
+                                {
+                                    foreach (var p in newlyDecided)
+                                        _pendingDecisionApps.Add(p);
+                                }
+                                // Drop any toasts already queued for these
+                                // apps — the user has decided, they don't
+                                // need to see or dismiss more pop-ups for Z.
+                                lock (VisibleState.PendingToasts)
+                                {
+                                    for (int i = VisibleState.PendingToasts.Count - 1; i >= 0; i--)
+                                    {
+                                        var t = VisibleState.PendingToasts[i];
+                                        if (!string.IsNullOrEmpty(t.AppPath) && newlyDecided.Contains(t.AppPath))
+                                            VisibleState.PendingToasts.RemoveAt(i);
+                                    }
+                                }
+                            }
+
                             try
                             {
                                 ServiceGlobals.ServerChangeset = Guid.NewGuid();
@@ -1419,6 +1449,17 @@ namespace pylorak.TinyWall
                             catch (Exception e)
                             {
                                 Utils.LogException(e, Utils.LOG_ID_SERVICE);
+                            }
+                            finally
+                            {
+                                if (newlyDecided.Count > 0)
+                                {
+                                    lock (_pendingDecisionLock)
+                                    {
+                                        foreach (var p in newlyDecided)
+                                            _pendingDecisionApps.Remove(p);
+                                    }
+                                }
                             }
                         }
                         VisibleState.HasPassword = PasswordLock.HasPassword;
@@ -1924,6 +1965,7 @@ namespace pylorak.TinyWall
             // made a decision, so re-toasting would be noise.
             if (entry.Event == EventLogEvent.BLOCKED
                 && ServiceGlobals.Config?.ActiveProfile?.EnableFirstBlockToasts == true
+                && !IsDecisionPendingFor(entry.AppPath)
                 && !HasPermanentExceptionForSubject(entry.AppPath))
             {
                 long nowMs = new DateTimeOffset(entry.Timestamp.ToUniversalTime(), TimeSpan.Zero).ToUnixTimeMilliseconds();
@@ -1946,6 +1988,56 @@ namespace pylorak.TinyWall
         /// Matches by ExecutableSubject path today; other subject types
         /// fall through and get toasted (rare edge case).
         /// </summary>
+        private bool IsDecisionPendingFor(string? appPath)
+        {
+            if (string.IsNullOrEmpty(appPath))
+                return false;
+            lock (_pendingDecisionLock)
+            {
+                return _pendingDecisionApps.Contains(appPath);
+            }
+        }
+
+        /// <summary>
+        /// Diffs two configs and returns the executable paths that are
+        /// permanent exceptions in <paramref name="newCfg"/> but were not
+        /// permanent in <paramref name="oldCfg"/>. These are the apps the
+        /// user just made a decision on, so we suppress toasts for them
+        /// until the new rules are installed.
+        /// </summary>
+        private static HashSet<string> CollectNewlyPermanentExecPaths(ServerConfiguration? oldCfg, ServerConfiguration? newCfg)
+        {
+            var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (newCfg?.ActiveProfile?.AppExceptions is not { } newExceptions)
+                return result;
+
+            var oldSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (oldCfg?.ActiveProfile?.AppExceptions is { } oldExceptions)
+            {
+                foreach (var ex in oldExceptions)
+                {
+                    if (ex.Timer == AppExceptionTimer.Permanent
+                        && ex.Subject is ExecutableSubject es
+                        && !string.IsNullOrEmpty(es.ExecutablePath))
+                    {
+                        oldSet.Add(es.ExecutablePath);
+                    }
+                }
+            }
+
+            foreach (var ex in newExceptions)
+            {
+                if (ex.Timer == AppExceptionTimer.Permanent
+                    && ex.Subject is ExecutableSubject es
+                    && !string.IsNullOrEmpty(es.ExecutablePath)
+                    && !oldSet.Contains(es.ExecutablePath))
+                {
+                    result.Add(es.ExecutablePath);
+                }
+            }
+            return result;
+        }
+
         private static bool HasPermanentExceptionForSubject(string? appPath)
         {
             if (string.IsNullOrEmpty(appPath))

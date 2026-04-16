@@ -83,6 +83,9 @@ namespace pylorak.TinyWall.Views
             UpdateMenuBackground();
         }
 
+        private PixelPoint _anchorCursor;
+        private Size _lastArrangedSize;
+
         /// <summary>
         /// Shows the tray menu at the specified screen position, adjusted to stay on-screen.
         /// </summary>
@@ -96,16 +99,26 @@ namespace pylorak.TinyWall.Views
             PnlThemeItems.IsVisible = false;
             TxtThemeArrow.Text = "\uE76C";
 
-            // Position will be adjusted after the window is measured
-            Position = cursorPosition;
+            _anchorCursor = cursorPosition;
+            _lastArrangedSize = default;
+
+            // Show far off-screen so the user never sees the pre-layout frame.
+            // SizeToContent + a borderless window means Bounds can be 0 until the
+            // first layout pass completes, which happens after Show().
+            Position = new PixelPoint(-32000, -32000);
+            LayoutUpdated += OnLayoutUpdatedReposition;
             Show();
             Activate();
+        }
 
-            // Adjust position after layout so the window stays on screen
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-            {
-                AdjustPosition(cursorPosition);
-            }, Avalonia.Threading.DispatcherPriority.Loaded);
+        private void OnLayoutUpdatedReposition(object? sender, EventArgs e)
+        {
+            // Reposition whenever the arranged size changes (initial show, or a
+            // submenu expanding/collapsing grows/shrinks the window).
+            if (Bounds.Width <= 0 || Bounds.Height <= 0) return;
+            if (Bounds.Size == _lastArrangedSize) return;
+            _lastArrangedSize = Bounds.Size;
+            AdjustPosition(_anchorCursor);
         }
 
         private void AdjustPosition(PixelPoint cursor)
@@ -149,6 +162,7 @@ namespace pylorak.TinyWall.Views
 
         private void OnWindowDeactivated(object? sender, EventArgs e)
         {
+            LayoutUpdated -= OnLayoutUpdatedReposition;
             Close();
         }
 
